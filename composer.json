@@ -1,0 +1,35 @@
+{
+    "name": "msp/twofactorauth",
+    "description": "",
+    "require": {
+        "php": "~5.5.0|~5.6.0|~7.0.0",
+
+        "msp/common": "*",
+        "msp/securitysuite": "*",
+        "magento/magento-composer-installer": "*",
+        "spomky-labs/otphp": "^8.0",
+        "endroid/qrcode": "^1.7"
+    },
+    "suggest": {
+
+    },
+    "type": "magento2-module",
+    "version": "0.1.0",
+    "license": "OSL 3.0",
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "MSP\\TwoFactorAuth\\": ""
+        }
+    },
+    "extra": {
+        "map": [
+            [
+                "*",
+                "MSP/TwoFactorAuth"
+            ]
+        ]
+    }
+}
