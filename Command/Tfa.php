@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Command;
 
 use Magento\Framework\App\Cache\Manager;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use MSP\TwoFactorAuth\Helper\Data;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,7 +53,7 @@ class Tfa extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->configInterface->saveConfig(
-            'msp_twofactorauth/general/enabled',
+            Data::XML_PATH_GENERAL_ENABLED,
             '0',
             'default',
             0
