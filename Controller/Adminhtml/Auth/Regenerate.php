@@ -1,6 +1,6 @@
 <?php
 /**
- * IDEALIAGroup srl
+ * MageSpecialist
  *
  * NOTICE OF LICENSE
  *
@@ -10,11 +10,11 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to info@idealiagroup.com so we can send you a copy immediately.
+ * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
  * @package    MSP_TwoFactorAuth
- * @copyright  Copyright (c) 2016 IDEALIAGroup srl (http://www.idealiagroup.com)
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -23,38 +23,48 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Auth;
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\User\Model\UserFactory;
-use Magento\Integration\Api\AdminTokenServiceInterface;
+use Magento\User\Model\ResourceModel\User as UserResourceModel;
 
 class Regenerate extends Action
 {
-    protected $userFactory;
+    /**
+     * @var UserResourceModel
+     */
+    private $userResourceModel;
+
+    /**
+     * @var UserFactory
+     */
+    private $userInterfaceFactory;
 
     public function __construct(
         Context $context,
+        UserResourceModel $userResourceModel,
         UserFactory $userFactory
     ) {
-        $this->userFactory = $userFactory;
-
         parent::__construct($context);
+        $this->userResourceModel = $userResourceModel;
+        $this->userInterfaceFactory = $userFactory;
     }
 
     public function execute()
     {
         $userId = $this->getRequest()->getParam('id');
-
-        $user = $this->userFactory->create();
-        $user->load($userId);
+        $user = $this->userInterfaceFactory->create();
+        $this->userResourceModel->load($user, $userId);
 
         if (!$user->getId()) {
             throw new \Exception('Invalid user');
         }
 
         $user
+            ->setPassword(null)
             ->setMspTfaSecret('')
-            ->setMspTfaActivated(false)
-            ->save();
+            ->setMspTfaActivated(false);
 
-        $this->messageManager->addSuccess(__('Two Factor Authentication token has been replaced'));
+        $this->userResourceModel->save($user);
+
+        $this->messageManager->addSuccessMessage(__('Two Factor Authentication token has been replaced'));
         $this->_redirect('adminhtml/*/edit', ['user_id' => $userId]);
     }
 

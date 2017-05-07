@@ -1,6 +1,6 @@
 <?php
 /**
- * IDEALIAGroup srl
+ * MageSpecialist
  *
  * NOTICE OF LICENSE
  *
@@ -10,48 +10,67 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to info@idealiagroup.com so we can send you a copy immediately.
+ * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
  * @package    MSP_TwoFactorAuth
- * @copyright  Copyright (c) 2016 IDEALIAGroup srl (http://www.idealiagroup.com)
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 namespace MSP\TwoFactorAuth\Model;
 
 use Base32\Base32;
-use Endroid\QrCode\Factory\QrCodeFactory;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use Magento\Backend\Model\Auth\Session;
-use MSP\TwoFactorAuth\Helper\Data;
 
 class Tfa implements TfaInterface
 {
-    protected $session;
-    protected $helperData;
-    protected $qrCodeFactory;
-    protected $storeManagerInterface;
     protected $_totp = null;
+
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
 
     public function __construct(
         Session $session,
-        Data $helperData,
-        QrCodeFactory $qrCodeFactory,
-        StoreManagerInterface $storeManagerInterface
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->session = $session;
-        $this->helperData = $helperData;
-        $this->qrCodeFactory = $qrCodeFactory;
-        $this->storeManagerInterface = $storeManagerInterface;
+        $this->storeManager = $storeManager;
+        $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * Return true if enabled
+     * @return bool
+     */
+    public function getEnabled()
+    {
+        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_GENERAL_ENABLED);
     }
 
     /**
      * Get current admin user
      * @return \Magento\User\Model\User|null
      */
-    protected function _getUser()
+    protected function getUser()
     {
         return $this->session->getUser();
     }
@@ -60,9 +79,9 @@ class Tfa implements TfaInterface
      * Generate random secret
      * @return string
      */
-    protected function _generateSecret()
+    protected function generateSecret()
     {
-        $secret = mcrypt_create_iv(128, MCRYPT_RAND);
+        $secret = random_bytes(128);
         return Base32::encode($secret);
     }
 
@@ -70,9 +89,9 @@ class Tfa implements TfaInterface
      * Get TOTP object
      * @return \OTPHP\TOTP
      */
-    protected function _getTotp()
+    protected function getTotp()
     {
-        $user = $this->_getUser();
+        $user = $this->getUser();
 
         if (is_null($this->_totp)) {
             $this->_totp = new \OTPHP\TOTP(
@@ -90,11 +109,11 @@ class Tfa implements TfaInterface
      */
     public function getUserMustActivateTfa()
     {
-        if (!$this->helperData->getEnabled()) {
+        if (!$this->getEnabled()) {
             return false;
         }
 
-        return ($this->_getUser()->getMspTfaEnabled() && !$this->getUserTfaIsActive());
+        return ($this->getUser()->getMspTfaEnabled() && !$this->getUserTfaIsActive());
     }
 
     /**
@@ -103,7 +122,7 @@ class Tfa implements TfaInterface
      */
     public function getUserMustAuth()
     {
-        if (!$this->helperData->getEnabled()) {
+        if (!$this->getEnabled()) {
             return false;
         }
 
@@ -120,11 +139,11 @@ class Tfa implements TfaInterface
      */
     public function getUserTfaIsActive()
     {
-        if (!$this->helperData->getEnabled()) {
+        if (!$this->getEnabled()) {
             return false;
         }
 
-        $user = $this->_getUser();
+        $user = $this->getUser();
 
         return ($user->getMspTfaEnabled() && $user->getMspTfaSecret() && $user->getMspTfaActivated());
     }
@@ -135,27 +154,27 @@ class Tfa implements TfaInterface
      */
     public function getProvisioningUrl()
     {
-        $user = $this->_getUser();
+        $user = $this->getUser();
 
         if (!$user) {
             return null;
         }
 
         if (!$user->getMspTfaSecret()) {
-            $secret = $this->_generateSecret();
+            $secret = $this->generateSecret();
 
             $user
                 ->setMspTfaSecret($secret)
                 ->save();
         }
 
-        $baseUrl = $this->storeManagerInterface->getStore()->getBaseUrl();
+        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
 
         // @codingStandardsIgnoreStart
         $issuer = parse_url($baseUrl, PHP_URL_HOST);
         // @codingStandardsIgnoreEnd
 
-        $totp = $this->_getTotp();
+        $totp = $this->getTotp();
         $totp->setIssuer($issuer);
 
         return $totp->getProvisioningUri(true);
@@ -168,7 +187,7 @@ class Tfa implements TfaInterface
      */
     public function verify($token)
     {
-        $totp = $this->_getTotp();
+        $totp = $this->getTotp();
         $totp->now();
 
         return $totp->verify($token);
@@ -177,20 +196,21 @@ class Tfa implements TfaInterface
     /**
      * Render TFA QrCode
      */
-    public function renderQrCode()
+    public function getQrCodeAsPng()
     {
-        $qrCode = $this->qrCodeFactory->createQrCode([
-            'text' => $this->getProvisioningUrl(),
-            'size' => 400,
-            'padding' => 10,
-            'error_correction_level' => 'high',
-            'foreground_color' => ['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0],
-            'background_color' => ['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0],
-            'label_font_size' => 16,
-            'extension' => 'png',
-        ]);
+        $qrCode = new QrCode($this->getProvisioningUrl());
+        $qrCode
+            ->setSize(400)
+            ->setErrorCorrectionLevel('high')
+            ->setForegroundColor(['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0])
+            ->setBackgroundColor(['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0])
+            ->setLabelFontSize(16)
+            ->setEncoding('UTF-8');
 
-        $qrCode->render(null, 'png');
+        $writer = new PngWriter($qrCode);
+        $pngData = $writer->writeString();
+
+        return $pngData;
     }
 
     /**
@@ -200,7 +220,7 @@ class Tfa implements TfaInterface
      */
     public function activateUserTfa()
     {
-        $user = $this->_getUser();
+        $user = $this->getUser();
         if (!$user) {
             return $this;
         }

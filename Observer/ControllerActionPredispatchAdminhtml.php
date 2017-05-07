@@ -1,6 +1,6 @@
 <?php
 /**
- * IDEALIAGroup srl
+ * MageSpecialist
  *
  * NOTICE OF LICENSE
  *
@@ -10,13 +10,14 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to info@idealiagroup.com so we can send you a copy immediately.
+ * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
  * @package    MSP_TwoFactorAuth
- * @copyright  Copyright (c) 2016 IDEALIAGroup srl (http://www.idealiagroup.com)
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
 
 namespace MSP\TwoFactorAuth\Observer;
 
@@ -29,18 +30,30 @@ use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class ControllerActionPredispatchAdminhtml implements ObserverInterface
 {
-    protected $tfaInterface;
-    protected $actionFlag;
-    protected $urlInterface;
+    /**
+     * @var TfaInterface
+     */
+    private $tfa;
+
+    /**
+     * @var ActionFlag
+     */
+    private $actionFlag;
+
+    /**
+     * @var UrlInterface
+     */
+    private $url;
 
     public function __construct(
-        TfaInterface $tfaInterface,
+        TfaInterface $tfa,
         ActionFlag $actionFlag,
-        UrlInterface $urlInterface
+        UrlInterface $url
     ) {
-        $this->tfaInterface = $tfaInterface;
+
+        $this->tfa = $tfa;
         $this->actionFlag = $actionFlag;
-        $this->urlInterface = $urlInterface;
+        $this->url = $url;
     }
 
     /**
@@ -68,14 +81,14 @@ class ControllerActionPredispatchAdminhtml implements ObserverInterface
             return;
         }
         
-        if ($this->tfaInterface->getUserMustActivateTfa()) {
+        if ($this->tfa->getUserMustActivateTfa()) {
             $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-            $url = $this->urlInterface->getUrl('msp_twofactorauth/activate/index');
+            $url = $this->url->getUrl('msp_twofactorauth/activate/index');
             $controllerAction->getResponse()->setRedirect($url);
 
-        } else if ($this->tfaInterface->getUserMustAuth()) {
+        } else if ($this->tfa->getUserMustAuth()) {
             $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-            $url = $this->urlInterface->getUrl('msp_twofactorauth/auth/index');
+            $url = $this->url->getUrl('msp_twofactorauth/auth/index');
             $controllerAction->getResponse()->setRedirect($url);
         }
     }

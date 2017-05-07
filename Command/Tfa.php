@@ -22,38 +22,44 @@ namespace MSP\TwoFactorAuth\Command;
 
 use Magento\Framework\App\Cache\Manager;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
-use MSP\TwoFactorAuth\Helper\Data;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Tfa extends Command
 {
-    protected $configInterface;
-    protected $cacheManager;
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
+
+    /**
+     * @var Manager
+     */
+    private $cacheManager;
 
     public function __construct(
-        ConfigInterface $configInterface,
+        ConfigInterface $config,
         Manager $cacheManager
     ) {
-        $this->configInterface = $configInterface;
-        $this->cacheManager = $cacheManager;
         parent::__construct();
+        $this->config = $config;
+        $this->cacheManager = $cacheManager;
     }
 
     protected function configure()
     {
         $this->setName('msp:security:tfa:disable');
-        $this->setDescription('Disable two factor auth');
+        $this->setDescription('Globally disable two factor auth');
 
         parent::configure();
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->configInterface->saveConfig(
-            Data::XML_PATH_GENERAL_ENABLED,
+        $this->config->saveConfig(
+            TfaInterface::XML_PATH_GENERAL_ENABLED,
             '0',
             'default',
             0

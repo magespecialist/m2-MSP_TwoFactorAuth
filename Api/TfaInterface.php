@@ -1,6 +1,6 @@
 <?php
 /**
- * IDEALIAGroup srl
+ * MageSpecialist
  *
  * NOTICE OF LICENSE
  *
@@ -10,11 +10,11 @@
  * http://opensource.org/licenses/osl-3.0.php
  * If you did not receive a copy of the license and are unable to
  * obtain it through the world-wide-web, please send an email
- * to info@idealiagroup.com so we can send you a copy immediately.
+ * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
  * @package    MSP_TwoFactorAuth
- * @copyright  Copyright (c) 2016 IDEALIAGroup srl (http://www.idealiagroup.com)
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
@@ -22,6 +22,8 @@ namespace MSP\TwoFactorAuth\Api;
 
 interface TfaInterface
 {
+    const XML_PATH_GENERAL_ENABLED = 'msp_securitysuite/twofactorauth/enabled';
+
     /**
      * Return true if user must activate his TFA
      * @return bool
@@ -43,7 +45,7 @@ interface TfaInterface
     /**
      * Render TFA QrCode
      */
-    public function renderQrCode();
+    public function getQrCodeAsPng();
 
     /**
      * Get TFA provisioning URL
