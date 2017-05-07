@@ -14,7 +14,7 @@ Did you lock yourself out from Magento backend? <a href="https://github.com/mage
 
 From command line: 
 
-`composer require msp/twofatorauth`
+`composer require msp/twofactorauth`
 
 **2. Enable and configure from your Magento backend config**
 
