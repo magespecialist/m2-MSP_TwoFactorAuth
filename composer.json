@@ -7,14 +7,14 @@
         "msp/common": "*",
         "msp/securitysuite": "*",
         "magento/magento-composer-installer": "*",
-        "spomky-labs/otphp": "^8.0",
-        "endroid/qrcode": "^1.7"
+        "spomky-labs/otphp": "^8.3",
+        "endroid/qrcode": "^2.1"
     },
     "suggest": {
 
     },
     "type": "magento2-module",
-    "version": "0.1.4",
+    "version": "0.1.5",
     "license": "OSL 3.0",
     "autoload": {
         "files": [
