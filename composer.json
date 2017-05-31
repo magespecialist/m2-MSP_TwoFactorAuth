@@ -1,20 +1,25 @@
 {
     "name": "msp/twofactorauth",
-    "description": "",
+    "description": "Two Factor Authentication module for Magento2 - Member of MageSpecialist SecuritySuite",
     "require": {
-        "php": "~5.5.0|~5.6.0|~7.0.0",
+        "php": "~7.0.0",
 
         "msp/common": "*",
-        "msp/securitysuite": "*",
+        "msp/security-suite-common": "*",
         "magento/magento-composer-installer": "*",
         "spomky-labs/otphp": "^8.3",
         "endroid/qrcode": "^2.1"
     },
     "suggest": {
-
+        "msp/security-suite": "Full MageSpecialist Security Suite"
     },
+    "authors": [
+        {
+            "name": "Riccardo Tempesta",
+            "email": "riccardo.tempesta@magespecialist.it"
+        }
+    ],
     "type": "magento2-module",
-    "version": "0.1.5",
     "license": "OSL 3.0",
     "autoload": {
         "files": [

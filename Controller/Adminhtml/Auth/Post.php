@@ -22,7 +22,10 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Auth;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Backend\Model\Auth\Session;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Post extends Action
 {
@@ -31,14 +34,29 @@ class Post extends Action
      */
     private $tfa;
 
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Context $context,
-        TfaInterface $tfa
+        TfaInterface $tfa,
+        LogManagementInterface $logManagement,
+        EventInterface $event,
+        Session $session
     ) {
         $this->tfa = $tfa;
 
         parent::__construct($context);
         $this->tfa = $tfa;
+        $this->session = $session;
+        $this->event = $event;
     }
 
     public function execute()
@@ -50,6 +68,12 @@ class Post extends Action
 
             return $this->_redirect('/');
         } else {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Invalid token',
+                'username' => $this->session->getUser()->getUserName(),
+            ]);
+
             $this->messageManager->addErrorMessage('Invalid code');
             return $this->_redirect('msp_twofactorauth/auth/index');
         }

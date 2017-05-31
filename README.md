@@ -4,7 +4,7 @@ Two Factor Authentication module for maximum **backend access protection** in Ma
 
 > Member of **MSP Security Suite**
 >
-> See: https://github.com/magespecialist/m2-MSP_SecuritySuiteFull
+> See: https://github.com/magespecialist/m2-MSP_Security_Suite
 
 Did you lock yourself out from Magento backend? <a href="https://github.com/magespecialist/m2-MSP_TwoFactorAuth#emergency-commandline-disable">click here.</a>
 
