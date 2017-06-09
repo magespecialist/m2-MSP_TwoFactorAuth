@@ -207,8 +207,8 @@ class Tfa implements TfaInterface
             ->setLabelFontSize(16)
             ->setEncoding('UTF-8');
 
-        $writer = new PngWriter($qrCode);
-        $pngData = $writer->writeString();
+        $writer = new PngWriter();
+        $pngData = $writer->writeString($qrCode);
 
         return $pngData;
     }

@@ -25,7 +25,6 @@ use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Post extends Action
 {
@@ -48,7 +47,6 @@ class Post extends Action
         Context $context,
         TfaInterface $tfa,
         LogManagementInterface $logManagement,
-        EventInterface $event,
         Session $session
     ) {
         $this->tfa = $tfa;
@@ -56,7 +54,7 @@ class Post extends Action
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     public function execute()
