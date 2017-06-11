@@ -7,8 +7,8 @@
         "msp/common": "*",
         "msp/security-suite-common": "*",
         "magento/magento-composer-installer": "*",
-        "spomky-labs/otphp": "^8.3",
-        "endroid/qrcode": "^2.1"
+        "spomky-labs/otphp": "~8.3",
+        "endroid/qrcode": "~2.2"
     },
     "suggest": {
         "msp/security-suite": "Full MageSpecialist Security Suite"
