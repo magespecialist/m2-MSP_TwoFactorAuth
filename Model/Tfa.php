@@ -204,8 +204,7 @@ class Tfa implements TfaInterface
     protected function generateSecret()
     {
         $secret = random_bytes(128);
-        return Base32::encode($secret);
-//        return preg_replace('/[^A-Za-z0-9]/', '', Base32::encode($secret));
+        return preg_replace('/[^A-Za-z0-9]/', '', Base32::encode($secret));
     }
 
     /**
