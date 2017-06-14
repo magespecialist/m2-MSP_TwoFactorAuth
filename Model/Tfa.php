@@ -452,7 +452,7 @@ class Tfa implements TfaInterface
         $trustEntry = $this->trustedInterfaceFactory->create();
         $this->trustedResourceModel->load($trustEntry, $token, TrustedInterface::TOKEN);
 
-        return !!$trustEntry->getId();
+        return $trustEntry->getId() && ($trustEntry->getUserId() == $this->getUser()->getId());
     }
 
     /**
