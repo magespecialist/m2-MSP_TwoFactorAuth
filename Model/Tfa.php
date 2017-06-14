@@ -24,7 +24,17 @@ use Base32\Base32;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
+use Magento\Framework\Session\SessionManagerInterface;
+use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
+use Magento\Framework\Stdlib\CookieManagerInterface;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
+use Magento\Framework\App\DeploymentConfig\Reader as DeploymentConfigReader;
+use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
+use MSP\TwoFactorAuth\Api\Data\TrustedInterface;
+use MSP\TwoFactorAuth\Api\Data\TrustedInterfaceFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use Magento\Backend\Model\Auth\Session;
 
@@ -47,14 +57,94 @@ class Tfa implements TfaInterface
      */
     private $storeManager;
 
+    /**
+     * @var TrustedInterfaceFactory
+     */
+    private $trustedInterfaceFactory;
+
+    /**
+     * @var DateTime
+     */
+    private $dateTime;
+
+    /**
+     * @var RequestInterface
+     */
+    private $request;
+
+    /**
+     * @var TrustedResourceModel
+     */
+    private $trustedResourceModel;
+
+    /**
+     * @var RemoteAddress
+     */
+    private $remoteAddress;
+
+    /**
+     * @var CookieManagerInterface
+     */
+    private $cookieManager;
+
+    /**
+     * @var CookieMetadataFactory
+     */
+    private $cookieMetadataFactory;
+
+    /**
+     * @var DeploymentConfigReader
+     */
+    private $deploymentConfigReader;
+
+    /**
+     * @var SessionManagerInterface
+     */
+    private $sessionManager;
+
+    /**
+     * @var TrustedResourceModel\CollectionFactory
+     */
+    private $collectionFactory;
+
     public function __construct(
         Session $session,
         StoreManagerInterface $storeManager,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        RequestInterface $request,
+        DateTime $dateTime,
+        TrustedInterfaceFactory $trustedInterfaceFactory,
+        TrustedResourceModel $trustedResourceModel,
+        RemoteAddress $remoteAddress,
+        CookieManagerInterface $cookieManager,
+        CookieMetadataFactory $cookieMetadataFactory,
+        DeploymentConfigReader $deploymentConfigReader,
+        SessionManagerInterface $sessionManager,
+        TrustedResourceModel\CollectionFactory $collectionFactory
     ) {
         $this->session = $session;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
+        $this->trustedInterfaceFactory = $trustedInterfaceFactory;
+        $this->dateTime = $dateTime;
+        $this->request = $request;
+        $this->trustedResourceModel = $trustedResourceModel;
+        $this->remoteAddress = $remoteAddress;
+        $this->cookieManager = $cookieManager;
+        $this->cookieMetadataFactory = $cookieMetadataFactory;
+        $this->deploymentConfigReader = $deploymentConfigReader;
+        $this->sessionManager = $sessionManager;
+        $this->collectionFactory = $collectionFactory;
+    }
+
+    /**
+     * Get device name
+     * @return string
+     */
+    private function getDeviceName()
+    {
+        $browser = parse_user_agent();
+        return $browser['platform'] . ' ' . $browser['browser'] . ' ' . $browser['version'];
     }
 
     /**
@@ -63,7 +153,39 @@ class Tfa implements TfaInterface
      */
     public function getEnabled()
     {
-        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_GENERAL_ENABLED);
+        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED);
+    }
+
+    /**
+     * Return true if trusted devices are allowed
+     * @return bool
+     */
+    public function getAllowTrustedDevices()
+    {
+        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_ALLOW_TRUSTED_DEVICES);
+    }
+
+    /**
+     * Return true if users are forced to use tfa
+     * @return bool
+     */
+    public function getForceAllUsers()
+    {
+        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_FORCE_ALL_USERS);
+    }
+
+    /**
+     * Return a list of trusted devices for given user id
+     * @param int $userId
+     * @return array
+     */
+    public function getTrustedDevices($userId)
+    {
+        /** @var $collection TrustedResourceModel\Collection */
+        $collection = $this->collectionFactory->create();
+        $collection->addFieldToFilter('user_id', $userId);
+
+        return $collection->getItems();
     }
 
     /**
@@ -113,7 +235,10 @@ class Tfa implements TfaInterface
             return false;
         }
 
-        return ($this->getUser()->getMspTfaEnabled() && !$this->getUserTfaIsActive());
+        return (
+            ($this->getUser()->getMspTfaEnabled() || $this->getForceAllUsers()) &&
+            !$this->getUserTfaIsActive()
+        );
     }
 
     /**
@@ -254,5 +379,90 @@ class Tfa implements TfaInterface
     public function getTwoAuthFactorPassed()
     {
         return $this->session->getMspTfaPassed();
+    }
+
+    /**
+     * Trust device and return secret token
+     * @return void
+     */
+    public function trustDevice()
+    {
+        $token = md5(uniqid(time()));
+
+        /** @var $trustEntry TrustedInterface */
+        $trustEntry = $this->trustedInterfaceFactory->create();
+        $trustEntry
+            ->setToken($token)
+            ->setDateTime($this->dateTime->date())
+            ->setUserId($this->getUser()->getId())
+            ->setLastIp($this->remoteAddress->getRemoteAddress())
+            ->setDeviceName($this->getDeviceName())
+            ->setUserAgent($this->request->getServer('HTTP_USER_AGENT'));
+
+        $this->trustedResourceModel->save($trustEntry);
+
+        $this->sendTokenCookie($token);
+    }
+
+    /**
+     * Send token as cookie
+     * @param string $token
+     */
+    private function sendTokenCookie($token)
+    {
+        // Enable cookie
+        $cookieMetadata = $this->cookieMetadataFactory->createSensitiveCookieMetadata()
+            ->setPath($this->sessionManager->getCookiePath())
+            ->setDomain($this->sessionManager->getCookieDomain());
+
+        $this->cookieManager->setSensitiveCookie(TfaInterface::TRUSTED_DEVICE_COOKIE, $token, $cookieMetadata);
+    }
+
+    /**
+     * Rotate secret trust token
+     * @return void
+     */
+    public function rotateToken()
+    {
+        $token = $this->cookieManager->getCookie(TfaInterface::TRUSTED_DEVICE_COOKIE);
+
+        /** @var $trustEntry TrustedInterface */
+        $trustEntry = $this->trustedInterfaceFactory->create();
+        $this->trustedResourceModel->load($trustEntry, $token, TrustedInterface::TOKEN);
+        if ($trustEntry->getId()) {
+            $token = md5(uniqid(time()));
+
+            $trustEntry->setToken($token);
+            $this->trustedResourceModel->save($trustEntry);
+
+            $this->sendTokenCookie($token);
+        }
+    }
+
+    /**
+     * Return true if device is trusted
+     * @return bool
+     */
+    public function isTrustedDevice()
+    {
+        $token = $this->cookieManager->getCookie(TfaInterface::TRUSTED_DEVICE_COOKIE);
+
+        /** @var $trustEntry TrustedInterface */
+        $trustEntry = $this->trustedInterfaceFactory->create();
+        $this->trustedResourceModel->load($trustEntry, $token, TrustedInterface::TOKEN);
+
+        return !!$trustEntry->getId();
+    }
+
+    /**
+     * Revoke trusted device
+     * @param int $tokenId
+     * @return void
+     */
+    public function revokeTrustedDevice($tokenId)
+    {
+        $trustEntry = $this->trustedInterfaceFactory->create();
+        $this->trustedResourceModel->load($trustEntry, $tokenId);
+        $this->trustedResourceModel->delete($trustEntry);
     }
 }

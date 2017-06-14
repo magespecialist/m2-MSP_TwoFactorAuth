@@ -25,6 +25,8 @@
         <msp_securitysuite>
             <twofactorauth>
                 <enabled>0</enabled>
+                <allow_trusted_devices>1</allow_trusted_devices>
+                <force_all_users>0</force_all_users>
             </twofactorauth>
         </msp_securitysuite>
     </default>

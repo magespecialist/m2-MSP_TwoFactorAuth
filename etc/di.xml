@@ -21,8 +21,8 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-
-    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa" />
+    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\TrustedInterface" type="\MSP\TwoFactorAuth\Model\Trusted"/>
 
     <type name="Magento\Framework\Console\CommandList">
         <arguments>

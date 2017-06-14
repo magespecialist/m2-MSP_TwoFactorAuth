@@ -18,12 +18,13 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Trusted;
 
-use Magento\Backend\Block\Template;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\ResponseInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class Auth extends Template
+class Revoke extends Action
 {
     /**
      * @var TfaInterface
@@ -31,21 +32,26 @@ class Auth extends Template
     private $tfa;
 
     public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
+        Action\Context $context,
+        TfaInterface $tfa
     ) {
-        parent::__construct($context, $data);
+        parent::__construct($context);
         $this->tfa = $tfa;
     }
 
-    public function getPostUrl()
+    /**
+     * Dispatch request
+     *
+     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @throws \Magento\Framework\Exception\NotFoundException
+     */
+    public function execute()
     {
-        return $this->getUrl('*/*/post');
-    }
+        $tokenId = $this->getRequest()->getParam('id');
+        $userId = $this->getRequest()->getParam('user_id');
+        $this->tfa->revokeTrustedDevice($tokenId);
 
-    public function shouldShowRememberCheckbox()
-    {
-        return $this->tfa->getAllowTrustedDevices();
+        $this->messageManager->addSuccessMessage(__('Device authorization revoked'));
+        $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
     }
 }

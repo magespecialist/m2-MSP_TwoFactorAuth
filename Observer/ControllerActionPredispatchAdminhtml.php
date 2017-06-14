@@ -82,14 +82,24 @@ class ControllerActionPredispatchAdminhtml implements ObserverInterface
         }
         
         if ($this->tfa->getUserMustActivateTfa()) {
+            // Must activate TFA
             $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
             $url = $this->url->getUrl('msp_twofactorauth/activate/index');
             $controllerAction->getResponse()->setRedirect($url);
-
-        } else if ($this->tfa->getUserMustAuth()) {
-            $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-            $url = $this->url->getUrl('msp_twofactorauth/auth/index');
-            $controllerAction->getResponse()->setRedirect($url);
+        } else {
+            if ($this->tfa->getUserMustAuth() &&
+                $this->tfa->getAllowTrustedDevices() &&
+                $this->tfa->isTrustedDevice()
+            ) {
+                // Trusted devices
+                $this->tfa->setTwoAuthFactorPassed(true);
+                $this->tfa->rotateToken();
+            } else if ($this->tfa->getUserMustAuth()) {
+                // non-Trusted devices
+                $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
+                $url = $this->url->getUrl('msp_twofactorauth/auth/index');
+                $controllerAction->getResponse()->setRedirect($url);
+            }
         }
     }
 }

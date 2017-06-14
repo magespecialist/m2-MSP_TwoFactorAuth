@@ -59,7 +59,7 @@ class Tfa extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->config->saveConfig(
-            TfaInterface::XML_PATH_GENERAL_ENABLED,
+            TfaInterface::XML_PATH_ENABLED,
             '0',
             'default',
             0

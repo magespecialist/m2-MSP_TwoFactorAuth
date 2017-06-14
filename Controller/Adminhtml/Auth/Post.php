@@ -43,10 +43,14 @@ class Post extends Action
      */
     private $event;
 
+    /**
+     * @var Context
+     */
+    private $context;
+
     public function __construct(
         Context $context,
         TfaInterface $tfa,
-        LogManagementInterface $logManagement,
         Session $session
     ) {
         $this->tfa = $tfa;
@@ -55,17 +59,23 @@ class Post extends Action
         $this->tfa = $tfa;
         $this->session = $session;
         $this->event = $context->getEventManager();
+        $this->context = $context;
     }
 
     public function execute()
     {
         $token = $this->getRequest()->getParam('tfa_code');
+        $tfaTrusted = $this->getRequest()->getParam('tfa_trusted');
         
         if ($this->tfa->verify($token)) {
             $this->tfa->setTwoAuthFactorPassed(true);
+            if ($tfaTrusted && $this->tfa->getAllowTrustedDevices()) {
+                $this->tfa->trustDevice();
+            }
 
             return $this->_redirect('/');
         } else {
+            $this->tfa->setTwoAuthFactorPassed(false);
             $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Invalid token',

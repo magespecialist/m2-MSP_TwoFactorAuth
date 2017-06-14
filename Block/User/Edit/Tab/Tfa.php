@@ -20,10 +20,32 @@
 
 namespace MSP\TwoFactorAuth\Block\User\Edit\Tab;
 
+use Magento\Backend\Block\Template\Context;
 use Magento\Backend\Block\Widget\Form\Generic;
+use Magento\Framework\Data\FormFactory;
+use Magento\Framework\Registry;
+use MSP\TwoFactorAuth\Api\Data\TrustedInterface;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class Tfa extends Generic
 {
+    /**
+     * @var TfaInterface
+     */
+    private $tfa;
+
+    public function __construct(
+        Context $context,
+        Registry $registry,
+        FormFactory $formFactory,
+        TfaInterface $tfa,
+        array $data = []
+    )
+    {
+        parent::__construct($context, $registry, $formFactory, $data);
+        $this->tfa = $tfa;
+    }
+
     protected function _prepareForm()
     {
         /** @var $user \Magento\User\Model\User */
@@ -39,15 +61,15 @@ class Tfa extends Generic
 
         $tfaFieldset = $form->addFieldset(
             'base_fieldset', [
-                'legend' => __('Two Factor Authentication')
-            ]);
+            'legend' => __('Two Factor Authentication')
+        ]);
 
         $tfaFieldset->addField(
             'msp_tfa_enabled',
             'select',
             [
                 'value' => $user->getMspTfaEnabled(),
-                'name'  => 'msp_tfa_enabled',
+                'name' => 'msp_tfa_enabled',
                 'label' => __('Enable'),
                 'title' => __('Enable'),
                 'options' => array(
@@ -70,6 +92,57 @@ class Tfa extends Generic
                         . ' onclick="self.location.href=\'' . $regenerateUrl . '\'">'
                         . __('Regenerate Token')
                         . '</button>',
+                ]
+            );
+        }
+
+        if ($this->tfa->getAllowTrustedDevices()) {
+            $trustedDevices = $this->tfa->getTrustedDevices($user->getId());
+
+            // TODO: Make this better, my eyes are bleeding looking at this code
+            if (count($trustedDevices)) {
+                $devicesHtml = ['<div class="msp_tfa-trusted_devices">'];
+
+                $devicesHtml[] = '<div class="msp_tfa-trusted_devices-head">';
+                $devicesHtml[] = '<div class="msp_tfa-trusted_devices-last_ip">' . __('IP') . '</div>';
+                $devicesHtml[] = '<div class="msp_tfa-trusted_devices-date">' . __('Date Time') . '</div>';
+                $devicesHtml[] = '<div class="msp_tfa-trusted_devices-name">' . __('Device') . '</div>';
+                $devicesHtml[] = '<div class="msp_tfa-trusted_devices-revoke">&nbsp;</div>';
+                $devicesHtml[] = '</div>';
+
+                foreach ($trustedDevices as $trustedDevice) {
+                    /** @var $trustedDevice TrustedInterface */
+                    $revokeUrl = $this->getUrl('msp_twofactorauth/trusted/revoke', [
+                        'id' => $trustedDevice->getId(),
+                        'user_id' => $user->getId(),
+                    ]);
+
+                    $devicesHtml[] = '<div class="msp_tfa-trusted_devices-row">';
+                    $devicesHtml[] = '<div class="msp_tfa-trusted_devices-last_ip">'
+                        . $trustedDevice->getLastIp() . '</div>';
+                    $devicesHtml[] = '<div class="msp_tfa-trusted_devices-date">'
+                        . $trustedDevice->getDateTime() . '</div>';
+                    $devicesHtml[] = '<div class="msp_tfa-trusted_devices-name">'
+                        . $trustedDevice->getDeviceName() . '</div>';
+                    $devicesHtml[] = '<div class="msp_tfa-trusted_devices-revoke">'
+                            . '<button type="button" onclick="self.location.href=\'' . $revokeUrl . '\'">'
+                                . __('Revoke')
+                            . '</button>'
+                        . '</div>';
+                    $devicesHtml[] = '</div>';
+                }
+                $devicesHtml[] = '</div>';
+            } else {
+                $devicesHtml = [__('No trusted devices for this user')];
+            }
+
+            $tfaFieldset->addField(
+                'msp_tfa_trusted',
+                'label',
+                [
+                    'label' => __('Trusted Devices'),
+                    'name' => 'msp_tfa_trusted',
+                    'after_element_html' => implode("\n", $devicesHtml),
                 ]
             );
         }
