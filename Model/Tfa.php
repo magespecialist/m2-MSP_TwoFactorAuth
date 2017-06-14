@@ -357,6 +357,7 @@ class Tfa implements TfaInterface
 
         $user
             ->setMspTfaActivated(true)
+            ->setMspTfaEnabled(true)
             ->save();
 
         return $this;

@@ -65,7 +65,7 @@ class Regenerate extends Action
         $this->userResourceModel->save($user);
 
         $this->messageManager->addSuccessMessage(__('Two Factor Authentication token has been replaced'));
-        $this->_redirect('adminhtml/*/edit', ['user_id' => $userId]);
+        $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
     }
 
     /**
