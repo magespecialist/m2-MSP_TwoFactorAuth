@@ -412,11 +412,13 @@ class Tfa implements TfaInterface
     private function sendTokenCookie($token)
     {
         // Enable cookie
-        $cookieMetadata = $this->cookieMetadataFactory->createSensitiveCookieMetadata()
+        $cookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata()
+            ->setDurationOneYear()
+            ->setHttpOnly(true)
             ->setPath($this->sessionManager->getCookiePath())
             ->setDomain($this->sessionManager->getCookieDomain());
 
-        $this->cookieManager->setSensitiveCookie(TfaInterface::TRUSTED_DEVICE_COOKIE, $token, $cookieMetadata);
+        $this->cookieManager->setPublicCookie(TfaInterface::TRUSTED_DEVICE_COOKIE, $token, $cookieMetadata);
     }
 
     /**
