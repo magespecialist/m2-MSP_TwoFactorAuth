@@ -5,7 +5,7 @@
         "php": "~7.0.0",
 
         "msp/common": "*",
-        "msp/security-suite-common": "*",
+        "msp/security-suite-common": "^1.1",
         "magento/magento-composer-installer": "*",
         "spomky-labs/otphp": "~8.3",
         "endroid/qrcode": "~2.2",
