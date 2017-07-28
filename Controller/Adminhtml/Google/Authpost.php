@@ -18,15 +18,17 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Auth;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\Event\ManagerInterface;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\Google;
 
-class Post extends Action
+class Authpost extends Action
 {
     /**
      * @var TfaInterface
@@ -39,7 +41,7 @@ class Post extends Action
     private $session;
 
     /**
-     * @var EventInterface
+     * @var ManagerInterface
      */
     private $event;
 
@@ -48,9 +50,15 @@ class Post extends Action
      */
     private $context;
 
+    /**
+     * @var Google
+     */
+    private $google;
+
     public function __construct(
         Context $context,
         TfaInterface $tfa,
+        Google $google,
         Session $session
     ) {
         $this->tfa = $tfa;
@@ -60,6 +68,7 @@ class Post extends Action
         $this->session = $session;
         $this->event = $context->getEventManager();
         $this->context = $context;
+        $this->google = $google;
     }
 
     public function execute()
@@ -67,7 +76,7 @@ class Post extends Action
         $token = $this->getRequest()->getParam('tfa_code');
         $tfaTrusted = $this->getRequest()->getParam('tfa_trusted');
         
-        if ($this->tfa->verify($token)) {
+        if ($this->google->verify($token)) {
             $this->tfa->setTwoAuthFactorPassed(true);
             if ($tfaTrusted && $this->tfa->getAllowTrustedDevices()) {
                 $this->tfa->trustDevice();

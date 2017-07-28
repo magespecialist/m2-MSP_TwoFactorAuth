@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * MageSpecialist
  *
@@ -18,15 +17,24 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="admin_login" />
 
-    <body>
-        <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Activate" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/activate.phtml" />
-        </referenceContainer>
-    </body>
-</page>
+namespace MSP\TwoFactorAuth\Block\Google;
+
+use Magento\Backend\Block\Template;
+
+class Activate extends Template
+{
+    /**
+     * Get QR code
+     * @return string
+     */
+    public function getQrCodeUrl()
+    {
+        return $this->getUrl('*/*/qrcode');
+    }
+    
+    public function getPostUrl()
+    {
+        return $this->getUrl('*/*/activatepost');
+    }
+}

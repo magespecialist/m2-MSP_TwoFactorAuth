@@ -18,13 +18,12 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Activate;
+namespace MSP\TwoFactorAuth\Block\Google;
 
-use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
+use Magento\Backend\Block\Template;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class Post extends Action
+class Auth extends Template
 {
     /**
      * @var TfaInterface
@@ -32,35 +31,21 @@ class Post extends Action
     private $tfa;
 
     public function __construct(
-        Context $context,
-        TfaInterface $tfa
+        Template\Context $context,
+        TfaInterface $tfa,
+        array $data = []
     ) {
-        parent::__construct($context);
+        parent::__construct($context, $data);
         $this->tfa = $tfa;
     }
 
-    public function execute()
+    public function getPostUrl()
     {
-        $token = $this->getRequest()->getParam('tfa_code');
-        
-        if ($this->tfa->verify($token)) {
-            $this->tfa->activateUserTfa();
-            $this->tfa->setTwoAuthFactorPassed(true);
-
-            return $this->_redirect('/');
-        } else {
-            $this->messageManager->addErrorMessage('Invalid code');
-            return $this->_redirect('*/*/index');
-        }
+        return $this->getUrl('*/*/authpost');
     }
 
-    /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
-     */
-    protected function _isAllowed()
+    public function shouldShowRememberCheckbox()
     {
-        return $this->tfa->getUserMustActivateTfa();
+        return $this->tfa->getAllowTrustedDevices();
     }
 }

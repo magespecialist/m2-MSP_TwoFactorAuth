@@ -18,34 +18,28 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block;
+namespace MSP\TwoFactorAuth\Setup;
 
-use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Api\TfaInterface;
+use Magento\Framework\Setup\InstallDataInterface;
+use Magento\Framework\Setup\ModuleContextInterface;
+use Magento\Framework\Setup\ModuleDataSetupInterface;
 
-class Auth extends Template
+/**
+ * @codeCoverageIgnore
+ */
+class InstallData implements InstallDataInterface
 {
     /**
-     * @var TfaInterface
+     * Installs data for a module
+     *
+     * @param ModuleDataSetupInterface $setup
+     * @param ModuleContextInterface $context
+     * @return void
      */
-    private $tfa;
-
-    public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-        $this->tfa = $tfa;
-    }
-
-    public function getPostUrl()
+    public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {
-        return $this->getUrl('*/*/post');
-    }
+        $setup->startSetup();
 
-    public function shouldShowRememberCheckbox()
-    {
-        return $this->tfa->getAllowTrustedDevices();
+        $setup->endSetup();
     }
 }

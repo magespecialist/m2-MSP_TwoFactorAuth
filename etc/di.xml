@@ -22,7 +22,18 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
     <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
+    <preference for="\MSP\TwoFactorAuth\Api\ProviderManagementInterface" type="\MSP\TwoFactorAuth\Model\ProviderManagement"/>
+    <preference for="\MSP\TwoFactorAuth\Api\ProviderConfigInterface" type="\MSP\TwoFactorAuth\Model\ProviderConfig"/>
     <preference for="\MSP\TwoFactorAuth\Api\Data\TrustedInterface" type="\MSP\TwoFactorAuth\Model\Trusted"/>
+
+    <type name="MSP\TwoFactorAuth\Api\ProviderManagementInterface">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
+                <!--<item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>-->
+            </argument>
+        </arguments>
+    </type>
 
     <type name="Magento\Framework\Console\CommandList">
         <arguments>

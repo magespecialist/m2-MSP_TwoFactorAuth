@@ -28,6 +28,13 @@ interface TfaInterface
     const XML_PATH_FORCE_ALL_USERS = 'msp_securitysuite/twofactorauth/force_all_users';
 
     /**
+     * Get user's provider
+     * @param \Magento\User\Model\User $user = null
+     * @return ProviderInterface|null
+     */
+    public function getUserProvider(\Magento\User\Model\User $user = null);
+
+    /**
      * Return true if enabled
      * @return bool
      */
@@ -71,29 +78,12 @@ interface TfaInterface
     public function getUserTfaIsActive();
 
     /**
-     * Render TFA QrCode
-     */
-    public function getQrCodeAsPng();
-
-    /**
-     * Get TFA provisioning URL
-     * @return string
-     */
-    public function getProvisioningUrl();
-
-    /**
-     * Return true on token validation
-     * @param $token
-     * @return bool
-     */
-    public function verify($token);
-
-    /**
      * Activate user TFA
+     * @param string $providerCode
      * @return TfaInterface
      * @throws \Exception
      */
-    public function activateUserTfa();
+    public function activateUserTfa($providerCode);
 
     /**
      * Set TFA pass status
@@ -132,4 +122,11 @@ interface TfaInterface
      * @return void
      */
     public function revokeTrustedDevice($tokenId);
+
+    /**
+     * Regenerate token
+     * @param \Magento\User\Model\User $user
+     * @return boolean
+     */
+    public function regenerateToken(\Magento\User\Model\User $user);
 }

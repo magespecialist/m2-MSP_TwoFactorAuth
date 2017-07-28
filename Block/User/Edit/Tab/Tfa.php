@@ -26,6 +26,7 @@ use Magento\Framework\Data\FormFactory;
 use Magento\Framework\Registry;
 use MSP\TwoFactorAuth\Api\Data\TrustedInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Config\Source\Provider;
 
 class Tfa extends Generic
 {
@@ -34,16 +35,24 @@ class Tfa extends Generic
      */
     private $tfa;
 
+    /**
+     * @var Provider
+     */
+    private $provider;
+
     public function __construct(
         Context $context,
         Registry $registry,
         FormFactory $formFactory,
         TfaInterface $tfa,
+        Provider $provider,
         array $data = []
     )
     {
         parent::__construct($context, $registry, $formFactory, $data);
         $this->tfa = $tfa;
+        $this->context = $context;
+        $this->provider = $provider;
     }
 
     protected function _prepareForm()
@@ -51,7 +60,7 @@ class Tfa extends Generic
         /** @var $user \Magento\User\Model\User */
         $user = $this->_coreRegistry->registry('permissions_user');
 
-        $regenerateUrl = $this->getUrl('msp_twofactorauth/auth/regenerate', [
+        $regenerateUrl = $this->getUrl('msp_twofactorauth/regenerate/token', [
             'id' => $user->getId(),
         ]);
 
@@ -65,21 +74,22 @@ class Tfa extends Generic
         ]);
 
         $tfaFieldset->addField(
-            'msp_tfa_enabled',
+            'msp_tfa_provider',
             'select',
             [
-                'value' => $user->getMspTfaEnabled(),
-                'name' => 'msp_tfa_enabled',
-                'label' => __('Enable'),
-                'title' => __('Enable'),
-                'options' => array(
-                    0 => __('No'),
-                    1 => __('Yes'),
-                ),
+                'value' => $user->getMspTfaProvider(),
+                'name' => 'msp_tfa_provider',
+                'label' => __('Two Factor Authentication'),
+                'title' => __('Two Factor Authentication'),
+                'options' => $this->provider->toArray(),
             ]
         );
 
-        if ($user->getMspTfaEnabled() && $user->getMspTfaActivated()) {
+        $tfaProvider = $this->tfa->getUserProvider($user);
+        if (
+            $tfaProvider &&
+            $tfaProvider->canRegenerateToken($user)
+        ) {
             $tfaFieldset->addField(
                 'msp_tfa_regenerate',
                 'label',

@@ -20,9 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Model;
 
-use Base32\Base32;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
@@ -31,7 +28,8 @@ use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Store\Model\StoreManagerInterface;
-use Magento\Framework\App\DeploymentConfig\Reader as DeploymentConfigReader;
+use MSP\TwoFactorAuth\Api\ProviderInterface;
+use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
 use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
 use MSP\TwoFactorAuth\Api\Data\TrustedInterface;
 use MSP\TwoFactorAuth\Api\Data\TrustedInterfaceFactory;
@@ -40,8 +38,6 @@ use Magento\Backend\Model\Auth\Session;
 
 class Tfa implements TfaInterface
 {
-    protected $_totp = null;
-
     /**
      * @var ScopeConfigInterface
      */
@@ -93,11 +89,6 @@ class Tfa implements TfaInterface
     private $cookieMetadataFactory;
 
     /**
-     * @var DeploymentConfigReader
-     */
-    private $deploymentConfigReader;
-
-    /**
      * @var SessionManagerInterface
      */
     private $sessionManager;
@@ -106,6 +97,11 @@ class Tfa implements TfaInterface
      * @var TrustedResourceModel\CollectionFactory
      */
     private $collectionFactory;
+
+    /**
+     * @var ProviderManagementInterface
+     */
+    private $providerManagement;
 
     public function __construct(
         Session $session,
@@ -118,9 +114,9 @@ class Tfa implements TfaInterface
         RemoteAddress $remoteAddress,
         CookieManagerInterface $cookieManager,
         CookieMetadataFactory $cookieMetadataFactory,
-        DeploymentConfigReader $deploymentConfigReader,
         SessionManagerInterface $sessionManager,
-        TrustedResourceModel\CollectionFactory $collectionFactory
+        TrustedResourceModel\CollectionFactory $collectionFactory,
+        ProviderManagementInterface $providerManagement
     ) {
         $this->session = $session;
         $this->storeManager = $storeManager;
@@ -132,9 +128,9 @@ class Tfa implements TfaInterface
         $this->remoteAddress = $remoteAddress;
         $this->cookieManager = $cookieManager;
         $this->cookieMetadataFactory = $cookieMetadataFactory;
-        $this->deploymentConfigReader = $deploymentConfigReader;
         $this->sessionManager = $sessionManager;
         $this->collectionFactory = $collectionFactory;
+        $this->providerManagement = $providerManagement;
     }
 
     /**
@@ -148,12 +144,34 @@ class Tfa implements TfaInterface
     }
 
     /**
+     * Get user's provider
+     * @param \Magento\User\Model\User $user = null
+     * @return ProviderInterface|null
+     */
+    public function getUserProvider(\Magento\User\Model\User $user = null)
+    {
+        return $this->providerManagement->getUserProvider($user);
+    }
+
+    /**
      * Return true if enabled
      * @return bool
      */
     public function getEnabled()
     {
-        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED);
+        if (!$this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED)) {
+            return false;
+        }
+
+        // Require at least one provider enabled
+        $providers = $this->providerManagement->getAllProviders();
+        foreach ($providers as $provider) {
+            if ($provider->isEnabled()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -198,34 +216,6 @@ class Tfa implements TfaInterface
     }
 
     /**
-     * Generate random secret
-     * @return string
-     */
-    protected function generateSecret()
-    {
-        $secret = random_bytes(128);
-        return preg_replace('/[^A-Za-z0-9]/', '', Base32::encode($secret));
-    }
-
-    /**
-     * Get TOTP object
-     * @return \OTPHP\TOTP
-     */
-    protected function getTotp()
-    {
-        $user = $this->getUser();
-
-        if (is_null($this->_totp)) {
-            $this->_totp = new \OTPHP\TOTP(
-                $user->getEmail(),
-                $user->getMspTfaSecret()
-            );
-        }
-
-        return $this->_totp;
-    }
-
-    /**
      * Return true if user must activate his TFA
      * @return bool
      */
@@ -236,7 +226,7 @@ class Tfa implements TfaInterface
         }
 
         return (
-            ($this->getUser()->getMspTfaEnabled() || $this->getForceAllUsers()) &&
+            ($this->getUserProvider() || $this->getForceAllUsers()) &&
             !$this->getUserTfaIsActive()
         );
     }
@@ -269,94 +259,27 @@ class Tfa implements TfaInterface
         }
 
         $user = $this->getUser();
+        $provider = $this->getUserProvider();
 
-        return ($user->getMspTfaEnabled() && $user->getMspTfaSecret() && $user->getMspTfaActivated());
-    }
-
-    /**
-     * Get TFA provisioning URL
-     * @return string
-     */
-    public function getProvisioningUrl()
-    {
-        $user = $this->getUser();
-
-        if (!$user) {
-            return null;
-        }
-
-        if (!$user->getMspTfaSecret()) {
-            $secret = $this->generateSecret();
-
-            $user
-                ->setMspTfaSecret($secret)
-                ->save();
-        }
-
-        $baseUrl = $this->storeManager->getStore()->getBaseUrl();
-
-        // @codingStandardsIgnoreStart
-        $issuer = parse_url($baseUrl, PHP_URL_HOST);
-        // @codingStandardsIgnoreEnd
-
-        $totp = $this->getTotp();
-        $totp->setIssuer($issuer);
-
-        return $totp->getProvisioningUri(true);
-    }
-
-    /**
-     * Return true on token validation
-     * @param $token
-     * @return bool
-     */
-    public function verify($token)
-    {
-        $totp = $this->getTotp();
-        $totp->now();
-
-        return $totp->verify($token);
-    }
-
-    /**
-     * Render TFA QrCode
-     */
-    public function getQrCodeAsPng()
-    {
-        $qrCode = new QrCode($this->getProvisioningUrl());
-        $qrCode
-            ->setSize(400)
-            ->setErrorCorrectionLevel('high')
-            ->setForegroundColor(['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0])
-            ->setBackgroundColor(['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0])
-            ->setLabelFontSize(16)
-            ->setEncoding('UTF-8');
-
-        $writer = new PngWriter();
-        $pngData = $writer->writeString($qrCode);
-
-        return $pngData;
+        return ($provider && $provider->getUserIsConfigured($user) && $user->getMspTfaActivated());
     }
 
     /**
      * Activate user TFA
+     * @param string $providerCode
      * @return TfaInterface
      * @throws \Exception
      */
-    public function activateUserTfa()
+    public function activateUserTfa($providerCode)
     {
         $user = $this->getUser();
         if (!$user) {
             return $this;
         }
 
-        if (!$user->getMspTfaSecret()) {
-            throw new \Exception('Cannot activate user due to missing secret code');
-        }
-
         $user
             ->setMspTfaActivated(true)
-            ->setMspTfaEnabled(true)
+            ->setMspTfaProvider($providerCode)
             ->save();
 
         return $this;
@@ -388,6 +311,10 @@ class Tfa implements TfaInterface
      */
     public function trustDevice()
     {
+        if (!$this->getAllowTrustedDevices()) {
+            return;
+        }
+
         $token = md5(uniqid(time()));
 
         /** @var $trustEntry TrustedInterface */
@@ -467,5 +394,23 @@ class Tfa implements TfaInterface
         $trustEntry = $this->trustedInterfaceFactory->create();
         $this->trustedResourceModel->load($trustEntry, $tokenId);
         $this->trustedResourceModel->delete($trustEntry);
+    }
+
+    /**
+     * Regenerate token
+     * @param \Magento\User\Model\User $user
+     * @return boolean
+     */
+    public function regenerateToken(\Magento\User\Model\User $user)
+    {
+        $provider = $this->getUserProvider();
+
+        $user->setPassword(null); // Avoid resetting password
+        $provider->regenerateToken($user);
+        $user
+            ->setMspTfaActivated(false)
+            ->save();
+
+        return true;
     }
 }

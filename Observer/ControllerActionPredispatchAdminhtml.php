@@ -50,7 +50,6 @@ class ControllerActionPredispatchAdminhtml implements ObserverInterface
         ActionFlag $actionFlag,
         UrlInterface $url
     ) {
-
         $this->tfa = $tfa;
         $this->actionFlag = $actionFlag;
         $this->url = $url;
@@ -66,39 +65,41 @@ class ControllerActionPredispatchAdminhtml implements ObserverInterface
         $controllerAction = $observer->getEvent()->getControllerAction();
         $fullActionName = $controllerAction->getRequest()->getFullActionName();
 
-        if (in_array($fullActionName, [
+        $allowedUrls = [
             'adminhtml_auth_login',
             'adminhtml_auth_logout',
+        ];
 
-            'msp_twofactorauth_activate_index',
-            'msp_twofactorauth_activate_qrcode',
-            'msp_twofactorauth_activate_post',
+        if ($provider = $this->tfa->getUserProvider()) {
+            $allowedUrls[] = str_replace('/', '_', $provider->getActivatePath());
+            $allowedUrls[] = str_replace('/', '_', $provider->getAuthPath());
+            if ($provider->isEnabled()) {
+                $allowedUrls = array_merge($allowedUrls, $provider->getAllowedExtraActions());
+            }
 
-            'msp_twofactorauth_auth_index',
-            'msp_twofactorauth_auth_post',
-            'msp_twofactorauth_auth_regenerate',
-        ])) {
-            return;
-        }
-        
-        if ($this->tfa->getUserMustActivateTfa()) {
-            // Must activate TFA
-            $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-            $url = $this->url->getUrl('msp_twofactorauth/activate/index');
-            $controllerAction->getResponse()->setRedirect($url);
-        } else {
-            if ($this->tfa->getUserMustAuth() &&
-                $this->tfa->getAllowTrustedDevices() &&
-                $this->tfa->isTrustedDevice()
-            ) {
-                // Trusted devices
-                $this->tfa->setTwoAuthFactorPassed(true);
-                $this->tfa->rotateToken();
-            } else if ($this->tfa->getUserMustAuth()) {
-                // non-Trusted devices
+            if (in_array($fullActionName, $allowedUrls)) {
+                return;
+            }
+
+            if ($this->tfa->getUserMustActivateTfa()) {
+                // Must activate TFA
                 $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-                $url = $this->url->getUrl('msp_twofactorauth/auth/index');
+                $url = $this->url->getUrl($provider->getActivatePath());
                 $controllerAction->getResponse()->setRedirect($url);
+            } else {
+                if ($this->tfa->getUserMustAuth() &&
+                    $this->tfa->getAllowTrustedDevices() &&
+                    $this->tfa->isTrustedDevice()
+                ) {
+                    // Trusted devices
+                    $this->tfa->setTwoAuthFactorPassed(true);
+                    $this->tfa->rotateToken();
+                } else if ($this->tfa->getUserMustAuth()) {
+                    // non-Trusted devices
+                    $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
+                    $url = $this->url->getUrl($provider->getAuthPath());
+                    $controllerAction->getResponse()->setRedirect($url);
+                }
             }
         }
     }

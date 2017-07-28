@@ -18,14 +18,15 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Auth;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Regenerate;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\User\Model\UserFactory;
 use Magento\User\Model\ResourceModel\User as UserResourceModel;
+use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
 
-class Regenerate extends Action
+class Token extends Action
 {
     /**
      * @var UserResourceModel
@@ -37,14 +38,21 @@ class Regenerate extends Action
      */
     private $userInterfaceFactory;
 
+    /**
+     * @var ProviderManagementInterface
+     */
+    private $providerManagement;
+
     public function __construct(
         Context $context,
         UserResourceModel $userResourceModel,
+        ProviderManagementInterface $providerManagement,
         UserFactory $userFactory
     ) {
         parent::__construct($context);
         $this->userResourceModel = $userResourceModel;
         $this->userInterfaceFactory = $userFactory;
+        $this->providerManagement = $providerManagement;
     }
 
     public function execute()
@@ -57,12 +65,10 @@ class Regenerate extends Action
             throw new \Exception('Invalid user');
         }
 
-        $user
-            ->setPassword(null)
-            ->setMspTfaSecret('')
-            ->setMspTfaActivated(false);
-
-        $this->userResourceModel->save($user);
+        $provider = $this->providerManagement->getUserProvider($user);
+        if ($provider->canRegenerateToken($user)) {
+            $provider->regenerateToken($user);
+        }
 
         $this->messageManager->addSuccessMessage(__('Two Factor Authentication token has been replaced'));
         $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);

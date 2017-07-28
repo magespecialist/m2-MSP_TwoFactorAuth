@@ -24,6 +24,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -91,6 +92,24 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $setup->getConnection()->createTable($table);
     }
 
+    protected function upgradeTo010200(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+        $adminUserTable = $setup->getTable('admin_user');
+
+        $connection->changeColumn($adminUserTable, 'msp_tfa_enabled', 'msp_tfa_provider', [
+            'type' => Table::TYPE_TEXT,
+            'nullable' => true,
+            'comment' => 'Two Factor Authentication Provider',
+        ]);
+
+        $connection->changeColumn($adminUserTable, 'msp_tfa_secret', 'msp_tfa_config', [
+            'type' => Table::TYPE_TEXT,
+            'nullable' => true,
+            'comment' => 'Two Factor Authentication Config',
+        ]);
+    }
+
     /**
      * Upgrades DB schema for a module
      *
@@ -104,6 +123,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.1.0') < 0) {
             $this->upgradeTo010100($setup);
+        }
+
+        if (version_compare($context->getVersion(), '1.2.0') < 0) {
+            $this->upgradeTo010200($setup);
         }
 
         $setup->endSetup();

@@ -18,14 +18,14 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Activate;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class Index extends Action
+class Auth extends Action
 {
     /**
      * @var PageFactory
@@ -50,7 +50,7 @@ class Index extends Action
 
     public function execute()
     {
-        if (!$this->tfa->getUserMustActivateTfa()) {
+        if (!$this->tfa->getUserMustAuth()) {
             return $this->_redirect('/');
         }
 
@@ -64,6 +64,6 @@ class Index extends Action
      */
     protected function _isAllowed()
     {
-        return $this->tfa->getUserMustActivateTfa();
+        return true;
     }
 }

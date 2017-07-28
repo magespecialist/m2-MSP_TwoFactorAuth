@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * MageSpecialist
  *
@@ -18,19 +17,25 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="admin_login" />
 
-    <head>
-        <css src="MSP_TwoFactorAuth::css/auth.css"/>
-    </head>
+namespace MSP\TwoFactorAuth\Api;
 
-    <body>
-        <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/auth.phtml" />
-        </referenceContainer>
-    </body>
-</page>
+interface ProviderConfigInterface
+{
+    /**
+     * Save user TFA config
+     * @param array $config
+     * @param string $providerCode
+     * @param \Magento\User\Model\User $user
+     * @return array
+     */
+    public function setUserProviderConfiguration($config, $providerCode, \Magento\User\Model\User $user);
+
+    /**
+     * Get user TFA config
+     * @param string $providerCode
+     * @param \Magento\User\Model\User $user
+     * @return array
+     */
+    public function getUserProviderConfiguration($providerCode, \Magento\User\Model\User $user);
+}

@@ -18,19 +18,20 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Activate;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\Controller\Result\Raw;
+use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\Google;
 
-class Qrcode extends Action
+class Activate extends Action
 {
     /**
-     * @var Raw
+     * @var PageFactory
      */
-    private $rawResult;
+    private $pageFactory;
 
     /**
      * @var TfaInterface
@@ -39,24 +40,22 @@ class Qrcode extends Action
 
     public function __construct(
         Context $context,
-        TfaInterface $tfa,
-        Raw $rawResult
-
+        PageFactory $pageFactory,
+        TfaInterface $tfa
     ) {
+
         parent::__construct($context);
+        $this->pageFactory = $pageFactory;
         $this->tfa = $tfa;
-        $this->rawResult = $rawResult;
     }
 
     public function execute()
     {
-        $pngData = $this->tfa->getQrCodeAsPng();
-        $this->rawResult
-            ->setHttpResponseCode(200)
-            ->setHeader('Content-Type', 'image/png')
-            ->setContents($pngData);
+        if (!$this->tfa->getUserMustActivateTfa()) {
+            return $this->_redirect('/');
+        }
 
-        return $this->rawResult;
+        return $this->pageFactory->create();
     }
 
     /**
@@ -66,6 +65,7 @@ class Qrcode extends Action
      */
     protected function _isAllowed()
     {
-        return $this->tfa->getUserMustActivateTfa();
+        $provider = $this->tfa->getUserProvider();
+        return $provider && ($provider->getCode() == Google::CODE) && $this->tfa->getUserMustActivateTfa();
     }
 }

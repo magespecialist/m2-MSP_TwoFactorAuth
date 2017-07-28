@@ -18,43 +18,48 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Auth;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
-use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\Google;
 
-class Index extends Action
+class Activatepost extends Action
 {
-    /**
-     * @var PageFactory
-     */
-    private $pageFactory;
-
     /**
      * @var TfaInterface
      */
     private $tfa;
 
+    /**
+     * @var Google
+     */
+    private $google;
+
     public function __construct(
         Context $context,
-        PageFactory $pageFactory,
+        Google $google,
         TfaInterface $tfa
     ) {
-
         parent::__construct($context);
-        $this->pageFactory = $pageFactory;
         $this->tfa = $tfa;
+        $this->google = $google;
     }
 
     public function execute()
     {
-        if (!$this->tfa->getUserMustAuth()) {
-            return $this->_redirect('/');
-        }
+        $token = $this->getRequest()->getParam('tfa_code');
 
-        return $this->pageFactory->create();
+        if ($this->google->verify($token)) {
+            $this->tfa->activateUserTfa(Google::CODE);
+            $this->tfa->setTwoAuthFactorPassed(true);
+
+            return $this->_redirect('/');
+        } else {
+            $this->messageManager->addErrorMessage('Invalid code');
+            return $this->_redirect('*/*/index');
+        }
     }
 
     /**
@@ -64,6 +69,7 @@ class Index extends Action
      */
     protected function _isAllowed()
     {
-        return true;
+        $provider = $this->tfa->getUserProvider();
+        return $provider && ($provider->getCode() == Google::CODE) && $this->tfa->getUserMustActivateTfa();
     }
 }

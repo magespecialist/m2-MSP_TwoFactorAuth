@@ -25,46 +25,40 @@
         <section id="msp_securitysuite">
             <group id="twofactorauth" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Two Factor Authentication</label>
-                <field id="enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable Two Factor Auth</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="allow_trusted_devices" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="allow_trusted_devices" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable "trust this device" option</label>
                     <comment>NOTE: This option should be used in HTTPS only environments</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="force_all_users" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Force on all users</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="enabled" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enable Two Factor Auth</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="allow_trusted_devices" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enable "trust this device" option</label>
-                    <comment>NOTE: This option should be used in HTTPS only environments</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="force_all_users" translate="label" type="select" sortOrder="50" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Force on all users</label>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
-                <field id="provider" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Provider</label>
-                    <source_model>MSP\TwoFactorAuth\Model\Config\Source\Provider</source_model>
+                <field id="force_all_users" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Force all users</label>
+                    <source_model>MSP\TwoFactorAuth\Model\Config\Source\Force</source_model>
                 </field>
             </group>
-            <group id="twofactorauth_duo" translate="label" type="text" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+            <group id="twofactorauth_google" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Two Factor Authentication - Google Authenticator</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable this provider</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
+            <group id="twofactorauth_duo" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="0" showInStore="0">
                 <label>Two Factor Authentication - Duo Security</label>
-                <field id="integration_key" translate="label comment" type="password" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable this provider</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="integration_key" translate="label comment" type="password" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Integration key</label>
                 </field>
-                <field id="secret_key" translate="label comment" type="password" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="secret_key" translate="label comment" type="password" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Secret key</label>
                 </field>
-                <field id="api_hostname" translate="label comment" type="text" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                <field id="api_hostname" translate="label comment" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>API hostname</label>
                 </field>
             </group>
