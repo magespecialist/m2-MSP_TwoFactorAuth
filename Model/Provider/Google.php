@@ -32,6 +32,7 @@ use MSP\TwoFactorAuth\Api\ProviderInterface;
 class Google implements ProviderInterface
 {
     const XML_PATH_ENABLED = 'msp_securitysuite/twofactorauth_google/enabled';
+    const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite/twofactorauth_google/allow_trusted_devices';
     const CODE = 'google';
 
     protected $_totp = null;
@@ -87,15 +88,6 @@ class Google implements ProviderInterface
     }
 
     /**
-     * Return true if this provider can regenerate token
-     * @return boolean
-     */
-    public function canRegenerateToken(\Magento\User\Model\User $user)
-    {
-        return $this->getUserIsConfigured($user);
-    }
-
-    /**
      * Return true if this provider is enabled
      * @return boolean
      */
@@ -112,7 +104,6 @@ class Google implements ProviderInterface
     {
         return [
             'msp_twofactorauth_google_activatepost',
-            'msp_twofactorauth_google_authpost',
             'msp_twofactorauth_google_qrcode',
         ];
     }
@@ -205,11 +196,13 @@ class Google implements ProviderInterface
 
     /**
      * Return true on token validation
-     * @param $token
+     * @param \Magento\Framework\App\RequestInterface $request
      * @return bool
      */
-    public function verify($token)
+    public function verify(\Magento\Framework\App\RequestInterface $request)
     {
+        $token = $request->getParam('tfa_code');
+
         $totp = $this->getTotp();
         $totp->now();
 
@@ -248,20 +241,11 @@ class Google implements ProviderInterface
     }
 
     /**
-     * Regenerate token
-     * @param \Magento\User\Model\User $user
+     * Return true if allow trusted devices
      * @return boolean
      */
-    public function regenerateToken(\Magento\User\Model\User $user)
+    public function allowTrustedDevices()
     {
-        $user->setPassword(null); // Avoid resetting password
-        $config = $this->providerConfig->getUserProviderConfiguration(static::CODE, $user);
-        unset($config['secret']);
-        $this->providerConfig->setUserProviderConfiguration($config, static::CODE, $user);
-        $user
-            ->setMspTfaActivated(false)
-            ->save();
-
-        return true;
+        return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }
 }

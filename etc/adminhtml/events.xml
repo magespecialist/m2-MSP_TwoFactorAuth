@@ -25,7 +25,7 @@
     <event name="view_block_abstract_to_html_before">
         <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\ViewBlockAbstractToHtmlBefore"/>
     </event>
-    <event name="controller_action_predispatch_adminhtml">
-        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\ControllerActionPredispatchAdminhtml"/>
+    <event name="controller_action_predispatch">
+        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\ControllerActionPredispatch"/>
     </event>
 </config>

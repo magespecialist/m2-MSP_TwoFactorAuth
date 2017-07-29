@@ -28,7 +28,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class ControllerActionPredispatchAdminhtml implements ObserverInterface
+class ControllerActionPredispatch implements ObserverInterface
 {
     /**
      * @var TfaInterface
@@ -68,6 +68,7 @@ class ControllerActionPredispatchAdminhtml implements ObserverInterface
         $allowedUrls = [
             'adminhtml_auth_login',
             'adminhtml_auth_logout',
+            'msp_twofactorauth_authpost_verify',
         ];
 
         if ($provider = $this->tfa->getUserProvider()) {
@@ -88,12 +89,12 @@ class ControllerActionPredispatchAdminhtml implements ObserverInterface
                 $controllerAction->getResponse()->setRedirect($url);
             } else {
                 if ($this->tfa->getUserMustAuth() &&
-                    $this->tfa->getAllowTrustedDevices() &&
+                    $provider->allowTrustedDevices() &&
                     $this->tfa->isTrustedDevice()
                 ) {
                     // Trusted devices
                     $this->tfa->setTwoAuthFactorPassed(true);
-                    $this->tfa->rotateToken();
+                    $this->tfa->rotateTrustedDeviceToken();
                 } else if ($this->tfa->getUserMustAuth()) {
                     // non-Trusted devices
                     $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);

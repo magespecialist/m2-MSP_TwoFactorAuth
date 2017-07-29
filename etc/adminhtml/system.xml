@@ -29,11 +29,6 @@
                     <label>Enable Two Factor Auth</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="allow_trusted_devices" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Enable "trust this device" option</label>
-                    <comment>NOTE: This option should be used in HTTPS only environments</comment>
-                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
-                </field>
                 <field id="force_all_users" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Force all users</label>
                     <source_model>MSP\TwoFactorAuth\Model\Config\Source\Force</source_model>
@@ -43,6 +38,11 @@
                 <label>Two Factor Authentication - Google Authenticator</label>
                 <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Enable this provider</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="allow_trusted_devices" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable "trust this device" option</label>
+                    <comment>NOTE: This option should be used in HTTPS only environments</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
             </group>

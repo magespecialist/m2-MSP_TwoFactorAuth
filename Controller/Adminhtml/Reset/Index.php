@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Regenerate;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Reset;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -26,7 +26,7 @@ use Magento\User\Model\UserFactory;
 use Magento\User\Model\ResourceModel\User as UserResourceModel;
 use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
 
-class Token extends Action
+class Index extends Action
 {
     /**
      * @var UserResourceModel
@@ -66,11 +66,9 @@ class Token extends Action
         }
 
         $provider = $this->providerManagement->getUserProvider($user);
-        if ($provider->canRegenerateToken($user)) {
-            $provider->regenerateToken($user);
-        }
+        $this->providerManagement->reset($provider->getCode(), $user);
 
-        $this->messageManager->addSuccessMessage(__('Two Factor Authentication token has been replaced'));
+        $this->messageManager->addSuccessMessage(__('Configuration has been reset for this user'));
         $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
     }
 

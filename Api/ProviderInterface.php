@@ -35,13 +35,6 @@ interface ProviderInterface
     public function getCode();
 
     /**
-     * Return true if this provider can regenerate token
-     * @param \Magento\User\Model\User $user
-     * @return boolean
-     */
-    public function canRegenerateToken(\Magento\User\Model\User $user);
-
-    /**
      * Return true if this provider is enabled
      * @return boolean
      */
@@ -60,13 +53,6 @@ interface ProviderInterface
     public function getActivatePath();
 
     /**
-     * Regenerate token
-     * @param \Magento\User\Model\User $user
-     * @return boolean
-     */
-    public function regenerateToken(\Magento\User\Model\User $user);
-
-    /**
      * Return auth action
      * @return string
      */
@@ -78,4 +64,17 @@ interface ProviderInterface
      * @return boolean
      */
     public function getUserIsConfigured(\Magento\User\Model\User $user);
+
+    /**
+     * Verify auth
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @return boolean
+     */
+    public function verify(\Magento\Framework\App\RequestInterface $request);
+
+    /**
+     * Return true if allow trusted devices
+     * @return boolean
+     */
+    public function allowTrustedDevices();
 }

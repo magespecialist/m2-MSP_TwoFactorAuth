@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authpost;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
@@ -26,9 +26,8 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\ManagerInterface;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Provider\Google;
 
-class Authpost extends Action
+class Verify extends Action
 {
     /**
      * @var TfaInterface
@@ -50,15 +49,9 @@ class Authpost extends Action
      */
     private $context;
 
-    /**
-     * @var Google
-     */
-    private $google;
-
     public function __construct(
         Context $context,
         TfaInterface $tfa,
-        Google $google,
         Session $session
     ) {
         $this->tfa = $tfa;
@@ -68,21 +61,18 @@ class Authpost extends Action
         $this->session = $session;
         $this->event = $context->getEventManager();
         $this->context = $context;
-        $this->google = $google;
     }
 
     public function execute()
     {
-        $token = $this->getRequest()->getParam('tfa_code');
         $tfaTrusted = $this->getRequest()->getParam('tfa_trusted');
-        
-        if ($this->google->verify($token)) {
+        $provider = $this->tfa->getUserProvider($this->session->getUser());
+
+        if ($provider->verify($this->getRequest())) {
             $this->tfa->setTwoAuthFactorPassed(true);
-            if ($tfaTrusted && $this->tfa->getAllowTrustedDevices()) {
+            if ($tfaTrusted && $provider->allowTrustedDevices()) {
                 $this->tfa->trustDevice();
             }
-
-            return $this->_redirect('/');
         } else {
             $this->tfa->setTwoAuthFactorPassed(false);
             $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
@@ -92,8 +82,9 @@ class Authpost extends Action
             ]);
 
             $this->messageManager->addErrorMessage('Invalid code');
-            return $this->_redirect('msp_twofactorauth/auth/index');
         }
+
+        return $this->_redirect('/');
     }
 
     /**

@@ -24,8 +24,6 @@ interface TfaInterface
 {
     const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
     const XML_PATH_ENABLED = 'msp_securitysuite/twofactorauth/enabled';
-    const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite/twofactorauth/allow_trusted_devices';
-    const XML_PATH_FORCE_ALL_USERS = 'msp_securitysuite/twofactorauth/force_all_users';
 
     /**
      * Get user's provider
@@ -39,18 +37,6 @@ interface TfaInterface
      * @return bool
      */
     public function getEnabled();
-
-    /**
-     * Return true if trusted devices are allowed
-     * @return bool
-     */
-    public function getAllowTrustedDevices();
-
-    /**
-     * Return true if users are forced to use tfa
-     * @return bool
-     */
-    public function getForceAllUsers();
 
     /**
      * Return a list of trusted devices for given user id
@@ -114,7 +100,7 @@ interface TfaInterface
      * Rotate secret token
      * @return string
      */
-    public function rotateToken();
+    public function rotateTrustedDeviceToken();
 
     /**
      * Revoke trusted device
@@ -122,11 +108,4 @@ interface TfaInterface
      * @return void
      */
     public function revokeTrustedDevice($tokenId);
-
-    /**
-     * Regenerate token
-     * @param \Magento\User\Model\User $user
-     * @return boolean
-     */
-    public function regenerateToken(\Magento\User\Model\User $user);
 }

@@ -175,24 +175,6 @@ class Tfa implements TfaInterface
     }
 
     /**
-     * Return true if trusted devices are allowed
-     * @return bool
-     */
-    public function getAllowTrustedDevices()
-    {
-        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_ALLOW_TRUSTED_DEVICES);
-    }
-
-    /**
-     * Return true if users are forced to use tfa
-     * @return bool
-     */
-    public function getForceAllUsers()
-    {
-        return (bool) $this->scopeConfig->getValue(TfaInterface::XML_PATH_FORCE_ALL_USERS);
-    }
-
-    /**
      * Return a list of trusted devices for given user id
      * @param int $userId
      * @return array
@@ -311,7 +293,7 @@ class Tfa implements TfaInterface
      */
     public function trustDevice()
     {
-        if (!$this->getAllowTrustedDevices()) {
+        if (!$this->getUserProvider()->allowTrustedDevices()) {
             return;
         }
 
@@ -352,7 +334,7 @@ class Tfa implements TfaInterface
      * Rotate secret trust token
      * @return void
      */
-    public function rotateToken()
+    public function rotateTrustedDeviceToken()
     {
         $token = $this->cookieManager->getCookie(TfaInterface::TRUSTED_DEVICE_COOKIE);
 
@@ -394,23 +376,5 @@ class Tfa implements TfaInterface
         $trustEntry = $this->trustedInterfaceFactory->create();
         $this->trustedResourceModel->load($trustEntry, $tokenId);
         $this->trustedResourceModel->delete($trustEntry);
-    }
-
-    /**
-     * Regenerate token
-     * @param \Magento\User\Model\User $user
-     * @return boolean
-     */
-    public function regenerateToken(\Magento\User\Model\User $user)
-    {
-        $provider = $this->getUserProvider();
-
-        $user->setPassword(null); // Avoid resetting password
-        $provider->regenerateToken($user);
-        $user
-            ->setMspTfaActivated(false)
-            ->save();
-
-        return true;
     }
 }

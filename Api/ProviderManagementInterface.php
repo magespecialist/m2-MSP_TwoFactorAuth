@@ -23,6 +23,7 @@ namespace MSP\TwoFactorAuth\Api;
 interface ProviderManagementInterface
 {
     const PROVIDER_NONE = 'none';
+    const XML_PATH_FORCE_ALL_USERS = 'msp_securitysuite/twofactorauth/force_all_users';
 
     /**
      * Return a providers list
@@ -37,6 +38,12 @@ interface ProviderManagementInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getProvider($code);
+
+    /**
+     * Return true if users are forced to use tfa
+     * @return ProviderInterface|null
+     */
+    public function getForcedProvider();
 
     /**
      * Get user's provider
@@ -62,4 +69,12 @@ interface ProviderManagementInterface
      * @return array
      */
     public function getUserProviderConfiguration($providerCode, $user = null);
+
+    /**
+     * Reset user's configuration
+     * @param $providerCode
+     * @param \Magento\User\Model\User $user
+     * @return boolean
+     */
+    public function reset($providerCode, \Magento\User\Model\User $user);
 }

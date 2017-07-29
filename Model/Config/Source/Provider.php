@@ -67,7 +67,9 @@ class Provider implements \Magento\Framework\Option\ArrayInterface
 
         $providers = $this->providerManagement->getAllProviders();
         foreach ($providers as $code => $provider) {
-            $res[$code] = $provider->getName();
+            if ($provider->isEnabled()) {
+                $res[$code] = $provider->getName();
+            }
         }
 
         return $res;

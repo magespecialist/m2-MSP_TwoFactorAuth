@@ -21,19 +21,18 @@
 namespace MSP\TwoFactorAuth\Model\Config\Source;
 
 use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class Force implements \Magento\Framework\Option\ArrayInterface
 {
     /**
-     * @var TfaInterface
+     * @var ProviderManagementInterface
      */
-    private $tfa;
+    private $providerManagement;
 
     public function __construct(
-        TfaInterface $tfa
+        ProviderManagementInterface $providerManagement
     ) {
-        $this->tfa = $tfa;
+        $this->providerManagement = $providerManagement;
     }
 
     /**
@@ -46,7 +45,7 @@ class Force implements \Magento\Framework\Option\ArrayInterface
         $res = [
             ['value' => ProviderManagementInterface::PROVIDER_NONE, 'label' => __('No')],
         ];
-        $providers = $this->tfa->getAllProviders();
+        $providers = $this->providerManagement->getAllProviders();
         foreach ($providers as $code => $provider) {
             $res[] = [
                 'value' => $code,

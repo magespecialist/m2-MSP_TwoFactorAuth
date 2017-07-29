@@ -21,6 +21,7 @@
 namespace MSP\TwoFactorAuth\Model;
 
 use Magento\Backend\Model\Auth\Session;
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Json\DecoderInterface;
@@ -56,10 +57,16 @@ class ProviderManagement implements ProviderManagementInterface
      */
     private $providerConfig;
 
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
     public function __construct(
         Session $session,
         EncoderInterface $encoder,
         DecoderInterface $decoder,
+        ScopeConfigInterface $scopeConfig,
         ProviderConfigInterface $providerConfig,
         $providers = []
     ) {
@@ -72,6 +79,7 @@ class ProviderManagement implements ProviderManagementInterface
         foreach ($providers as $provider) {
             $this->providers[$provider->getCode()] = $provider;
         }
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -108,6 +116,20 @@ class ProviderManagement implements ProviderManagementInterface
     }
 
     /**
+     * Return true if users are forced to use tfa
+     * @return ProviderInterface|null
+     */
+    public function getForcedProvider()
+    {
+        $providerCode = $this->scopeConfig->getValue(ProviderManagementInterface::XML_PATH_FORCE_ALL_USERS);
+        if ($providerCode == static::PROVIDER_NONE) {
+            return null;
+        }
+
+        return $this->getProvider($providerCode);
+    }
+
+    /**
      * Get user's provider
      * @param \Magento\User\Model\User $user = null
      * @return ProviderInterface|null
@@ -122,15 +144,23 @@ class ProviderManagement implements ProviderManagementInterface
             return null;
         }
 
-        if ($user->getMspTfaProvider() == ProviderManagementInterface::PROVIDER_NONE) {
+        $provider = $this->getForcedProvider();
+
+        if (!$provider) {
+            if ($user->getMspTfaProvider() == ProviderManagementInterface::PROVIDER_NONE) {
+                try {
+                    $provider = $this->getProvider($user->getMspTfaProvider());
+                } catch (NoSuchEntityException $e) {
+                    $provider = null;
+                }
+            }
+        }
+
+        if (!$provider || !$provider->isEnabled()) {
             return null;
         }
 
-        try {
-            return $this->getProvider($user->getMspTfaProvider());
-        } catch (NoSuchEntityException $e) {
-            return null;
-        }
+        return $provider;
     }
 
     /**
@@ -163,5 +193,22 @@ class ProviderManagement implements ProviderManagementInterface
         }
 
         return $this->providerConfig->getUserProviderConfiguration($providerCode, $user);
+    }
+
+    /**
+     * Reset user's configuration
+     * @param $providerCode
+     * @param \Magento\User\Model\User $user
+     * @return boolean
+     */
+    public function reset($providerCode, \Magento\User\Model\User $user)
+    {
+        $user->setPassword(null); // Avoid resetting password
+        $this->providerConfig->setUserProviderConfiguration([], $providerCode, $user);
+        $user
+            ->setMspTfaActivated(false)
+            ->save();
+
+        return true;
     }
 }

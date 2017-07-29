@@ -18,48 +18,40 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
+use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Provider\Google;
+use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
 
-class Activatepost extends Action
+class Auth extends Action
 {
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+
     /**
      * @var TfaInterface
      */
     private $tfa;
 
-    /**
-     * @var Google
-     */
-    private $google;
-
     public function __construct(
         Context $context,
-        Google $google,
+        PageFactory $pageFactory,
         TfaInterface $tfa
     ) {
+
         parent::__construct($context);
+        $this->pageFactory = $pageFactory;
         $this->tfa = $tfa;
-        $this->google = $google;
     }
 
     public function execute()
     {
-        $token = $this->getRequest()->getParam('tfa_code');
-
-        if ($this->google->verify($token)) {
-            $this->tfa->activateUserTfa(Google::CODE);
-            $this->tfa->setTwoAuthFactorPassed(true);
-
-            return $this->_redirect('/');
-        } else {
-            $this->messageManager->addErrorMessage('Invalid code');
-            return $this->_redirect('*/*/activate');
-        }
+        return $this->pageFactory->create();
     }
 
     /**
@@ -70,6 +62,6 @@ class Activatepost extends Action
     protected function _isAllowed()
     {
         $provider = $this->tfa->getUserProvider();
-        return $provider && ($provider->getCode() == Google::CODE) && $this->tfa->getUserMustActivateTfa();
+        return $provider && ($provider->getCode() == DuoSecurity::CODE);
     }
 }

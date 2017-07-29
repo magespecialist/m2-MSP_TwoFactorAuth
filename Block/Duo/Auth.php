@@ -18,34 +18,59 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Google;
+namespace MSP\TwoFactorAuth\Block\Duo;
 
 use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Model\Provider\Google;
+use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
 
 class Auth extends Template
 {
     /**
-     * @var Google
+     * @var DuoSecurity
      */
-    private $google;
+    private $duoSecurity;
+
+    /**
+     * @var TfaInterface
+     */
+    private $tfa;
 
     public function __construct(
         Template\Context $context,
-        Google $google,
+        TfaInterface $tfa,
+        DuoSecurity $duoSecurity,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->google = $google;
+        $this->duoSecurity = $duoSecurity;
+        $this->tfa = $tfa;
     }
 
-    public function getPostUrl()
+    /**
+     * Get API hostname
+     * @return string
+     */
+    public function getApiHost()
     {
-        return $this->getUrl('*/authpost/verify');
+        return $this->duoSecurity->getApiHostname();
     }
 
-    public function shouldShowRememberCheckbox()
+    /**
+     * Get API signature
+     * @return string
+     */
+    public function getSignature()
     {
-        return $this->google->allowTrustedDevices();
+        return $this->duoSecurity->getRequestSignature();
+    }
+
+    /**
+     * Get post action
+     * @return string
+     */
+    public function getPostAction()
+    {
+        return $this->getUrl('*/authpost/verify', ['form_key' => $this->getFormKey()]);
     }
 }

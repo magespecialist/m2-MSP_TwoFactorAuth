@@ -25,6 +25,7 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
+use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
 
 /**
  * @codeCoverageIgnore
@@ -36,36 +37,45 @@ class UpgradeData implements UpgradeDataInterface
      */
     private $encoder;
 
+    /**
+     * @var DuoSecurity
+     */
+    private $duoSecurity;
+
     public function __construct(
-        EncoderInterface $encoder
+        EncoderInterface $encoder,
+        DuoSecurity $duoSecurity
     ) {
         $this->encoder = $encoder;
+        $this->duoSecurity = $duoSecurity;
     }
 
     protected function upgradeTo010200(ModuleDataSetupInterface $setup)
     {
-        $connection = $setup->getConnection();
-        $adminUserTable = $setup->getTable('admin_user');
+//        $connection = $setup->getConnection();
+//        $adminUserTable = $setup->getTable('admin_user');
+//
+//        $connection->update($adminUserTable, [
+//            'msp_tfa_provider' => ProviderManagementInterface::PROVIDER_NONE
+//        ], 'msp_tfa_provider=0');
+//
+//        $connection->update($adminUserTable, [
+//            'msp_tfa_provider' => 'google'
+//        ], 'msp_tfa_provider=1');
+//
+//        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
+//        foreach ($users as $user) {
+//            $tfaSecret = $user['msp_tfa_config'];
+//            if ($tfaSecret) {
+//                $connection->update($adminUserTable, ['msp_tfa_config' => $this->encoder->encode([
+//                    'google' => [
+//                        'secret' => $tfaSecret,
+//                    ]
+//                ])], 'user_id='.intval($user['user_id']));
+//            }
+//        }
 
-        $connection->update($adminUserTable, [
-            'msp_tfa_provider' => ProviderManagementInterface::PROVIDER_NONE
-        ], 'msp_tfa_provider=0');
-
-        $connection->update($adminUserTable, [
-            'msp_tfa_provider' => 'google'
-        ], 'msp_tfa_provider=1');
-
-        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
-        foreach ($users as $user) {
-            $tfaSecret = $user['msp_tfa_config'];
-            if ($tfaSecret) {
-                $connection->update($adminUserTable, ['msp_tfa_config' => $this->encoder->encode([
-                    'google' => [
-                        'secret' => $tfaSecret,
-                    ]
-                ])], 'user_id='.intval($user['user_id']));
-            }
-        }
+        $this->duoSecurity->generateApplicationKey();
     }
 
     /**
