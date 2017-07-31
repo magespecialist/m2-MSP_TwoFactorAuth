@@ -24,8 +24,10 @@ use Magento\Framework\Json\EncoderInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
+use MSP\SecuritySuiteCommon\Model\ConfigMigration;
 use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
 use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 /**
  * @codeCoverageIgnore
@@ -38,44 +40,71 @@ class UpgradeData implements UpgradeDataInterface
     private $encoder;
 
     /**
-     * @var DuoSecurity
+     * @var ConfigMigration
      */
-    private $duoSecurity;
+    private $configMigration;
+
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
 
     public function __construct(
         EncoderInterface $encoder,
-        DuoSecurity $duoSecurity
+        ConfigMigration $configMigration,
+        ConfigInterface $config
     ) {
         $this->encoder = $encoder;
-        $this->duoSecurity = $duoSecurity;
+        $this->configMigration = $configMigration;
+        $this->config = $config;
     }
 
     protected function upgradeTo010200(ModuleDataSetupInterface $setup)
     {
-//        $connection = $setup->getConnection();
-//        $adminUserTable = $setup->getTable('admin_user');
-//
-//        $connection->update($adminUserTable, [
-//            'msp_tfa_provider' => ProviderManagementInterface::PROVIDER_NONE
-//        ], 'msp_tfa_provider=0');
-//
-//        $connection->update($adminUserTable, [
-//            'msp_tfa_provider' => 'google'
-//        ], 'msp_tfa_provider=1');
-//
-//        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
-//        foreach ($users as $user) {
-//            $tfaSecret = $user['msp_tfa_config'];
-//            if ($tfaSecret) {
-//                $connection->update($adminUserTable, ['msp_tfa_config' => $this->encoder->encode([
-//                    'google' => [
-//                        'secret' => $tfaSecret,
-//                    ]
-//                ])], 'user_id='.intval($user['user_id']));
-//            }
-//        }
+        $connection = $setup->getConnection();
+        $adminUserTable = $setup->getTable('admin_user');
 
-        $this->duoSecurity->generateApplicationKey();
+        $connection->update($adminUserTable, [
+            'msp_tfa_provider' => ProviderManagementInterface::PROVIDER_NONE
+        ], 'msp_tfa_provider=0');
+
+        $connection->update($adminUserTable, [
+            'msp_tfa_provider' => 'google'
+        ], 'msp_tfa_provider=1');
+
+        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
+        foreach ($users as $user) {
+            $tfaSecret = $user['msp_tfa_config'];
+            if ($tfaSecret) {
+                $connection->update($adminUserTable, ['msp_tfa_config' => $this->encoder->encode([
+                    'google' => [
+                        'secret' => $tfaSecret,
+                    ]
+                ])], 'user_id='.intval($user['user_id']));
+            }
+        }
+
+        $this->configMigration->doConfigMigration(
+            $setup,
+            'msp_securitysuite/twofactorauth/allow_trusted_devices',
+            'msp_securitysuite_twofactorauth/google/allow_trusted_devices'
+        );
+
+        $this->configMigration->doConfigMigration(
+            $setup,
+            'msp_securitysuite/twofactorauth',
+            'msp_securitysuite_twofactorauth/general'
+        );
+
+        // Generate random duo security key
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+        $randomString = '';
+        for ($i = 0; $i < 64; $i++) {
+            $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        $this->config->saveConfig(DuoSecurity::XML_PATH_APPLICATION_KEY, $randomString, 'default', 0);
     }
 
     /**

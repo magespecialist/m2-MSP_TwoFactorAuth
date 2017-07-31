@@ -23,7 +23,7 @@ namespace MSP\TwoFactorAuth\Api;
 interface ProviderManagementInterface
 {
     const PROVIDER_NONE = 'none';
-    const XML_PATH_FORCE_ALL_USERS = 'msp_securitysuite/twofactorauth/force_all_users';
+    const XML_PATH_FORCE_ALL_USERS = 'msp_securitysuite_twofactorauth/general/force_all_users';
 
     /**
      * Return a providers list

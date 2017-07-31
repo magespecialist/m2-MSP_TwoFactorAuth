@@ -23,7 +23,7 @@ namespace MSP\TwoFactorAuth\Model\Provider;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use MSP\TwoFactorAuth\Api\ProviderInterface;
-use Magento\Framework\App\Config\Storage\WriterInterface;
+use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
 
 class DuoSecurity implements ProviderInterface
 {
@@ -36,11 +36,11 @@ class DuoSecurity implements ProviderInterface
     const DUO_EXPIRE = 300;
     const APP_EXPIRE = 3600;
 
-    const XML_PATH_ENABLED = 'msp_securitysuite/twofactorauth_duo/enabled';
-    const XML_PATH_INTEGRATION_KEY = 'msp_securitysuite/twofactorauth_duo/integration_key';
-    const XML_PATH_SECRET_KEY = 'msp_securitysuite/twofactorauth_duo/secret_key';
-    const XML_PATH_API_HOSTNAME = 'msp_securitysuite/twofactorauth_duo/api_hostname';
-    const XML_PATH_APPLICATION_KEY = 'msp_securitysuite/twofactorauth_duo/application_key';
+    const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/duo/enabled';
+    const XML_PATH_INTEGRATION_KEY = 'msp_securitysuite_twofactorauth/duo/integration_key';
+    const XML_PATH_SECRET_KEY = 'msp_securitysuite_twofactorauth/duo/secret_key';
+    const XML_PATH_API_HOSTNAME = 'msp_securitysuite_twofactorauth/duo/api_hostname';
+    const XML_PATH_APPLICATION_KEY = 'msp_securitysuite_twofactorauth/duo/application_key';
 
     /**
      * @var ScopeConfigInterface
@@ -48,23 +48,23 @@ class DuoSecurity implements ProviderInterface
     private $scopeConfig;
 
     /**
-     * @var WriterInterface
-     */
-    private $writer;
-
-    /**
      * @var Session
      */
     private $session;
 
+    /**
+     * @var ConfigInterface
+     */
+    private $config;
+
     public function __construct(
         ScopeConfigInterface $scopeConfig,
-        WriterInterface $writer,
+        ConfigInterface $config,
         Session $session
     ) {
         $this->scopeConfig = $scopeConfig;
-        $this->writer = $writer;
         $this->session = $session;
+        $this->config = $config;
     }
 
     /**
@@ -74,21 +74,6 @@ class DuoSecurity implements ProviderInterface
     public function getApiHostname()
     {
         return $this->scopeConfig->getValue(static::XML_PATH_API_HOSTNAME);
-    }
-
-    /**
-     * Generate an application key
-     */
-    public function generateApplicationKey()
-    {
-        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $charactersLength = strlen($characters);
-        $randomString = '';
-        for ($i = 0; $i < 64; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
-        }
-
-        $this->writer->save(static::XML_PATH_APPLICATION_KEY, $randomString);
     }
 
     /**

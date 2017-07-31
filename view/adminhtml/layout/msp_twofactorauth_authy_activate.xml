@@ -19,18 +19,14 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
-    <default>
-        <msp_securitysuite_twofactorauth>
-            <general>
-                <enabled>0</enabled>
-                <provider>google</provider>
-            </general>
-            <google>
-                <force_all_users>none</force_all_users>
-                <allow_trusted_devices>1</allow_trusted_devices>
-            </google>
-        </msp_securitysuite_twofactorauth>
-    </default>
-</config>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+    <update handle="admin_login" />
+
+    <body>
+        <referenceContainer name="login.content">
+            <block class="MSP\TwoFactorAuth\Block\Auhty\Activate" name="content"
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/authy/activate.phtml" />
+        </referenceContainer>
+    </body>
+</page>

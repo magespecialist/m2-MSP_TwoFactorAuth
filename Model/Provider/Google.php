@@ -31,8 +31,8 @@ use MSP\TwoFactorAuth\Api\ProviderInterface;
 
 class Google implements ProviderInterface
 {
-    const XML_PATH_ENABLED = 'msp_securitysuite/twofactorauth_google/enabled';
-    const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite/twofactorauth_google/allow_trusted_devices';
+    const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/google/enabled';
+    const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite_twofactorauth/google/allow_trusted_devices';
     const CODE = 'google';
 
     protected $_totp = null;

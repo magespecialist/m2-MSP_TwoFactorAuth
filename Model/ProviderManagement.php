@@ -122,7 +122,7 @@ class ProviderManagement implements ProviderManagementInterface
     public function getForcedProvider()
     {
         $providerCode = $this->scopeConfig->getValue(ProviderManagementInterface::XML_PATH_FORCE_ALL_USERS);
-        if ($providerCode == static::PROVIDER_NONE) {
+        if (($providerCode == static::PROVIDER_NONE) || !$providerCode) {
             return null;
         }
 
@@ -147,7 +147,7 @@ class ProviderManagement implements ProviderManagementInterface
         $provider = $this->getForcedProvider();
 
         if (!$provider) {
-            if ($user->getMspTfaProvider() == ProviderManagementInterface::PROVIDER_NONE) {
+            if ($user->getMspTfaProvider() != ProviderManagementInterface::PROVIDER_NONE) {
                 try {
                     $provider = $this->getProvider($user->getMspTfaProvider());
                 } catch (NoSuchEntityException $e) {

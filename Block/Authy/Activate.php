@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * MageSpecialist
  *
@@ -18,19 +17,19 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
-    <default>
-        <msp_securitysuite_twofactorauth>
-            <general>
-                <enabled>0</enabled>
-                <provider>google</provider>
-            </general>
-            <google>
-                <force_all_users>none</force_all_users>
-                <allow_trusted_devices>1</allow_trusted_devices>
-            </google>
-        </msp_securitysuite_twofactorauth>
-    </default>
-</config>
+
+namespace MSP\TwoFactorAuth\Block\Authy;
+
+use Magento\Backend\Block\Template;
+
+class Activate extends Template
+{
+    /**
+     * Get URL to post activation code to
+     * @return string
+     */
+    public function getPostUrl()
+    {
+        return $this->getUrl('*/*/activatepost');
+    }
+}

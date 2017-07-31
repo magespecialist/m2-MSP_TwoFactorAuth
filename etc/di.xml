@@ -31,6 +31,7 @@
             <argument name="providers" xsi:type="array">
                 <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
                 <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
+                <!--<item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>-->
             </argument>
         </arguments>
     </type>

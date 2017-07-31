@@ -23,7 +23,7 @@ namespace MSP\TwoFactorAuth\Api;
 interface TfaInterface
 {
     const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
-    const XML_PATH_ENABLED = 'msp_securitysuite/twofactorauth/enabled';
+    const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/general/enabled';
 
     /**
      * Get user's provider
