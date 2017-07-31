@@ -24,7 +24,7 @@ Enable from **Store > Config > SecuritySuite > Two Factor Authentication**.
 
 **3. Enable two factor authentication for your user**
 
-You can select between a set of different 2FA providers.
+You can choose among different 2FA providers.
 
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/user_tfa.png" />
 
