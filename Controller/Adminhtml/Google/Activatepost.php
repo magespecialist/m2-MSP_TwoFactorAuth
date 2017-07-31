@@ -49,9 +49,7 @@ class Activatepost extends Action
 
     public function execute()
     {
-        $token = $this->getRequest()->getParam('tfa_code');
-
-        if ($this->google->verify($token)) {
+        if ($this->google->verify($this->getRequest())) {
             $this->tfa->activateUserTfa(Google::CODE);
             $this->tfa->setTwoAuthFactorPassed(true);
 
