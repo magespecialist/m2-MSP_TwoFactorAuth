@@ -18,21 +18,29 @@ From command line:
 
 **2. Enable and configure from your Magento backend config**
 
-Enable from **Store > Config > MageSpecialist > SecuritySuite > Two Factor Authentication**.
+Enable from **Store > Config > SecuritySuite > Two Factor Authentication**.
 
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/config.png" />
 
 **3. Enable two factor authentication for your user**
 
+You can select between a set of different 2FA providers.
+
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/user_tfa.png" />
 
-**4. Scan the QR code with your Two Factor Authentication application**
+**4. Google Authenticator example**
+
+**4.1. Scan the QR code with your Two Factor Authentication application**
 
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/token.png" />
 
-**5. Login and type a valid two factor authentication code**
+**4.2. Login and type a valid two factor authentication code**
 
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/login_token.png" />
+
+**5. Duo Security example**
+
+<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/duo.png" />
 
 ## Emergency commandline disable:
 
