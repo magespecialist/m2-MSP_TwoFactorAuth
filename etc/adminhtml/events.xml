@@ -28,4 +28,10 @@
     <event name="controller_action_predispatch">
         <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\ControllerActionPredispatch"/>
     </event>
+    <event name="admin_user_save_after">
+        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\AdminUserSaveAfter"/>
+    </event>
+    <event name="admin_user_load_after">
+        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\AdminUserLoadAfter"/>
+    </event>
 </config>

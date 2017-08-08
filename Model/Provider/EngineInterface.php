@@ -18,24 +18,9 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Api;
+namespace MSP\TwoFactorAuth\Model\Provider;
 
-interface ProviderConfigInterface
+interface EngineInterface
 {
-    /**
-     * Save user TFA config
-     * @param array $config
-     * @param string $providerCode
-     * @param \Magento\User\Model\User $user
-     * @return array
-     */
-    public function setUserProviderConfiguration($config, $providerCode, \Magento\User\Model\User $user);
 
-    /**
-     * Get user TFA config
-     * @param string $providerCode
-     * @param \Magento\User\Model\User $user
-     * @return array
-     */
-    public function getUserProviderConfiguration($providerCode, \Magento\User\Model\User $user);
 }

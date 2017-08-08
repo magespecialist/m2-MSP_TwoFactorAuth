@@ -21,20 +21,9 @@
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
-    <preference for="\MSP\TwoFactorAuth\Api\ProviderManagementInterface" type="\MSP\TwoFactorAuth\Model\ProviderManagement"/>
-    <preference for="\MSP\TwoFactorAuth\Api\ProviderConfigInterface" type="\MSP\TwoFactorAuth\Model\ProviderConfig"/>
-    <preference for="\MSP\TwoFactorAuth\Api\Data\TrustedInterface" type="\MSP\TwoFactorAuth\Model\Trusted"/>
 
-    <type name="MSP\TwoFactorAuth\Api\ProviderManagementInterface">
-        <arguments>
-            <argument name="providers" xsi:type="array">
-                <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
-                <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
-                <!--<item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>-->
-            </argument>
-        </arguments>
-    </type>
+    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa" />
+    <preference for="MSP\TwoFactorAuth\Api\UserConfigManagementInterface" type="MSP\TwoFactorAuth\Model\UserConfigManagement" />
 
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
@@ -43,4 +32,24 @@
             </argument>
         </arguments>
     </type>
+
+    <type name="MSP\TwoFactorAuth\Api\TfaInterface">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <!-- Parameter "name" must be the same as defined in virtualType "code" parameter -->
+                <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\Google" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\Google</argument>
+            <argument name="code" xsi:type="string">google</argument>
+            <argument name="name" xsi:type="string">Google Authenticator</argument>
+            <argument name="canBeSecondary" xsi:type="boolean">true</argument>
+            <argument name="allowTrustedDevices" xsi:type="boolean">true</argument>
+            <argument name="requiresConfiguration" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
 </config>

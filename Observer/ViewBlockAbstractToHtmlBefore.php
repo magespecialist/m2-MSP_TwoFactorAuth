@@ -65,8 +65,8 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
             $block->addTabAfter(
                 'msp_twofactorauth',
                 [
-                    'label' => __('Two Factor Authentication'),
-                    'title' => __('Two Factor Authentication'),
+                    'label' => __('2FA'),
+                    'title' => __('2FA'),
                     'content' => $tfaForm,
                     'active' => true
                 ],

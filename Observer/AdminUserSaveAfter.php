@@ -18,41 +18,24 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-
 namespace MSP\TwoFactorAuth\Observer;
 
-use Magento\Backend\Model\UrlInterface;
-use Magento\Framework\App\ActionFlag;
-use Magento\Framework\App\Action\Action;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
 
-class ControllerActionPredispatch implements ObserverInterface
+class AdminUserSaveAfter implements ObserverInterface
 {
     /**
-     * @var TfaInterface
+     * @var UserConfigManagementInterface
      */
-    private $tfa;
-
-    /**
-     * @var ActionFlag
-     */
-    private $actionFlag;
-
-    /**
-     * @var UrlInterface
-     */
-    private $url;
+    private $userConfigManagement;
 
     public function __construct(
-        TfaInterface $tfa,
-        ActionFlag $actionFlag,
-        UrlInterface $url
+        UserConfigManagementInterface $userConfigManagement
     ) {
-        $this->tfa = $tfa;
-        $this->actionFlag = $actionFlag;
-        $this->url = $url;
+        $this->userConfigManagement = $userConfigManagement;
     }
 
     /**
@@ -61,18 +44,18 @@ class ControllerActionPredispatch implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        /** @var $controllerAction \Magento\Backend\App\AbstractAction */
-        $controllerAction = $observer->getEvent()->getControllerAction();
-        $fullActionName = $controllerAction->getRequest()->getFullActionName();
+        $user = $observer->getEvent()->getObject();
+        $data = $user->getData();
 
-        if (in_array($fullActionName, $this->tfa->getAllowedUrls())) {
-            return;
+        $providers = [];
+        for ($i=0; $i<TfaInterface::MAX_PROVIDERS; $i++) {
+            if (isset($data['msp_tfa_provider_' . $i])) {
+                $providers[] = $data['msp_tfa_provider_' . $i];
+            }
         }
 
-        if (!$this->tfa->getAuthPassed()) {
-            $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-            $url = $this->url->getUrl('msp_twofactorauth/tfa/index');
-            $controllerAction->getResponse()->setRedirect($url);
+        if (count($providers)) {
+            $this->userConfigManagement->setProvidersCodes($user, $providers);
         }
     }
 }

@@ -25,9 +25,8 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\ModuleDataSetupInterface;
 use Magento\Framework\Setup\UpgradeDataInterface;
 use MSP\SecuritySuiteCommon\Model\ConfigMigration;
-use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
-use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
+use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
 /**
  * @codeCoverageIgnore
@@ -65,7 +64,7 @@ class UpgradeData implements UpgradeDataInterface
         $adminUserTable = $setup->getTable('admin_user');
 
         $connection->update($adminUserTable, [
-            'msp_tfa_provider' => ProviderManagementInterface::PROVIDER_NONE
+            'msp_tfa_provider' => 'none',
         ], 'msp_tfa_provider=0');
 
         $connection->update($adminUserTable, [
@@ -107,6 +106,15 @@ class UpgradeData implements UpgradeDataInterface
         $this->config->saveConfig(DuoSecurity::XML_PATH_APPLICATION_KEY, $randomString, 'default', 0);
     }
 
+    protected function upgradeTo010300(ModuleDataSetupInterface $setup)
+    {
+        $this->configMigration->doConfigMigration(
+            $setup,
+            'msp_securitysuite_twofactorauth/general/force_provider',
+            'msp_securitysuite_twofactorauth/general/force_provider_0'
+        );
+    }
+
     /**
      * Upgrades data for a module
      *
@@ -120,6 +128,10 @@ class UpgradeData implements UpgradeDataInterface
 
         if (version_compare($context->getVersion(), '1.2.0') < 0) {
             $this->upgradeTo010200($setup);
+        }
+
+        if (version_compare($context->getVersion(), '1.3.0') < 0) {
+            $this->upgradeTo010300($setup);
         }
 
         $setup->endSetup();

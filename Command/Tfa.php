@@ -22,10 +22,10 @@ namespace MSP\TwoFactorAuth\Command;
 
 use Magento\Framework\App\Cache\Manager;
 use Magento\Framework\App\Config\ConfigResource\ConfigInterface;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class Tfa extends Command
 {

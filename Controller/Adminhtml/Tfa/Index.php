@@ -1,3 +1,4 @@
+<?php
 /**
  * MageSpecialist
  *
@@ -17,11 +18,21 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-.field-tfa_trusted {
-    margin-top: -10px !important;
-    margin-left: -5px !important;
-}
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
 
-.field-tfa_trusted label span {
-    margin-left: 10px !important;
+use Magento\Backend\App\Action;
+use Magento\Framework\App\ResponseInterface;
+
+class Index extends Action
+{
+    /**
+     * Dispatch request
+     *
+     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @throws \Magento\Framework\Exception\NotFoundException
+     */
+    public function execute()
+    {
+        $providerNo = intval($this->getRequest()->getParam('p', 0));
+    }
 }

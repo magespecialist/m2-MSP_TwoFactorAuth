@@ -20,19 +20,20 @@
 
 namespace MSP\TwoFactorAuth\Model\Config\Source;
 
-use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
+use Magento\Framework\Option\ArrayInterface;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class Provider implements \Magento\Framework\Option\ArrayInterface
+class Provider implements ArrayInterface
 {
     /**
-     * @var ProviderManagementInterface
+     * @var TfaInterface
      */
-    private $providerManagement;
+    private $tfa;
 
     public function __construct(
-        ProviderManagementInterface $providerManagement
+        TfaInterface $tfa
     ) {
-        $this->providerManagement = $providerManagement;
+        $this->tfa = $tfa;
     }
 
     /**
@@ -42,14 +43,14 @@ class Provider implements \Magento\Framework\Option\ArrayInterface
      */
     public function toOptionArray()
     {
-        $res = [];
-
-        $providers = $this->toArray();
-
-        foreach ($providers as $code => $label) {
+        $res = [
+            ['value' => '', 'label' => __('Disabled')],
+        ];
+        $providers = $this->tfa->getAllProviders();
+        foreach ($providers as $code => $provider) {
             $res[] = [
-                'value' => $code,
-                'label' => $label,
+                'value' => $provider->getCode(),
+                'label' => __($provider->getName()),
             ];
         }
 
@@ -63,15 +64,13 @@ class Provider implements \Magento\Framework\Option\ArrayInterface
      */
     public function toArray()
     {
-        $res = [ProviderManagementInterface::PROVIDER_NONE => __('Disabled')];
+        $options = $this->toOptionArray();
+        $return = [];
 
-        $providers = $this->providerManagement->getAllProviders();
-        foreach ($providers as $code => $provider) {
-            if ($provider->isEnabled()) {
-                $res[$code] = $provider->getName();
-            }
+        foreach ($options as $option) {
+            $return[$option['value']] = $option['label'];
         }
 
-        return $res;
+        return $return;
     }
 }

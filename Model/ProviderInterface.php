@@ -18,15 +18,20 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Api;
+namespace MSP\TwoFactorAuth\Model;
+
+use Magento\User\Api\Data\UserInterface;
+use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
 interface ProviderInterface
 {
+    const PROVIDER_DISABLE = 'disable';
+
     /**
-     * Get provider name
-     * @return string
+     * Get provider engine
+     * @return EngineInterface
      */
-    public function getName();
+    public function getEngine();
 
     /**
      * Get provider code
@@ -35,46 +40,33 @@ interface ProviderInterface
     public function getCode();
 
     /**
-     * Return true if this provider is enabled
-     * @return boolean
-     */
-    public function isEnabled();
-
-    /**
-     * Return a list of reserved actions accessible without 2FA
-     * @return array
-     */
-    public function getAllowedExtraActions();
-
-    /**
-     * Return activation action
+     * Get provider name
      * @return string
      */
-    public function getActivatePath();
+    public function getName();
 
     /**
-     * Return auth action
-     * @return string
-     */
-    public function getAuthPath();
-
-    /**
-     * Return true if user has a full configuration
-     * @param \Magento\User\Model\User $user
+     * Return true if this provider can be used as secondary method
      * @return boolean
      */
-    public function getUserIsConfigured(\Magento\User\Model\User $user);
+    public function getCanBeSecondary();
 
     /**
-     * Verify auth
-     * @param \Magento\Framework\App\RequestInterface $request
+     * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function verify(\Magento\Framework\App\RequestInterface $request);
+    public function getAllowTrustedDevices();
 
     /**
-     * Return true if allow trusted devices
+     * Return true if this provider allows resetting configuration
      * @return boolean
      */
-    public function allowTrustedDevices();
+    public function getRequiresConfiguration();
+
+    /**
+     * Return true if this provider has been configured
+     * @param UserInterface $user
+     * @return bool
+     */
+    public function getIsConfigured(UserInterface $user);
 }

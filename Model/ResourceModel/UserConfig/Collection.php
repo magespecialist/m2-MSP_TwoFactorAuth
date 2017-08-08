@@ -18,27 +18,16 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Google;
+namespace MSP\TwoFactorAuth\Model\ResourceModel\UserConfig;
 
-use Magento\Backend\Block\Template;
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
-class Activate extends Template
+class Collection extends AbstractCollection
 {
-    /**
-     * Get QR code
-     * @return string
-     */
-    public function getQrCodeUrl()
-    {
-        return $this->getUrl('*/*/qrcode');
-    }
+    protected $_idFieldName = 'msp_tfa_user_config_id';
 
-    /**
-     * Get URL to post activation code to
-     * @return string
-     */
-    public function getPostUrl()
+    protected function _construct()
     {
-        return $this->getUrl('*/*/activatepost');
+        $this->_init('\MSP\TwoFactorAuth\Model\UserConfig', '\MSP\TwoFactorAuth\Model\ResourceModel\UserConfig');
     }
 }
