@@ -51,6 +51,7 @@ class Auth extends Action
 
     public function execute()
     {
+        $this->tfa->activateUserTfa(DuoSecurity::CODE);
         return $this->pageFactory->create();
     }
 
