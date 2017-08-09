@@ -21,6 +21,8 @@
 namespace MSP\TwoFactorAuth\Model;
 
 use Magento\User\Api\Data\UserInterface;
+use Magento\User\Block\User;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
@@ -61,12 +63,30 @@ class Provider implements ProviderInterface
      */
     private $userConfigManagement;
 
+    /**
+     * @var string
+     */
+    private $configureAction;
+
+    /**
+     * @var string
+     */
+    private $authAction;
+
+    /**
+     * @var string[]
+     */
+    private $extraActions;
+
 
     public function __construct(
         EngineInterface $engine,
         UserConfigManagementInterface $userConfigManagement,
         $code,
         $name,
+        $configureAction,
+        $authAction,
+        $extraActions = [],
         $canBeSecondary = true,
         $allowTrustedDevices = true,
         $requiresConfiguration = true
@@ -78,6 +98,9 @@ class Provider implements ProviderInterface
         $this->canBeSecondary = $canBeSecondary;
         $this->allowTrustedDevices = $allowTrustedDevices;
         $this->requiresConfiguration = $requiresConfiguration;
+        $this->configureAction = $configureAction;
+        $this->authAction = $authAction;
+        $this->extraActions = $extraActions;
     }
 
     /**
@@ -135,6 +158,17 @@ class Provider implements ProviderInterface
     }
 
     /**
+     * Reset provider configuration
+     * @param UserInterface $user
+     * @return $this
+     */
+    public function resetConfiguration(UserInterface $user)
+    {
+        $this->userConfigManagement->setProviderConfig($user, $this->getCode(), null);
+        return $this;
+    }
+
+    /**
      * Return true if this provider has been configured
      * @param UserInterface $user
      * @return bool
@@ -156,5 +190,60 @@ class Provider implements ProviderInterface
         }
 
         return $this->userConfigManagement->getProviderConfig($user, $this->getCode());
+    }
+
+    /**
+     * Return true if current provider has been activated
+     * @param UserInterface $user
+     * @return bool
+     */
+    public function getIsActive(UserInterface $user)
+    {
+        if (!$this->getRequiresConfiguration()) {
+            return true;
+        }
+
+        return $this->userConfigManagement->getProviderConfigurationIsActive($user, $this->getCode());
+    }
+
+    /**
+     * Activate provider
+     * @param UserInterface $user
+     * @return $this
+     */
+    public function activate(UserInterface $user)
+    {
+        if ($this->getRequiresConfiguration()) {
+            $this->userConfigManagement->activateProviderConfiguration($user, $this->getCode());
+        }
+
+        return $this;
+    }
+
+    /**
+     * Get configure action
+     * @return string
+     */
+    public function getConfigureAction()
+    {
+        return $this->configureAction;
+    }
+
+    /**
+     * Get auth action
+     * @return string
+     */
+    public function getAuthAction()
+    {
+        return $this->authAction;
+    }
+
+    /**
+     * Get allowed extra actions
+     * @return string[]
+     */
+    public function getExtraActions()
+    {
+        return $this->extraActions;
     }
 }

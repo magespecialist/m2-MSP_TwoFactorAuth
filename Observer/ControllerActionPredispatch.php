@@ -21,12 +21,14 @@
 
 namespace MSP\TwoFactorAuth\Observer;
 
+use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\ActionFlag;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 
 class ControllerActionPredispatch implements ObserverInterface
 {
@@ -45,14 +47,37 @@ class ControllerActionPredispatch implements ObserverInterface
      */
     private $url;
 
+    /**
+     * @var TfaSessionInterface
+     */
+    private $tfaSession;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
     public function __construct(
         TfaInterface $tfa,
         ActionFlag $actionFlag,
-        UrlInterface $url
+        UrlInterface $url,
+        Session $session,
+        TfaSessionInterface $tfaSession
     ) {
         $this->tfa = $tfa;
         $this->actionFlag = $actionFlag;
         $this->url = $url;
+        $this->tfaSession = $tfaSession;
+        $this->session = $session;
+    }
+
+    /**
+     * Get current user
+     * @return \Magento\User\Model\User|null
+     */
+    protected function getUser()
+    {
+        return $this->session->getUser();
     }
 
     /**
@@ -69,7 +94,9 @@ class ControllerActionPredispatch implements ObserverInterface
             return;
         }
 
-        if (!$this->tfa->getAuthPassed()) {
+        $user = $this->getUser();
+
+        if (!$this->tfaSession->getIsGranted() || count($this->tfa->getProvidersToActivate($user))) {
             $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
             $url = $this->url->getUrl('msp_twofactorauth/tfa/index');
             $controllerAction->getResponse()->setRedirect($url);

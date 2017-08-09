@@ -18,14 +18,16 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
-class Index extends Action
+class Configurepost extends Action
 {
     /**
      * @var TfaInterface
@@ -37,14 +39,34 @@ class Index extends Action
      */
     private $session;
 
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+    /**
+     * @var Google
+     */
+    private $google;
+
+    /**
+     * @var TfaSessionInterface
+     */
+    private $tfaSession;
+
     public function __construct(
         Action\Context $context,
         Session $session,
+        PageFactory $pageFactory,
+        Google $google,
+        TfaSessionInterface $tfaSession,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
+        $this->pageFactory = $pageFactory;
+        $this->google = $google;
+        $this->tfaSession = $tfaSession;
     }
 
     /**
@@ -58,20 +80,30 @@ class Index extends Action
 
     public function execute()
     {
-        $n = intval($this->getRequest()->getParam(TfaInterface::PROVIDER_NO_GET_PARAM, 0));
         $user = $this->getUser();
 
-        $providersToConfigure = $this->tfa->getProvidersToActivate($user);
-        if (count($providersToConfigure)) {
-            return $this->_redirect($providersToConfigure[0]->getConfigureAction());
-        }
+        if ($this->google->verify($user, $this->getRequest())) {
+            $this->tfa->getProvider(Google::CODE)->activate($user);
+            $this->tfaSession->grantAccess();
 
-        if ($provider = $this->tfa->getUserProvider($user, $n)) {
-            return $this->_redirect($provider->getAuthAction(), [
-                TfaInterface::PROVIDER_NO_GET_PARAM => $n
-            ]);
+            return $this->_redirect('/');
+        } else {
+            $this->messageManager->addErrorMessage('Invalid code');
+            return $this->_redirect('*/*/activate');
         }
+    }
 
-        throw new LocalizedException(__('Internal error accessing 2FA index page'));
+    /**
+     * Check if admin has permissions to visit related pages
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
+        $user = $this->getUser();
+
+        return
+            $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
+            !$this->tfa->getProvider(Google::CODE)->getIsActive($user);
     }
 }

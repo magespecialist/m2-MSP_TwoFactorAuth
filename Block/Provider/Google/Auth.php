@@ -18,18 +18,35 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model\Provider;
+namespace MSP\TwoFactorAuth\Block\Provider\Google;
 
-use Magento\User\Api\Data\UserInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Backend\Block\Template;
+use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
-interface EngineInterface
+class Auth extends Template
 {
     /**
-     * Return true on token validation
-     * @param UserInterface $user
-     * @param RequestInterface $request
-     * @return bool
+     * @var TfaInterface
      */
-    public function verify(UserInterface $user, RequestInterface $request);
+    private $tfa;
+
+    public function __construct(
+        Template\Context $context,
+        TfaInterface $tfa,
+        array $data = []
+    ) {
+        parent::__construct($context, $data);
+        $this->tfa = $tfa;
+    }
+
+    public function getPostUrl()
+    {
+        return $this->getUrl('*/*/authpost');
+    }
+
+    public function shouldShowRememberCheckbox()
+    {
+        return $this->tfa->getProvider(Google::CODE)->getAllowTrustedDevices();
+    }
 }

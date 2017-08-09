@@ -24,6 +24,8 @@ use Magento\User\Api\Data\UserInterface;
 
 interface UserConfigManagementInterface
 {
+    const ACTIVE_CONFIG_KEY = 'active';
+
     /**
      * Get a provider configuration for a given user
      * @param UserInterface $user
@@ -63,4 +65,20 @@ interface UserConfigManagementInterface
      * @return array
      */
     public function getProvidersCodes(UserInterface $user);
+
+    /**
+     * Activate a provider configuration
+     * @param UserInterface $user
+     * @param $providerCode
+     * @return $this
+     */
+    public function activateProviderConfiguration(UserInterface $user, $providerCode);
+
+    /**
+     * Return true if a provider configuration has been activated
+     * @param UserInterface $user
+     * @param $providerCode
+     * @return boolean
+     */
+    public function getProviderConfigurationIsActive(UserInterface $user, $providerCode);
 }

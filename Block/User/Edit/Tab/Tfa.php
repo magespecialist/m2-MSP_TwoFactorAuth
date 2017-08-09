@@ -100,9 +100,9 @@ class Tfa extends Generic
         foreach ($providers as $providerCode => $provider) {
             /** @var ProviderInterface $provider */
             if ($provider->getIsConfigured($user)) {
-                $resetUrl = $this->getUrl('msp_twofactorauth/reset/index', [
+                $resetUrl = $this->getUrl('msp_twofactorauth/tfa/reset', [
                     'id' => $user->getId(),
-                    'code' => $providerCode,
+                    'provider' => $providerCode,
                 ]);
 
                 $tfaFieldset->addField(

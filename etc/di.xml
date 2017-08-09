@@ -24,6 +24,7 @@
 
     <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa" />
     <preference for="MSP\TwoFactorAuth\Api\UserConfigManagementInterface" type="MSP\TwoFactorAuth\Model\UserConfigManagement" />
+    <preference for="MSP\TwoFactorAuth\Api\TfaSessionInterface" type="MSP\TwoFactorAuth\Model\TfaSession"/>
 
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
@@ -38,6 +39,7 @@
             <argument name="providers" xsi:type="array">
                 <!-- Parameter "name" must be the same as defined in virtualType "code" parameter -->
                 <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
+                <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
             </argument>
         </arguments>
     </type>
@@ -47,9 +49,32 @@
             <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\Google</argument>
             <argument name="code" xsi:type="string">google</argument>
             <argument name="name" xsi:type="string">Google Authenticator</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/google/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/google/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="qr" xsi:type="string">msp_twofactorauth/google/qr</item>
+                <item name="configurepost" xsi:type="string">msp_twofactorauth/google/configurepost</item>
+                <item name="authpost" xsi:type="string">msp_twofactorauth/google/authpost</item>
+            </argument>
             <argument name="canBeSecondary" xsi:type="boolean">true</argument>
             <argument name="allowTrustedDevices" xsi:type="boolean">true</argument>
             <argument name="requiresConfiguration" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\DuoSecurity" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity</argument>
+            <argument name="code" xsi:type="string">duo_security</argument>
+            <argument name="name" xsi:type="string">Duo Security</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/duo/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/duo/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="authpost" xsi:type="string">msp_twofactorauth/duo/authpost</item>
+            </argument>
+            <argument name="canBeSecondary" xsi:type="boolean">true</argument>
+            <argument name="allowTrustedDevices" xsi:type="boolean">false</argument>
+            <argument name="requiresConfiguration" xsi:type="boolean">false</argument>
         </arguments>
     </virtualType>
 </config>

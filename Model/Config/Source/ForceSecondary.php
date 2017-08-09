@@ -22,7 +22,6 @@ namespace MSP\TwoFactorAuth\Model\Config\Source;
 
 use Magento\Framework\Option\ArrayInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\ProviderInterface;
 
 class ForceSecondary implements ArrayInterface
 {
@@ -47,7 +46,7 @@ class ForceSecondary implements ArrayInterface
     {
         $res = [
             ['value' => '', 'label' => __('Allow users to decide')],
-            ['value' => ProviderInterface::PROVIDER_DISABLE, 'label' => __('Do not use')],
+            ['value' => TfaInterface::PROVIDER_DISABLE, 'label' => __('Do not use')],
         ];
         $providers = $this->tfa->getAllProviders();
         foreach ($providers as $code => $provider) {

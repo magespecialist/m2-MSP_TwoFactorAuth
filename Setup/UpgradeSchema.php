@@ -194,10 +194,15 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 $providerConfig = [];
             }
 
+            $providerCode = $user['msp_tfa_provider'];
+            if ($providerCode == 'none') {
+                $providerCode = '';
+            }
+
             $connection->insert($tfaAdminUserTable, [
                 'user_id' => $user['user_id'],
                 'encoded_config' => $this->encoder->encode($providerConfig),
-                'encoded_providers' => $this->encoder->encode([$user['msp_tfa_provider']]),
+                'encoded_providers' => $this->encoder->encode([$providerCode]),
             ]);
         }
 

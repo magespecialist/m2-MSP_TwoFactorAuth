@@ -18,18 +18,27 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model\Provider;
+namespace MSP\TwoFactorAuth\Block\Provider\Google;
 
-use Magento\User\Api\Data\UserInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Backend\Block\Template;
 
-interface EngineInterface
+class Configure extends Template
 {
     /**
-     * Return true on token validation
-     * @param UserInterface $user
-     * @param RequestInterface $request
-     * @return bool
+     * Get QR code
+     * @return string
      */
-    public function verify(UserInterface $user, RequestInterface $request);
+    public function getQrCodeUrl()
+    {
+        return $this->getUrl('*/*/qr');
+    }
+
+    /**
+     * Get URL to post activation code to
+     * @return string
+     */
+    public function getPostUrl()
+    {
+        return $this->getUrl('*/*/configurepost');
+    }
 }

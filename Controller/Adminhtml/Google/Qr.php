@@ -18,14 +18,16 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\Controller\Result\Raw;
+use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
-class Index extends Action
+class Qr extends Action
 {
     /**
      * @var TfaInterface
@@ -37,14 +39,35 @@ class Index extends Action
      */
     private $session;
 
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+
+    /**
+     * @var Raw
+     */
+    private $rawResult;
+
+    /**
+     * @var Google
+     */
+    private $google;
+
     public function __construct(
         Action\Context $context,
         Session $session,
-        TfaInterface $tfa
+        PageFactory $pageFactory,
+        TfaInterface $tfa,
+        Google $google,
+        Raw $rawResult
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
+        $this->pageFactory = $pageFactory;
+        $this->rawResult = $rawResult;
+        $this->google = $google;
     }
 
     /**
@@ -58,20 +81,26 @@ class Index extends Action
 
     public function execute()
     {
-        $n = intval($this->getRequest()->getParam(TfaInterface::PROVIDER_NO_GET_PARAM, 0));
+        $pngData = $this->google->getQrCodeAsPng($this->getUser());
+        $this->rawResult
+            ->setHttpResponseCode(200)
+            ->setHeader('Content-Type', 'image/png')
+            ->setContents($pngData);
+
+        return $this->rawResult;
+    }
+
+    /**
+     * Check if admin has permissions to visit related pages
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
         $user = $this->getUser();
 
-        $providersToConfigure = $this->tfa->getProvidersToActivate($user);
-        if (count($providersToConfigure)) {
-            return $this->_redirect($providersToConfigure[0]->getConfigureAction());
-        }
-
-        if ($provider = $this->tfa->getUserProvider($user, $n)) {
-            return $this->_redirect($provider->getAuthAction(), [
-                TfaInterface::PROVIDER_NO_GET_PARAM => $n
-            ]);
-        }
-
-        throw new LocalizedException(__('Internal error accessing 2FA index page'));
+        return
+            $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
+            !$this->tfa->getProvider(Google::CODE)->getIsActive($user);
     }
 }

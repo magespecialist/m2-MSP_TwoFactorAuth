@@ -1,4 +1,3 @@
-<?php
 /**
  * MageSpecialist
  *
@@ -18,18 +17,11 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model\Provider;
+.field-tfa_trusted {
+    margin-top: -10px !important;
+    margin-left: -5px !important;
+}
 
-use Magento\User\Api\Data\UserInterface;
-use Magento\Framework\App\RequestInterface;
-
-interface EngineInterface
-{
-    /**
-     * Return true on token validation
-     * @param UserInterface $user
-     * @param RequestInterface $request
-     * @return bool
-     */
-    public function verify(UserInterface $user, RequestInterface $request);
+.field-tfa_trusted label span {
+    margin-left: 10px !important;
 }

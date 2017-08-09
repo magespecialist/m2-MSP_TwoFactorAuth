@@ -25,8 +25,6 @@ use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
 interface ProviderInterface
 {
-    const PROVIDER_DISABLE = 'disable';
-
     /**
      * Get provider engine
      * @return EngineInterface
@@ -64,9 +62,48 @@ interface ProviderInterface
     public function getRequiresConfiguration();
 
     /**
+     * Reset provider configuration
+     * @param UserInterface $user
+     * @return $this
+     */
+    public function resetConfiguration(UserInterface $user);
+
+    /**
      * Return true if this provider has been configured
      * @param UserInterface $user
      * @return bool
      */
     public function getIsConfigured(UserInterface $user);
+
+    /**
+     * Return true if current provider has been activated
+     * @param UserInterface $user
+     * @return bool
+     */
+    public function getIsActive(UserInterface $user);
+
+    /**
+     * Activate provider
+     * @param UserInterface $user
+     * @return $this
+     */
+    public function activate(UserInterface $user);
+
+    /**
+     * Get configure action
+     * @return string
+     */
+    public function getConfigureAction();
+
+    /**
+     * Get auth action
+     * @return string
+     */
+    public function getAuthAction();
+
+    /**
+     * Get allowed extra actions
+     * @return string[]
+     */
+    public function getExtraActions();
 }

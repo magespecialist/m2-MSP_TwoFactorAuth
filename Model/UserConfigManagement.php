@@ -83,7 +83,14 @@ class UserConfigManagement implements UserConfigManagementInterface
     {
         $userConfig = $this->getUserConfiguration($user);
         $providersConfig = $userConfig->getData('config');
-        $providersConfig[$providerCode] = $config;
+
+        if (is_null($config)) {
+            if (isset($providersConfig[$providerCode])) {
+                unset($providersConfig[$providerCode]);
+            }
+        } else {
+            $providersConfig[$providerCode] = $config;
+        }
 
         $userConfig->setData('config', $providersConfig);
         $userConfig->getResource()->save($userConfig);
@@ -147,5 +154,37 @@ class UserConfigManagement implements UserConfigManagementInterface
     {
         $userConfig = $this->getUserConfiguration($user);
         return $userConfig->getData('providers');
+    }
+
+    /**
+     * Activate a provider configuration
+     * @param UserInterface $user
+     * @param $providerCode
+     * @return $this
+     */
+    public function activateProviderConfiguration(UserInterface $user, $providerCode)
+    {
+        $config = $this->getProviderConfig($user, $providerCode);
+        if (!$config) {
+            $config = [];
+        }
+
+        $config[UserConfigManagementInterface::ACTIVE_CONFIG_KEY] = true;
+        $this->setProviderConfig($user, $providerCode, $config);
+        return $this;
+    }
+
+    /**
+     * Return true if a provider configuration has been activated
+     * @param UserInterface $user
+     * @param $providerCode
+     * @return boolean
+     */
+    public function getProviderConfigurationIsActive(UserInterface $user, $providerCode)
+    {
+        $config = $this->getProviderConfig($user, $providerCode);
+        return $config &&
+            isset($config[UserConfigManagementInterface::ACTIVE_CONFIG_KEY]) &&
+            $config[UserConfigManagementInterface::ACTIVE_CONFIG_KEY];
     }
 }

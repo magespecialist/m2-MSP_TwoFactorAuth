@@ -18,18 +18,21 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model\Provider;
+namespace MSP\TwoFactorAuth\Api;
 
-use Magento\User\Api\Data\UserInterface;
-use Magento\Framework\App\RequestInterface;
-
-interface EngineInterface
+interface TfaSessionInterface
 {
+    const KEY_PASSED = 'passed_2fa';
+
     /**
-     * Return true on token validation
-     * @param UserInterface $user
-     * @param RequestInterface $request
-     * @return bool
+     * Set 2FA session as passed
+     * @return $this
      */
-    public function verify(UserInterface $user, RequestInterface $request);
+    public function grantAccess();
+
+    /**
+     * Return true if 2FA session has been passed
+     * @return boolean
+     */
+    public function getIsGranted();
 }

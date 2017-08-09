@@ -13,23 +13,34 @@
  * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
- * @package    MSP_TwoFactorAuth
+ * @package    MSP_SecuritySuiteCommon
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model\Provider;
+namespace MSP\TwoFactorAuth\Model;
 
-use Magento\User\Api\Data\UserInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Session\SessionManager;
+use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 
-interface EngineInterface
+class TfaSession extends SessionManager implements TfaSessionInterface
 {
     /**
-     * Return true on token validation
-     * @param UserInterface $user
-     * @param RequestInterface $request
-     * @return bool
+     * Set 2FA session as passed
+     * @return $this
      */
-    public function verify(UserInterface $user, RequestInterface $request);
+    public function grantAccess()
+    {
+        $this->storage->setData(TfaSessionInterface::KEY_PASSED, true);
+        return $this;
+    }
+
+    /**
+     * Return true if 2FA session has been passed
+     * @return boolean
+     */
+    public function getIsGranted()
+    {
+        return !!$this->storage->getData(TfaSessionInterface::KEY_PASSED);
+    }
 }
