@@ -40,13 +40,10 @@
                     <label>Enable Two Factor Auth</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field canRestore="1" id="force_provider_0" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Force all users</label>
-                    <source_model>MSP\TwoFactorAuth\Model\Config\Source\Force</source_model>
-                </field>
-                <field canRestore="1" id="force_provider_1" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
-                    <label>Force secondary method</label>
-                    <source_model>MSP\TwoFactorAuth\Model\Config\Source\ForceSecondary</source_model>
+                <field canRestore="1" id="force_providers" translate="label" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Force providers</label>
+                    <source_model>MSP\TwoFactorAuth\Model\Config\Source\Provider</source_model>
+                    <comment>Force providers to be used by all users in this system. Leave empty to let users decide by their own.</comment>
                 </field>
             </group>
             <group id="google" translate="label" type="text" sortOrder="21" showInDefault="1" showInWebsite="0" showInStore="0">

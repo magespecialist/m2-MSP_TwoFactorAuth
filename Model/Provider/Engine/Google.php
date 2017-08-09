@@ -20,6 +20,7 @@
 
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
@@ -31,6 +32,7 @@ use Endroid\QrCode\Writer\PngWriter;
 
 class Google implements EngineInterface
 {
+    const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/google/enabled';
     const CODE = 'google';
 
     protected $totp = null;
@@ -45,12 +47,19 @@ class Google implements EngineInterface
      */
     private $storeManager;
 
+    /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
     public function __construct(
         StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig,
         UserConfigManagementInterface $configManagement
     ) {
         $this->configManagement = $configManagement;
         $this->storeManager = $storeManager;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -143,5 +152,14 @@ class Google implements EngineInterface
         $pngData = $writer->writeString($qrCode);
 
         return $pngData;
+    }
+
+    /**
+     * Return true if this provider has been enabled by admin
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED);
     }
 }

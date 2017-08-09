@@ -43,14 +43,12 @@ class Provider implements ArrayInterface
      */
     public function toOptionArray()
     {
-        $res = [
-            ['value' => '', 'label' => __('Disabled')],
-        ];
         $providers = $this->tfa->getAllProviders();
-        foreach ($providers as $code => $provider) {
+        $res = [];
+        foreach ($providers as $provider) {
             $res[] = [
                 'value' => $provider->getCode(),
-                'label' => __($provider->getName()),
+                'label' => $provider->getName(),
             ];
         }
 

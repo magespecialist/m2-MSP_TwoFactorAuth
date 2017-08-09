@@ -45,14 +45,6 @@ class AdminUserLoadAfter implements ObserverInterface
     public function execute(Observer $observer)
     {
         $user = $observer->getEvent()->getObject();
-        $providers = $this->userConfigManagement->getProvidersCodes($user);
-
-        for ($i=0; $i<TfaInterface::MAX_PROVIDERS; $i++) {
-            if ($i < count($providers)) {
-                $user->setData('msp_tfa_provider_' . $i, $providers[$i]);
-            } else {
-                $user->setData('msp_tfa_provider_' . $i, '');
-            }
-        }
+        $user->setData('msp_tfa_providers', $this->userConfigManagement->getProvidersCodes($user));
     }
 }

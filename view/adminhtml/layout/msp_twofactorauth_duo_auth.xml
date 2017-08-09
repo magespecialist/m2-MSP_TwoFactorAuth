@@ -29,8 +29,8 @@
 
     <body>
         <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Duo\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/duo/auth.phtml" />
+            <block class="MSP\TwoFactorAuth\Block\Provider\Duo\Auth" name="content"
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/duo/auth.phtml" />
         </referenceContainer>
     </body>
 </page>

@@ -67,50 +67,53 @@ class Tfa extends Generic
             'legend' => __('2FA')
         ]);
 
-        for ($i=0; $i<TfaInterface::MAX_PROVIDERS; $i++) {
-            $forcedProvider = $this->tfa->getForcedProvider($i);
-
-            if ($forcedProvider) {
-                $tfaFieldset->addField(
-                    'msp_tfa_provider_name_' . $i,
-                    'label',
-                    [
-                        'name' => 'msp_tfa_provider_name_' . $i,
-                        'label' => __('Provider #%1', $i + 1),
-                        'title' => __('Provider #%1', $i + 1),
-                        'after_element_html' => $forcedProvider->getName(),
-                    ]
-                );
-            } elseif (is_null($forcedProvider)) {
-                $tfaFieldset->addField(
-                    'msp_tfa_provider_' . $i,
-                    'select',
-                    [
-                        'value' => $user->getData(),
-                        'name' => 'msp_tfa_provider_' . $i,
-                        'label' => __('Provider #%1', $i + 1),
-                        'title' => __('Provider #%1', $i + 1),
-                        'options' => $this->provider->toArray(),
-                    ]
-                );
+        $forcedProviders = $this->tfa->getForcedProviders();
+        if (count($forcedProviders)) {
+            $names = [];
+            foreach ($forcedProviders as $forcedProvider) {
+                $names[] = $forcedProvider->getName();
             }
+
+            $tfaFieldset->addField(
+                'msp_tfa_providers_names',
+                'label',
+                [
+                    'name' => 'msp_tfa_providers_names',
+                    'label' => __('2FA Providers'),
+                    'title' => __('2FA Providers'),
+                    'after_element_html' => implode(', ', $names),
+                ]
+            );
+        } else {
+            $tfaFieldset->addField(
+                'msp_tfa_providers',
+                'multiselect',
+                [
+                    'value' => $user->getData(),
+                    'can_be_empty' => true,
+                    'name' => 'msp_tfa_providers',
+                    'label' => __('Providers'),
+                    'title' => __('Providers'),
+                    'values' => $this->provider->toOptionArray(),
+                ]
+            );
         }
 
-        $providers = $this->tfa->getAllProviders();
-        foreach ($providers as $providerCode => $provider) {
+        $providers = $this->tfa->getAllEnabledProviders();
+        foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
-            if ($provider->getIsConfigured($user)) {
+            if ($provider->getIsConfigured($user) && $provider->getCanReset()) {
                 $resetUrl = $this->getUrl('msp_twofactorauth/tfa/reset', [
                     'id' => $user->getId(),
-                    'provider' => $providerCode,
+                    'provider' => $provider->getCode(),
                 ]);
 
                 $tfaFieldset->addField(
-                    'msp_tfa_reset_' . $providerCode,
+                    'msp_tfa_reset_' . $provider->getCode(),
                     'label',
                     [
                         'label' => __('Reset %1', $provider->getName()),
-                        'name' => 'msp_tfa_reset_' . $providerCode,
+                        'name' => 'msp_tfa_reset_' . $provider->getCode(),
                         'after_element_html' =>
                             '<button'
                             . ' type="button" '

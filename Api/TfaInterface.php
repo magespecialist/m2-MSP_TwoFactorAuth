@@ -26,34 +26,38 @@ use MSP\TwoFactorAuth\Model\ProviderInterface;
 
 interface TfaInterface
 {
-    const MAX_PROVIDERS = 2;
-    const PROVIDER_DISABLE = 'disable';
-    const PROVIDER_NO_GET_PARAM = 'msptfa_n';
+    const PROVIDER_PROVIDER_GET_PARAM = 'msptfa_provider';
 
     const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/general/enabled';
-    const XML_PATH_FORCED_PROVIDER_PREFIX = 'msp_securitysuite_twofactorauth/general/force_provider_';
+    const XML_PATH_FORCED_PROVIDERS = 'msp_securitysuite_twofactorauth/general/force_providers';
+
+    /**
+     * Return true if 2FA is enabled
+     * @return boolean
+     */
+    public function getIsEnabled();
 
     /**
      * Get provider by code
      * @param string $providerCode
-     * @return ProviderInterface|null|false
+     * @param bool $onlyEnabled = true
+     * @return ProviderInterface|null
      */
-    public function getProvider($providerCode);
+    public function getProvider($providerCode, $onlyEnabled = true);
 
     /**
      * Retrieve forced providers list
-     * @return array
+     * @return ProviderInterface[]
      */
-    public function getForcedProvidersCodes();
+    public function getForcedProviders();
 
     /**
      * Get a user provider
      * @param UserInterface $user
-     * @param int $n
-     * @return ProviderInterface|null
+     * @return ProviderInterface[]
      */
-    public function getUserProvider(UserInterface $user, $n);
+    public function getUserProviders(UserInterface $user);
 
     /**
      * Get a list of providers
@@ -62,15 +66,10 @@ interface TfaInterface
     public function getAllProviders();
 
     /**
-     * Get forced provider:
-     * Returns ProviderInterface if defined
-     * Returns null if not defined
-     * Returns false if admin denied the n-th provider
-     * @param int $n
-     * @return false|ProviderInterface|null
-     * @throws LocalizedException
+     * Get a list of providers
+     * @return ProviderInterface[]
      */
-    public function getForcedProvider($n);
+    public function getAllEnabledProviders();
 
     /**
      * Return a list of trusted devices for given user id

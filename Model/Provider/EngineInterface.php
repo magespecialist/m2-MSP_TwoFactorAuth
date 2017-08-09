@@ -26,6 +26,12 @@ use Magento\Framework\App\RequestInterface;
 interface EngineInterface
 {
     /**
+     * Return true if this provider has been enabled by admin
+     * @return boolean
+     */
+    public function getIsEnabled();
+
+    /**
      * Return true on token validation
      * @param UserInterface $user
      * @param RequestInterface $request

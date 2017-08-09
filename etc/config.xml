@@ -25,8 +25,7 @@
         <msp_securitysuite_twofactorauth>
             <general>
                 <enabled>0</enabled>
-                <force_provider_0></force_provider_0>
-                <force_provider_1></force_provider_1>
+                <force_providers></force_providers>
             </general>
             <google>
                 <allow_trusted_devices>1</allow_trusted_devices>

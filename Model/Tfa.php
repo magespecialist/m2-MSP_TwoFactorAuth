@@ -70,21 +70,44 @@ class Tfa implements TfaInterface
      */
     public function getAllProviders()
     {
-        return $this->providers;
+        return array_values($this->providers);
+    }
+
+    /**
+     * Get a list of providers
+     * @return ProviderInterface[]
+     */
+    public function getAllEnabledProviders()
+    {
+        if (!$this->getIsEnabled()) {
+            return [];
+        }
+
+        $res = [];
+
+        $providers = $this->getAllProviders();
+        foreach ($providers as $provider) {
+            if ($provider->getIsEnabled()) {
+                $res[] = $provider;
+            }
+        }
+
+        return $res;
     }
 
     /**
      * Get provider by code
      * @param string $providerCode
-     * @return ProviderInterface|null|false
+     * @param bool $onlyEnabled = true
+     * @return ProviderInterface|null
      */
-    public function getProvider($providerCode)
+    public function getProvider($providerCode, $onlyEnabled = true)
     {
-        if ($providerCode == TfaInterface::PROVIDER_DISABLE) {
-            return false;
+        if (!$providerCode || !isset($this->providers[$providerCode])) {
+            return null;
         }
 
-        if (!$providerCode || !isset($this->providers[$providerCode])) {
+        if ($onlyEnabled && !$this->providers[$providerCode]->getIsEnabled()) {
             return null;
         }
 
@@ -93,16 +116,21 @@ class Tfa implements TfaInterface
 
     /**
      * Retrieve forced providers list
-     * @return array
+     * @return ProviderInterface[]
      */
-    public function getForcedProvidersCodes()
+    public function getForcedProviders()
     {
         if (is_null($this->forcedProviders)) {
+            $forcedProvidersCodes =
+                preg_split('/\s*,\s*/', $this->scopeConfig->getValue(TfaInterface::XML_PATH_FORCED_PROVIDERS));
+
             $this->forcedProviders = [];
 
-            for ($i = 0; $i < TfaInterface::MAX_PROVIDERS; $i++) {
-                $this->forcedProviders[] =
-                    $this->scopeConfig->getValue(TfaInterface::XML_PATH_FORCED_PROVIDER_PREFIX . $i);
+            foreach ($forcedProvidersCodes as $forcedProviderCode) {
+                $provider = $this->getProvider($forcedProviderCode);
+                if ($provider) {
+                    $this->forcedProviders[] = $provider;
+                }
             }
         }
 
@@ -112,50 +140,27 @@ class Tfa implements TfaInterface
     /**
      * Get a user provider
      * @param UserInterface $user
-     * @param int $n
-     * @return ProviderInterface|null
+     * @return ProviderInterface[]
      */
-    public function getUserProvider(UserInterface $user, $n)
+    public function getUserProviders(UserInterface $user)
     {
-        // Check if there is any forced provider
-        $forcedProvider = $this->getForcedProvider($n);
-        if ($forcedProvider) {
-            return $forcedProvider; // A forced provider is defined
+        $forcedProviders = $this->getForcedProviders();
+
+        if (count($forcedProviders)) {
+            return $forcedProviders;
         }
 
         $providersCodes = $this->userConfigManagement->getProvidersCodes($user);
 
-        if (($forcedProvider !== false) && isset($providersCodes[$n])) {
-            $userProvider = $this->getProvider($providersCodes[$n]);
-            if ($userProvider) {
-                return $userProvider;
+        $res = [];
+        foreach ($providersCodes as $providerCode) {
+            $provider = $this->getProvider($providerCode);
+            if ($provider) {
+                $res[] = $provider;
             }
         }
 
-        if ($n <= 0) {
-            return null;
-        }
-
-        return $this->getUserProvider($user, $n-1);
-    }
-
-    /**
-     * Get forced provider:
-     * Returns ProviderInterface if defined
-     * Returns null if not defined
-     * Returns false if admin denied the n-th provider
-     * @param int $n
-     * @return false|ProviderInterface|null
-     * @throws LocalizedException
-     */
-    public function getForcedProvider($n)
-    {
-        if ($n >= TfaInterface::MAX_PROVIDERS) {
-            throw new LocalizedException(__('Provider %1 does not exist', $n));
-        }
-
-        $providersCodes = $this->getForcedProvidersCodes();
-        return $this->getProvider($providersCodes[$n]);
+        return $res;
     }
 
     /**
@@ -206,17 +211,12 @@ class Tfa implements TfaInterface
      */
     public function getProvidersToActivate(UserInterface $user)
     {
-        $providersCodes = array_merge(
-            $this->getForcedProvidersCodes(),
-            $this->userConfigManagement->getProvidersCodes($user)
-        );
+        $providers = $this->getUserProviders($user);
 
         $res = [];
-        foreach ($providersCodes as $providerCode) {
-            if ($provider = $this->getProvider($providerCode)) {
-                if (!$provider->getIsActive($user)) {
-                    $res[] = $provider;
-                }
+        foreach ($providers as $provider) {
+            if (!$provider->getIsActive($user)) {
+                $res[] = $provider;
             }
         }
 
@@ -231,12 +231,22 @@ class Tfa implements TfaInterface
      */
     public function getProviderIsAllowed(UserInterface $user, $providerCode)
     {
-        for ($i=0; $i<TfaInterface::MAX_PROVIDERS; $i++) {
-            if ($this->getUserProvider($user, $i)->getCode() == $providerCode) {
+        $providers = $this->getUserProviders($user);
+        foreach ($providers as $provider) {
+            if ($provider->getCode() == $providerCode) {
                 return true;
             }
         }
 
         return false;
+    }
+
+    /**
+     * Return true if 2FA is enabled
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return !!$this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED);
     }
 }

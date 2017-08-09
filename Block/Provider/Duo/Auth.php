@@ -18,11 +18,12 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Duo;
+namespace MSP\TwoFactorAuth\Block\Provider\Duo;
 
 use Magento\Backend\Block\Template;
+use Magento\Backend\Model\Auth\Session;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
+use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
 class Auth extends Template
 {
@@ -36,15 +37,22 @@ class Auth extends Template
      */
     private $tfa;
 
+    /**
+     * @var Session
+     */
+    private $session;
+
     public function __construct(
         Template\Context $context,
         TfaInterface $tfa,
+        Session $session,
         DuoSecurity $duoSecurity,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->duoSecurity = $duoSecurity;
         $this->tfa = $tfa;
+        $this->session = $session;
     }
 
     /**
@@ -62,7 +70,7 @@ class Auth extends Template
      */
     public function getSignature()
     {
-        return $this->duoSecurity->getRequestSignature();
+        return $this->duoSecurity->getRequestSignature($this->session->getUser());
     }
 
     /**
@@ -71,6 +79,6 @@ class Auth extends Template
      */
     public function getPostAction()
     {
-        return $this->getUrl('*/authpost/verify', ['form_key' => $this->getFormKey()]);
+        return $this->getUrl('*/*/authpost', ['form_key' => $this->getFormKey()]);
     }
 }

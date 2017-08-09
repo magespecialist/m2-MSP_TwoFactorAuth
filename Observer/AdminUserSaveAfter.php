@@ -47,15 +47,11 @@ class AdminUserSaveAfter implements ObserverInterface
         $user = $observer->getEvent()->getObject();
         $data = $user->getData();
 
-        $providers = [];
-        for ($i=0; $i<TfaInterface::MAX_PROVIDERS; $i++) {
-            if (isset($data['msp_tfa_provider_' . $i])) {
-                $providers[] = $data['msp_tfa_provider_' . $i];
+        if (isset($data['msp_tfa_providers'])) {
+            if (!is_array($data['msp_tfa_providers'])) {
+                $data['msp_tfa_providers'] = [];
             }
-        }
-
-        if (count($providers)) {
-            $this->userConfigManagement->setProvidersCodes($user, $providers);
+            $this->userConfigManagement->setProvidersCodes($user, $data['msp_tfa_providers']);
         }
     }
 }

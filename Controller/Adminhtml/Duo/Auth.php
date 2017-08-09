@@ -18,14 +18,15 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Framework\Exception\LocalizedException;
+use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
-class Index extends Action
+class Auth extends Action
 {
     /**
      * @var TfaInterface
@@ -37,14 +38,21 @@ class Index extends Action
      */
     private $session;
 
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+
     public function __construct(
         Action\Context $context,
         Session $session,
+        PageFactory $pageFactory,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
+        $this->pageFactory = $pageFactory;
     }
 
     /**
@@ -58,31 +66,20 @@ class Index extends Action
 
     public function execute()
     {
-        $providerCode = $this->getRequest()->getParam(TfaInterface::PROVIDER_PROVIDER_GET_PARAM);
+        return $this->pageFactory->create();
+    }
+
+    /**
+     * Check if admin has permissions to visit related pages
+     *
+     * @return bool
+     */
+    protected function _isAllowed()
+    {
         $user = $this->getUser();
 
-        $providersToConfigure = $this->tfa->getProvidersToActivate($user);
-        if (count($providersToConfigure)) {
-            return $this->_redirect($providersToConfigure[0]->getConfigureAction());
-        }
-
-        if (!$providerCode) {
-            $providers = $this->tfa->getUserProviders($user);
-            if (!count($providers)) {
-                $providerCode = '';
-            } else {
-                $providerCode = $providers[0]->getCode();
-            }
-        }
-
-        if (!$this->tfa->getProviderIsAllowed($user, $providerCode)) {
-            return $this->_redirect('/');
-        }
-
-        if ($provider = $this->tfa->getProvider($providerCode)) {
-            return $this->_redirect($provider->getAuthAction());
-        }
-
-        throw new LocalizedException(__('Internal error accessing 2FA index page'));
+        return
+            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE) &&
+            $this->tfa->getProvider(DuoSecurity::CODE)->getIsActive($user);
     }
 }

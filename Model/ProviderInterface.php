@@ -26,6 +26,12 @@ use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 interface ProviderInterface
 {
     /**
+     * Return true if this provider has been enabled by admin
+     * @return boolean
+     */
+    public function getIsEnabled();
+
+    /**
      * Get provider engine
      * @return EngineInterface
      */
@@ -44,22 +50,16 @@ interface ProviderInterface
     public function getName();
 
     /**
-     * Return true if this provider can be used as secondary method
+     * Return true if this provider configuration can be reset
      * @return boolean
      */
-    public function getCanBeSecondary();
+    public function getCanReset();
 
     /**
      * Return true if this provider allows trusted devices
      * @return boolean
      */
     public function getAllowTrustedDevices();
-
-    /**
-     * Return true if this provider allows resetting configuration
-     * @return boolean
-     */
-    public function getRequiresConfiguration();
 
     /**
      * Reset provider configuration

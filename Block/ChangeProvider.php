@@ -18,19 +18,11 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var $block \MSP\TwoFactorAuth\Block\Provider\Duo\Auth */
-?>
-<form>
-    <fieldset class="admin__fieldset">
-        <iframe id="duo_iframe"
-                data-host="<?php echo $this->getApiHost(); ?>"
-                data-sig-request="<?php echo $this->getSignature(); ?>"
-                data-post-action="<?php echo $this->getPostAction(); ?>"
-        ></iframe>
-        <script type="text/javascript">
-          require(['MSP_TwoFactorAuth/js/duo'], function(duo) { duo.init(); });
-        </script>
-    </fieldset>
+namespace MSP\TwoFactorAuth\Block;
 
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
-</form>
+use Magento\Backend\Block\Template;
+
+class ChangeProvider extends Template
+{
+
+}

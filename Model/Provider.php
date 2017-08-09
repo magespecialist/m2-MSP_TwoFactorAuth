@@ -46,17 +46,7 @@ class Provider implements ProviderInterface
     /**
      * @var boolean
      */
-    private $canBeSecondary;
-
-    /**
-     * @var boolean
-     */
     private $allowTrustedDevices;
-
-    /**
-     * @var boolean
-     */
-    private $requiresConfiguration;
 
     /**
      * @var UserConfigManagementInterface
@@ -77,6 +67,10 @@ class Provider implements ProviderInterface
      * @var string[]
      */
     private $extraActions;
+    /**
+     * @var bool
+     */
+    private $canReset;
 
 
     public function __construct(
@@ -87,20 +81,27 @@ class Provider implements ProviderInterface
         $configureAction,
         $authAction,
         $extraActions = [],
-        $canBeSecondary = true,
-        $allowTrustedDevices = true,
-        $requiresConfiguration = true
+        $canReset = true,
+        $allowTrustedDevices = true
     ) {
         $this->engine = $engine;
         $this->userConfigManagement = $userConfigManagement;
         $this->code = $code;
         $this->name = $name;
-        $this->canBeSecondary = $canBeSecondary;
         $this->allowTrustedDevices = $allowTrustedDevices;
-        $this->requiresConfiguration = $requiresConfiguration;
         $this->configureAction = $configureAction;
         $this->authAction = $authAction;
         $this->extraActions = $extraActions;
+        $this->canReset = $canReset;
+    }
+
+    /**
+     * Return true if this provider has been enabled by admin
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return $this->getEngine()->getIsEnabled();
     }
 
     /**
@@ -131,12 +132,12 @@ class Provider implements ProviderInterface
     }
 
     /**
-     * Return true if this provider can be used as secondary method
+     * Return true if this provider configuration can be reset
      * @return boolean
      */
-    public function getCanBeSecondary()
+    public function getCanReset()
     {
-        return $this->canBeSecondary;
+        return $this->canReset;
     }
 
     /**
@@ -146,15 +147,6 @@ class Provider implements ProviderInterface
     public function getAllowTrustedDevices()
     {
         return $this->allowTrustedDevices;
-    }
-
-    /**
-     * Return true if this provider requires a configuration
-     * @return boolean
-     */
-    public function getRequiresConfiguration()
-    {
-        return $this->requiresConfiguration;
     }
 
     /**
@@ -175,7 +167,7 @@ class Provider implements ProviderInterface
      */
     public function getIsConfigured(UserInterface $user)
     {
-        return $this->getRequiresConfiguration() && !is_null($this->getConfiguration($user));
+        return !is_null($this->getConfiguration($user));
     }
 
     /**
@@ -185,10 +177,6 @@ class Provider implements ProviderInterface
      */
     public function getConfiguration(UserInterface $user)
     {
-        if (!$this->getRequiresConfiguration()) {
-            return null;
-        }
-
         return $this->userConfigManagement->getProviderConfig($user, $this->getCode());
     }
 
@@ -199,10 +187,6 @@ class Provider implements ProviderInterface
      */
     public function getIsActive(UserInterface $user)
     {
-        if (!$this->getRequiresConfiguration()) {
-            return true;
-        }
-
         return $this->userConfigManagement->getProviderConfigurationIsActive($user, $this->getCode());
     }
 
@@ -213,10 +197,7 @@ class Provider implements ProviderInterface
      */
     public function activate(UserInterface $user)
     {
-        if ($this->getRequiresConfiguration()) {
-            $this->userConfigManagement->activateProviderConfiguration($user, $this->getCode());
-        }
-
+        $this->userConfigManagement->activateProviderConfiguration($user, $this->getCode());
         return $this;
     }
 

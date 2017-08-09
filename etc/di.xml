@@ -56,9 +56,8 @@
                 <item name="configurepost" xsi:type="string">msp_twofactorauth/google/configurepost</item>
                 <item name="authpost" xsi:type="string">msp_twofactorauth/google/authpost</item>
             </argument>
-            <argument name="canBeSecondary" xsi:type="boolean">true</argument>
             <argument name="allowTrustedDevices" xsi:type="boolean">true</argument>
-            <argument name="requiresConfiguration" xsi:type="boolean">true</argument>
+            <argument name="canReset" xsi:type="boolean">true</argument>
         </arguments>
     </virtualType>
 
@@ -72,9 +71,8 @@
             <argument name="extraActions" xsi:type="array">
                 <item name="authpost" xsi:type="string">msp_twofactorauth/duo/authpost</item>
             </argument>
-            <argument name="canBeSecondary" xsi:type="boolean">true</argument>
             <argument name="allowTrustedDevices" xsi:type="boolean">false</argument>
-            <argument name="requiresConfiguration" xsi:type="boolean">false</argument>
+            <argument name="canReset" xsi:type="boolean">false</argument>
         </arguments>
     </virtualType>
 </config>
