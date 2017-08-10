@@ -1,0 +1,130 @@
+<?php
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/** @var $block \MSP\TwoFactorAuth\Block\Provider\Authy\Auth */
+?>
+<form action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}' autocomplete="off">
+    <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
+
+    <fieldset class="admin__fieldset">
+        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Authy Auth') ?></span></legend><br/>
+
+        <?php echo $block->getBlockHtml('formkey')?>
+
+        <div id="authy-actions-list">
+            <h3><?php echo __('Verification methods:') ?></h3>
+
+            <button
+                    type="button"
+                    class="action-primary">
+                <span><?php /* @escapeNotVerified */ echo __('Use one touch')?></span>
+            </button>
+
+            <button
+                    onclick="authySendCode('token')"
+                    type="button"
+                    class="action-primary">
+                <span><?php /* @escapeNotVerified */ echo __('Use authy token')?></span>
+            </button>
+
+            <br />
+            <h3><?php echo __('Emergency methods:') ?></h3>
+
+            <button
+                    onclick="authySendCode('sms')"
+                    type="button"
+                    class="action-default">
+                <span><?php /* @escapeNotVerified */ echo __('Send me a code via SMS')?></span>
+            </button>
+
+            <button
+                    onclick="authySendCode('call')"
+                    type="button"
+                    class="action-choose">
+                <span><?php /* @escapeNotVerified */ echo __('Send me a code via phone call')?></span>
+            </button>
+
+
+        </div>
+
+        <div class="admin__field _required field-tfa_code request-code">
+            <label for="tfa_code" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Code') ?></span></label>
+            <div class="admin__field-control">
+                <input
+                    id="tfa_code"
+                    class="admin__control-text"
+                    type="password"
+                    name="tfa_code"
+                    autofocus
+                    value=""
+                    data-validate="{required:true}"
+                    placeholder="<?php /* @escapeNotVerified */ echo __('Your code') ?>"/>
+            </div>
+        </div>
+        <div class="request-code">
+            <?php echo $block->getChildHtml('trust-device') ?>
+        </div><br />
+
+        <div class="form-actions request-code">
+            <div class="actions">
+                <button
+                    type="submit"
+                    class="action-login action-primary">
+                    <span><?php /* @escapeNotVerified */ echo __('Confirm')?></span>
+                </button>
+            </div>
+        </div>
+    </fieldset>
+
+    <br />
+    <?php echo $block->getChildHtml('change-provider') ?>
+
+    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+</form>
+
+<script type="text/javascript">
+    function authySendCode(via) {
+      var xmlhttp = new XMLHttpRequest();
+
+      document.getElementById('authy-actions-list').style.display='none';
+      var divs = document.querySelectorAll('.request-code');
+
+      [].forEach.call(divs, function(div) {
+        div.style.display = "block";
+      });
+
+      if (via !== 'token') {
+        xmlhttp.onreadystatechange = function () {
+          if (xmlhttp.readyState === XMLHttpRequest.DONE) {
+            if (xmlhttp.status === 200) {
+              console.log(xmlhttp.responseText);
+            }
+            else {
+              alert('There was an error trying to contact Authy services');
+              self.location.reload();
+            }
+          }
+        };
+
+        xmlhttp.open("GET", "<?php echo $block->getTokenRequestUrl() ?>?via=" + via, true);
+        xmlhttp.send();
+      }
+    }
+</script>

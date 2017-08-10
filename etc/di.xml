@@ -13,18 +13,19 @@
  * obtain it through the world-wide-web, please send an email
  * to info@magespecialist.it so we can send you a copy immediately.
  *
- * @category   MSP
- * @package    MSP_TwoFactorAuth
- * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @category     MSP
+ * @package        MSP_TwoFactorAuth
+ * @copyright    Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license        http://opensource.org/licenses/osl-3.0.php    Open Software License (OSL 3.0)
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
-    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa" />
-    <preference for="MSP\TwoFactorAuth\Api\UserConfigManagerInterface" type="MSP\TwoFactorAuth\Model\UserConfigManager" />
-    <preference for="MSP\TwoFactorAuth\Api\TrustedManagerInterface" type="MSP\TwoFactorAuth\Model\TrustedManager" />
+    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
+    <preference for="MSP\TwoFactorAuth\Api\UserConfigManagerInterface"
+                type="MSP\TwoFactorAuth\Model\UserConfigManager"/>
+    <preference for="MSP\TwoFactorAuth\Api\TrustedManagerInterface" type="MSP\TwoFactorAuth\Model\TrustedManager"/>
     <preference for="MSP\TwoFactorAuth\Api\TfaSessionInterface" type="MSP\TwoFactorAuth\Model\TfaSession"/>
 
     <type name="Magento\Framework\Console\CommandList">
@@ -41,7 +42,7 @@
                 <!-- Parameter "name" must be the same as defined in virtualType "code" parameter -->
                 <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
                 <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
-                <!--<item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>-->
+                <item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>
             </argument>
         </arguments>
     </type>
@@ -87,7 +88,11 @@
             <argument name="configureAction" xsi:type="string">msp_twofactorauth/authy/configure</argument>
             <argument name="authAction" xsi:type="string">msp_twofactorauth/authy/auth</argument>
             <argument name="extraActions" xsi:type="array">
+                <item name="configurepost" xsi:type="string">msp_twofactorauth/authy/configurepost</item>
+                <item name="verify" xsi:type="string">msp_twofactorauth/authy/verify</item>
+                <item name="verifypost" xsi:type="string">msp_twofactorauth/authy/verifypost</item>
                 <item name="authpost" xsi:type="string">msp_twofactorauth/authy/authpost</item>
+                <item name="token" xsi:type="string">msp_twofactorauth/authy/token</item>
             </argument>
             <argument name="canReset" xsi:type="boolean">true</argument>
         </arguments>

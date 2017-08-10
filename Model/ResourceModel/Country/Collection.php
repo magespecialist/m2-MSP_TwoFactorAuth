@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * MageSpecialist
  *
@@ -18,15 +17,17 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="admin_login" />
 
-    <body>
-        <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Provider\Google\Configure" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/google/configure.phtml" />
-        </referenceContainer>
-    </body>
-</page>
+namespace MSP\TwoFactorAuth\Model\ResourceModel\Country;
+
+use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
+
+class Collection extends AbstractCollection
+{
+    protected $_idFieldName = 'msp_tfa_country_codes_id';
+
+    protected function _construct()
+    {
+        $this->_init('\MSP\TwoFactorAuth\Model\Country', '\MSP\TwoFactorAuth\Model\ResourceModel\Country');
+    }
+}

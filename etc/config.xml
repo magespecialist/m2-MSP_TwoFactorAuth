@@ -30,6 +30,9 @@
             <google>
                 <allow_trusted_devices>1</allow_trusted_devices>
             </google>
+            <authy>
+                <allow_trusted_devices>1</allow_trusted_devices>
+            </authy>
         </msp_securitysuite_twofactorauth>
     </default>
 </config>

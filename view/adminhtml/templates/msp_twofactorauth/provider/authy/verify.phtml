@@ -18,44 +18,51 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var $block \MSP\TwoFactorAuth\Block\Provider\Google\Auth */
+/** @var $block \MSP\TwoFactorAuth\Block\Provider\Authy\Verify */
+$verifyInfo = $block->getVerifyInfo();
 ?>
 <form action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}' autocomplete="off">
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
 
     <fieldset class="admin__fieldset">
-        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Google Auth') ?></span></legend><br/>
+        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span></legend><br/>
 
-        <?php echo $block->getBlockHtml('formkey')?>
+        <p>
+            <strong><?php echo $verifyInfo['message'] ?></strong><br />
+            <a href="<?php echo $block->getConfigUrl() ?>"><?php echo __('Click here to change your phone number') ?></a>
+        </p><br />
 
-        <div class="admin__field _required field-tfa_code">
-            <label for="tfa_code" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Authenticator code') ?></span></label>
+        <div class="admin__field _required field-tfa_verify">
+            <label for="tfa_verify" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Verification code') ?></span></label>
             <div class="admin__field-control">
                 <input
-                    id="tfa_code"
-                    class="admin__control-text"
-                    type="password"
-                    name="tfa_code"
-                    autofocus
-                    value=""
-                    data-validate="{required:true}"
-                    placeholder="<?php /* @escapeNotVerified */ echo __('Your code') ?>"/>
+                        id="tfa_verify"
+                        class="admin__control-text"
+                        type="text"
+                        name="tfa_verify"
+                        autofocus
+                        value=""
+                        data-validate="{required:true}"
+                        placeholder="<?php /* @escapeNotVerified */ echo __('Verification code') ?>"/>
             </div>
         </div>
-        <?php echo $block->getChildHtml('trust-device') ?>
 
         <div class="form-actions">
             <div class="actions">
                 <button
                     type="submit"
                     class="action-login action-primary">
-                    <span><?php /* @escapeNotVerified */ echo __('Confirm')?></span>
+                    <span><?php /* @escapeNotVerified */ echo __('Verify')?></span>
                 </button>
             </div>
         </div>
     </fieldset>
 
-    <?php echo $block->getChildHtml('change-provider') ?>
-
     <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
+
+<script type="text/javascript">
+    window.setTimeout(function () {
+      self.location.href='<?php echo $block->getConfigUrl() ?>';
+    }, <?php echo $verifyInfo['seconds_to_expire'] * 1000 ?>);
+</script>

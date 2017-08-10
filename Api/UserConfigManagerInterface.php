@@ -44,6 +44,15 @@ interface UserConfigManagerInterface
     public function setProviderConfig(UserInterface $user, $providerCode, $config);
 
     /**
+     * Set provider configuration
+     * @param UserInterface $user
+     * @param string $providerCode
+     * @param array|null $config
+     * @return $this
+     */
+    public function addProviderConfig(UserInterface $user, $providerCode, $config);
+
+    /**
      * Reset provider configuration
      * @param UserInterface $user
      * @param $providerCode

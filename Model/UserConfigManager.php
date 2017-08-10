@@ -98,6 +98,25 @@ class UserConfigManager implements UserConfigManagerInterface
     }
 
     /**
+     * Set provider configuration
+     * @param UserInterface $user
+     * @param string $providerCode
+     * @param array|null $config
+     * @return $this
+     */
+    public function addProviderConfig(UserInterface $user, $providerCode, $config)
+    {
+        $userConfig = $this->getProviderConfig($user, $providerCode);
+        if (is_null($userConfig)) {
+            $newConfig = $config;
+        } else {
+            $newConfig = array_merge($userConfig, $config);
+        }
+
+        return $this->setProviderConfig($user, $providerCode, $newConfig);
+    }
+
+    /**
      * Reset provider configuration
      * @param UserInterface $user
      * @param $providerCode
@@ -164,13 +183,9 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     public function activateProviderConfiguration(UserInterface $user, $providerCode)
     {
-        $config = $this->getProviderConfig($user, $providerCode);
-        if (!$config) {
-            $config = [];
-        }
-
-        $config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY] = true;
-        $this->setProviderConfig($user, $providerCode, $config);
+        $this->addProviderConfig($user, $providerCode, [
+            UserConfigManagerInterface::ACTIVE_CONFIG_KEY => true
+        ]);
         return $this;
     }
 

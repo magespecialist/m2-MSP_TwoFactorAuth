@@ -25,8 +25,8 @@
 
     <body>
         <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Provider\Google\Configure" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/google/configure.phtml" />
+            <block class="MSP\TwoFactorAuth\Block\Provider\Authy\Configure" name="content"
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/authy/configure.phtml" />
         </referenceContainer>
     </body>
 </page>

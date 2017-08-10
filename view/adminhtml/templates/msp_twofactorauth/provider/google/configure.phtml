@@ -18,13 +18,13 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var $block \MSP\TwoFactorAuth\Block\Google\Activate */
+/** @var $block \MSP\TwoFactorAuth\Block\Provider\Google\Configure */
 ?>
 <form action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}' autocomplete="off">
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
 
     <fieldset class="admin__fieldset">
-        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('Two Factor Auth') ?></span></legend><br/>
+        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Google Auth') ?></span></legend><br/>
 
         <img src="<?php echo $block->getQrCodeUrl()?>" />
 
@@ -57,4 +57,6 @@
             </div>
         </div>
     </fieldset>
+
+    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>

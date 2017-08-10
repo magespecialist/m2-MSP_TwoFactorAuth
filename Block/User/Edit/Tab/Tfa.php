@@ -25,7 +25,7 @@ use Magento\Backend\Block\Widget\Form\Generic;
 use Magento\Framework\Data\FormFactory;
 use Magento\Framework\Registry;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Config\Source\Provider;
+use MSP\TwoFactorAuth\Model\Config\Source\EnabledProvider;
 use MSP\TwoFactorAuth\Model\ProviderInterface;
 
 class Tfa extends Generic
@@ -36,21 +36,21 @@ class Tfa extends Generic
     private $tfa;
 
     /**
-     * @var Provider
+     * @var EnabledProvider
      */
-    private $provider;
+    private $enabledProvider;
 
     public function __construct(
         Context $context,
         Registry $registry,
         FormFactory $formFactory,
         TfaInterface $tfa,
-        Provider $provider,
+        EnabledProvider $enabledProvider,
         array $data = []
     ) {
         parent::__construct($context, $registry, $formFactory, $data);
         $this->tfa = $tfa;
-        $this->provider = $provider;
+        $this->enabledProvider = $enabledProvider;
     }
 
     protected function _prepareForm()
@@ -94,7 +94,7 @@ class Tfa extends Generic
                     'name' => 'msp_tfa_providers',
                     'label' => __('Providers'),
                     'title' => __('Providers'),
-                    'values' => $this->provider->toOptionArray(),
+                    'values' => $this->enabledProvider->toOptionArray(),
                 ]
             );
         }

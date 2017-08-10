@@ -74,6 +74,21 @@
                     <label>API hostname</label>
                 </field>
             </group>
+            <group id="authy" translate="label" type="text" sortOrder="22" showInDefault="1" showInWebsite="0" showInStore="0">
+                <label>Authy</label>
+                <field id="enabled" translate="label" type="select" sortOrder="10" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable this provider</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="api_key" translate="label comment" type="password" sortOrder="20" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>API key</label>
+                </field>
+                <field canRestore="1" id="allow_trusted_devices" translate="label" type="select" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>Enable "trust this device" option</label>
+                    <comment>NOTE: This option should be used in HTTPS only environments</comment>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+            </group>
         </section>
     </system>
 </config>

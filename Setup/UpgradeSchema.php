@@ -20,6 +20,7 @@
 
 namespace MSP\TwoFactorAuth\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface;
 use Magento\Framework\Json\DecoderInterface;
 use Magento\Framework\Json\EncoderInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
@@ -218,6 +219,54 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $connection->dropColumn($adminUserTable, 'msp_tfa_activated');
     }
 
+    protected function upgradeTo020001(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+        $tableName = $setup->getTable('msp_tfa_country_codes');
+
+        $table = $setup->getConnection()
+            ->newTable($tableName)
+            ->addColumn(
+                'msp_tfa_country_codes_id',
+                Table::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+                'TFA admin user ID'
+            )
+            ->addColumn(
+                'code',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => false],
+                'Country code'
+            )
+            ->addColumn(
+                'name',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => false],
+                'Country name'
+            )
+            ->addColumn(
+                'dial_code',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => false],
+                'Prefix'
+            )
+            ->addIndex(
+                $setup->getIdxName(
+                    $tableName,
+                    ['code'],
+                    AdapterInterface::INDEX_TYPE_INDEX
+                ),
+                [['name' => 'code', 'size' => 128]],
+                ['type' => AdapterInterface::INDEX_TYPE_INDEX]
+            );
+
+        $connection->createTable($table);
+    }
+
     /**
      * Upgrades DB schema for a module
      *
@@ -239,6 +288,10 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '2.0.0') < 0) {
             $this->upgradeTo020000($setup);
+        }
+
+        if (version_compare($context->getVersion(), '2.0.1') < 0) {
+            $this->upgradeTo020001($setup);
         }
 
         $setup->endSetup();
