@@ -18,29 +18,37 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Provider\Google;
+namespace MSP\TwoFactorAuth\Api;
 
-use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Api\TfaInterface;
+use Magento\Framework\App\RequestInterface;
 
-class Auth extends Template
+interface TrustedManagerInterface
 {
+    const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
+
     /**
-     * @var TfaInterface
+     * Rotate secret trust token
+     * @return void
      */
-    private $tfa;
+    public function rotateTrustedDeviceToken();
 
-    public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-        $this->tfa = $tfa;
-    }
+    /**
+     * Return true if device is trusted
+     * @return bool
+     */
+    public function isTrustedDevice();
 
-    public function getPostUrl()
-    {
-        return $this->getUrl('*/*/authpost');
-    }
+    /**
+     * Revoke trusted device
+     * @param int $tokenId
+     * @return void
+     */
+    public function revokeTrustedDevice($tokenId);
+
+    /**
+     * Trust a device
+     * @param $providerCode
+     * @param RequestInterface $request
+     */
+    public function handleTrustDeviceRequest($providerCode, RequestInterface $request);
 }

@@ -18,47 +18,40 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
+namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
 
-use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Framework\View\Result\PageFactory;
-use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
+use Magento\Framework\App\ResponseInterface;
+use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 
-class Configure extends Action
+class Revoke extends Action
 {
     /**
-     * @var TfaInterface
+     * @var TrustedManagerInterface
      */
-    private $tfa;
-
-    /**
-     * @var Session
-     */
-    private $session;
+    private $trustedManager;
 
     public function __construct(
         Action\Context $context,
-        Session $session,
-        TfaInterface $tfa
+        TrustedManagerInterface $trustedManager
     ) {
         parent::__construct($context);
-        $this->tfa = $tfa;
-        $this->session = $session;
+        $this->trustedManager = $trustedManager;
     }
 
     /**
-     * Get current user
-     * @return \Magento\User\Model\User|null
+     * Dispatch request
+     *
+     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @throws \Magento\Framework\Exception\NotFoundException
      */
-    protected function getUser()
-    {
-        return $this->session->getUser();
-    }
-
     public function execute()
     {
-        return $this->_redirect('*/*/auth');
+        $tokenId = $this->getRequest()->getParam('id');
+        $userId = $this->getRequest()->getParam('user_id');
+        $this->trustedManager->revokeTrustedDevice($tokenId);
+
+        $this->messageManager->addSuccessMessage(__('Device authorization revoked'));
+        $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
     }
 }

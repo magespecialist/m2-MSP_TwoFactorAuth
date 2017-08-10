@@ -23,12 +23,10 @@ namespace MSP\TwoFactorAuth\Block;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Registry;
-use Magento\User\Api\Data\UserInterface;
 use Magento\User\Model\User;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\ProviderInterface;
 
-class ChangeProvider extends Template
+class TrustDevice extends Template
 {
     /**
      * @var Registry
@@ -77,30 +75,12 @@ class ChangeProvider extends Template
     }
 
     /**
-     * Return true if current provider is active
-     * @return bool
+     * Return true if "trust device" flag should be shown
+     * @return boolean
      */
-    public function getCurrentProviderIsActive()
+    public function canShowTrustDevice()
     {
-        $currentProvider = $this->tfa->getProvider($this->getCurrentProviderCode());
-        return $currentProvider->getIsActive($this->getUser());
-    }
-
-    /**
-     * Get a list of available providers
-     * @return ProviderInterface[]
-     */
-    public function getProvidersList()
-    {
-        $res = [];
-
-        $providers = $this->tfa->getUserProviders($this->getUser());
-        foreach ($providers as $provider) {
-            if ($provider->getCode() != $this->getCurrentProviderCode()) {
-                $res[] = $provider;
-            }
-        }
-
-        return $res;
+        $provider = $this->tfa->getProvider($this->getCurrentProviderCode());
+        return $provider->getAllowTrustedDevices();
     }
 }

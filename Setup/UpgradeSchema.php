@@ -166,6 +166,13 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 ['nullable' => true],
                 'Encoded providers configuration'
             )
+            ->addColumn(
+                'default_provider',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => true],
+                'Default provider'
+            )
             ->addForeignKey(
                 $setup->getFkName(
                     $setup->getTable('msp_tfa_user_config'),

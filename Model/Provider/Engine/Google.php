@@ -24,7 +24,7 @@ use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
-use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 use Base32\Base32;
 use Endroid\QrCode\QrCode;
@@ -33,14 +33,14 @@ use Endroid\QrCode\Writer\PngWriter;
 class Google implements EngineInterface
 {
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/google/enabled';
-    const CODE = 'google';
+    const CODE = 'google'; // Must be the same as defined in di.xml
 
     protected $totp = null;
 
     /**
-     * @var UserConfigManagementInterface
+     * @var UserConfigManagerInterface
      */
-    private $configManagement;
+    private $configManager;
 
     /**
      * @var StoreManagerInterface
@@ -55,9 +55,9 @@ class Google implements EngineInterface
     public function __construct(
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
-        UserConfigManagementInterface $configManagement
+        UserConfigManagerInterface $configManager
     ) {
-        $this->configManagement = $configManagement;
+        $this->configManager = $configManager;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
     }
@@ -80,7 +80,7 @@ class Google implements EngineInterface
     protected function getTotp(UserInterface $user)
     {
         if (is_null($this->totp)) {
-            $config = $this->configManagement->getProviderConfig($user, static::CODE);
+            $config = $this->configManager->getProviderConfig($user, static::CODE);
 
             $this->totp = new \OTPHP\TOTP(
                 $user->getEmail(),
@@ -98,10 +98,10 @@ class Google implements EngineInterface
      */
     protected function getProvisioningUrl(UserInterface $user)
     {
-        $config = $this->configManagement->getProviderConfig($user, static::CODE);
+        $config = $this->configManager->getProviderConfig($user, static::CODE);
         if (!isset($config['secret'])) {
             $config['secret'] = $this->generateSecret();
-            $this->configManagement->setProviderConfig($user, static::CODE, $config);
+            $this->configManager->setProviderConfig($user, static::CODE, $config);
         }
 
         $baseUrl = $this->storeManager->getStore()->getBaseUrl();

@@ -42,12 +42,7 @@
                     placeholder="<?php /* @escapeNotVerified */ echo __('Your code') ?>"/>
             </div>
         </div>
-        <?php if ($block->shouldShowRememberCheckbox()) : ?>
-        <div class="admin__field field-tfa_trusted">
-            <input id="tfa_trusted" name="tfa_trusted" value="1" type="checkbox" class="admin__control-checkbox" />&nbsp;
-            <label for="tfa_trusted"><span><?php /* @escapeNotVerified */ echo __('Trust this device, do not ask again') ?></span></label>
-        </div>
-        <?php endif; ?>
+        <?php echo $block->getChildHtml('trust-device') ?>
 
         <div class="form-actions">
             <div class="actions">
@@ -59,6 +54,8 @@
             </div>
         </div>
     </fieldset>
+
+    <?php echo $block->getChildHtml('change-provider') ?>
 
     <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>

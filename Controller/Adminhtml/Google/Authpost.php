@@ -25,6 +25,7 @@ use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
 class Authpost extends Action
@@ -53,12 +54,18 @@ class Authpost extends Action
      */
     private $tfaSession;
 
+    /**
+     * @var TrustedManagerInterface
+     */
+    private $trustedManager;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         PageFactory $pageFactory,
         Google $google,
         TfaSessionInterface $tfaSession,
+        TrustedManagerInterface $trustedManager,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -67,6 +74,7 @@ class Authpost extends Action
         $this->pageFactory = $pageFactory;
         $this->google = $google;
         $this->tfaSession = $tfaSession;
+        $this->trustedManager = $trustedManager;
     }
 
     /**
@@ -83,6 +91,7 @@ class Authpost extends Action
         $user = $this->getUser();
 
         if ($this->google->verify($user, $this->getRequest())) {
+            $this->trustedManager->handleTrustDeviceRequest(Google::CODE, $this->getRequest());
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {

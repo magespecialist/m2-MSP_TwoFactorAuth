@@ -28,7 +28,6 @@ interface TfaInterface
 {
     const PROVIDER_PROVIDER_GET_PARAM = 'msptfa_provider';
 
-    const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/general/enabled';
     const XML_PATH_FORCED_PROVIDERS = 'msp_securitysuite_twofactorauth/general/force_providers';
 

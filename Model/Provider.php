@@ -23,7 +23,7 @@ namespace MSP\TwoFactorAuth\Model;
 use Magento\User\Api\Data\UserInterface;
 use Magento\User\Block\User;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
 class Provider implements ProviderInterface
@@ -49,9 +49,9 @@ class Provider implements ProviderInterface
     private $allowTrustedDevices;
 
     /**
-     * @var UserConfigManagementInterface
+     * @var UserConfigManagerInterface
      */
-    private $userConfigManagement;
+    private $userConfigManager;
 
     /**
      * @var string
@@ -67,17 +67,24 @@ class Provider implements ProviderInterface
      * @var string[]
      */
     private $extraActions;
+
     /**
      * @var bool
      */
     private $canReset;
 
+    /**
+     * @var
+     */
+    private $icon;
+
 
     public function __construct(
         EngineInterface $engine,
-        UserConfigManagementInterface $userConfigManagement,
+        UserConfigManagerInterface $userConfigManager,
         $code,
         $name,
+        $icon,
         $configureAction,
         $authAction,
         $extraActions = [],
@@ -85,7 +92,7 @@ class Provider implements ProviderInterface
         $allowTrustedDevices = true
     ) {
         $this->engine = $engine;
-        $this->userConfigManagement = $userConfigManagement;
+        $this->userConfigManager = $userConfigManager;
         $this->code = $code;
         $this->name = $name;
         $this->allowTrustedDevices = $allowTrustedDevices;
@@ -93,6 +100,7 @@ class Provider implements ProviderInterface
         $this->authAction = $authAction;
         $this->extraActions = $extraActions;
         $this->canReset = $canReset;
+        $this->icon = $icon;
     }
 
     /**
@@ -132,6 +140,15 @@ class Provider implements ProviderInterface
     }
 
     /**
+     * Get provider icon
+     * @return string
+     */
+    public function getIcon()
+    {
+        return $this->icon;
+    }
+
+    /**
      * Return true if this provider configuration can be reset
      * @return boolean
      */
@@ -156,7 +173,7 @@ class Provider implements ProviderInterface
      */
     public function resetConfiguration(UserInterface $user)
     {
-        $this->userConfigManagement->setProviderConfig($user, $this->getCode(), null);
+        $this->userConfigManager->setProviderConfig($user, $this->getCode(), null);
         return $this;
     }
 
@@ -177,7 +194,7 @@ class Provider implements ProviderInterface
      */
     public function getConfiguration(UserInterface $user)
     {
-        return $this->userConfigManagement->getProviderConfig($user, $this->getCode());
+        return $this->userConfigManager->getProviderConfig($user, $this->getCode());
     }
 
     /**
@@ -187,7 +204,7 @@ class Provider implements ProviderInterface
      */
     public function getIsActive(UserInterface $user)
     {
-        return $this->userConfigManagement->getProviderConfigurationIsActive($user, $this->getCode());
+        return $this->userConfigManager->getProviderConfigurationIsActive($user, $this->getCode());
     }
 
     /**
@@ -197,7 +214,7 @@ class Provider implements ProviderInterface
      */
     public function activate(UserInterface $user)
     {
-        $this->userConfigManagement->activateProviderConfiguration($user, $this->getCode());
+        $this->userConfigManager->activateProviderConfiguration($user, $this->getCode());
         return $this;
     }
 

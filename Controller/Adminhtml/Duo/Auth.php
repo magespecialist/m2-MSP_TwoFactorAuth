@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
@@ -42,10 +43,15 @@ class Auth extends Action
      * @var PageFactory
      */
     private $pageFactory;
+    /**
+     * @var Registry
+     */
+    private $registry;
 
     public function __construct(
         Action\Context $context,
         Session $session,
+        Registry $registry,
         PageFactory $pageFactory,
         TfaInterface $tfa
     ) {
@@ -53,6 +59,7 @@ class Auth extends Action
         $this->tfa = $tfa;
         $this->session = $session;
         $this->pageFactory = $pageFactory;
+        $this->registry = $registry;
     }
 
     /**
@@ -66,6 +73,7 @@ class Auth extends Action
 
     public function execute()
     {
+        $this->registry->register('msp_tfa_current_provider', DuoSecurity::CODE);
         return $this->pageFactory->create();
     }
 
@@ -76,10 +84,8 @@ class Auth extends Action
      */
     protected function _isAllowed()
     {
-        $user = $this->getUser();
-
+        // Do not check for activation
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE) &&
-            $this->tfa->getProvider(DuoSecurity::CODE)->getIsActive($user);
+            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE);
     }
 }

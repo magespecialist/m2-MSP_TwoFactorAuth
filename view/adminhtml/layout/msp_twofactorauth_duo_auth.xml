@@ -24,13 +24,18 @@
     <update handle="admin_login" />
 
     <head>
+        <css src="MSP_TwoFactorAuth::css/auth.css"/>
         <css src="MSP_TwoFactorAuth::css/duo.css"/>
     </head>
 
     <body>
         <referenceContainer name="login.content">
             <block class="MSP\TwoFactorAuth\Block\Provider\Duo\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/duo/auth.phtml" />
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/duo/auth.phtml">
+
+                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
+                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml" />
+            </block>
         </referenceContainer>
     </body>
 </page>

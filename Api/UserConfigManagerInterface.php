@@ -22,7 +22,7 @@ namespace MSP\TwoFactorAuth\Api;
 
 use Magento\User\Api\Data\UserInterface;
 
-interface UserConfigManagementInterface
+interface UserConfigManagerInterface
 {
     const ACTIVE_CONFIG_KEY = 'active';
 

@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
@@ -43,9 +44,15 @@ class Auth extends Action
      */
     private $pageFactory;
 
+    /**
+     * @var Registry
+     */
+    private $registry;
+
     public function __construct(
         Action\Context $context,
         Session $session,
+        Registry $registry,
         PageFactory $pageFactory,
         TfaInterface $tfa
     ) {
@@ -53,6 +60,7 @@ class Auth extends Action
         $this->tfa = $tfa;
         $this->session = $session;
         $this->pageFactory = $pageFactory;
+        $this->registry = $registry;
     }
 
     /**
@@ -66,6 +74,7 @@ class Auth extends Action
 
     public function execute()
     {
+        $this->registry->register('msp_tfa_current_provider', Google::CODE);
         return $this->pageFactory->create();
     }
 

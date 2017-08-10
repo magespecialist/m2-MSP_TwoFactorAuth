@@ -139,7 +139,7 @@ class Tfa extends Generic
             $devicesHtml[] = '</div>';
 
             foreach ($trustedDevices as $trustedDevice) {
-                $revokeUrl = $this->getUrl('msp_twofactorauth/trusted/revoke', [
+                $revokeUrl = $this->getUrl('msp_twofactorauth/tfa/revoke', [
                     'id' => $trustedDevice->getId(),
                     'user_id' => $user->getId(),
                 ]);

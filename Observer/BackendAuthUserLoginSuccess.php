@@ -18,29 +18,33 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Provider\Google;
+namespace MSP\TwoFactorAuth\Observer;
 
-use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Api\TfaInterface;
+use Magento\Framework\Event\Observer;
+use Magento\Framework\Event\ObserverInterface;
+use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 
-class Auth extends Template
+class BackendAuthUserLoginSuccess implements ObserverInterface
 {
     /**
-     * @var TfaInterface
+     * @var TrustedManagerInterface
      */
-    private $tfa;
+    private $trustedManager;
 
     public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
+        TrustedManagerInterface $trustedManager
     ) {
-        parent::__construct($context, $data);
-        $this->tfa = $tfa;
+        $this->trustedManager = $trustedManager;
     }
 
-    public function getPostUrl()
+    /**
+     * @param Observer $observer
+     * @return void
+     */
+    public function execute(Observer $observer)
     {
-        return $this->getUrl('*/*/authpost');
+        if ($this->trustedManager->isTrustedDevice()) {
+            $this->trustedManager->rotateTrustedDeviceToken();
+        }
     }
 }

@@ -27,7 +27,7 @@ use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
 class DuoSecurity implements EngineInterface
 {
-    const CODE = 'duo_security';
+    const CODE = 'duo_security'; // Must be the same as defined in di.xml
 
     const DUO_PREFIX = "TX";
     const APP_PREFIX = "APP";

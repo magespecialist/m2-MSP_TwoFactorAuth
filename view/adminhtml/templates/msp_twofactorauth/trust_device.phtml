@@ -18,29 +18,12 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Provider\Google;
-
-use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Api\TfaInterface;
-
-class Auth extends Template
-{
-    /**
-     * @var TfaInterface
-     */
-    private $tfa;
-
-    public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-        $this->tfa = $tfa;
-    }
-
-    public function getPostUrl()
-    {
-        return $this->getUrl('*/*/authpost');
-    }
-}
+/** @var $block \MSP\TwoFactorAuth\Block\TrustDevice */
+$canShow = $block->canShowTrustDevice();
+?>
+<?php if ($canShow) : ?>
+<div class="admin__field field-tfa_trusted">
+    <input id="tfa_trust_device" name="tfa_trust_device" value="1" type="checkbox" class="admin__control-checkbox" />&nbsp;
+    <label for="tfa_trust_device"><span><?php /* @escapeNotVerified */ echo __('Trust this device, do not ask again') ?></span></label>
+</div>
+<?php endif ?>

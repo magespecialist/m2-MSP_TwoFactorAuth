@@ -21,10 +21,9 @@
 namespace MSP\TwoFactorAuth\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
 
 class Tfa implements TfaInterface
@@ -48,20 +47,20 @@ class Tfa implements TfaInterface
     private $collectionFactory;
 
     /**
-     * @var UserConfigManagementInterface
+     * @var UserConfigManagerInterface
      */
-    private $userConfigManagement;
+    private $userConfigManager;
 
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         TrustedResourceModel\CollectionFactory $collectionFactory,
-        UserConfigManagementInterface $userConfigManagement,
+        UserConfigManagerInterface $userConfigManager,
         $providers = []
     ) {
         $this->providers = $providers;
         $this->scopeConfig = $scopeConfig;
         $this->collectionFactory = $collectionFactory;
-        $this->userConfigManagement = $userConfigManagement;
+        $this->userConfigManager = $userConfigManager;
     }
 
     /**
@@ -150,7 +149,7 @@ class Tfa implements TfaInterface
             return $forcedProviders;
         }
 
-        $providersCodes = $this->userConfigManagement->getProvidersCodes($user);
+        $providersCodes = $this->userConfigManager->getProvidersCodes($user);
 
         $res = [];
         foreach ($providersCodes as $providerCode) {

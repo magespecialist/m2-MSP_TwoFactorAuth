@@ -18,7 +18,6 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-
 namespace MSP\TwoFactorAuth\Observer;
 
 use Magento\Backend\Model\Auth\Session;
@@ -29,6 +28,7 @@ use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 
 class ControllerActionPredispatch implements ObserverInterface
 {
@@ -57,18 +57,25 @@ class ControllerActionPredispatch implements ObserverInterface
      */
     private $session;
 
+    /**
+     * @var TrustedManagerInterface
+     */
+    private $trustedManager;
+
     public function __construct(
         TfaInterface $tfa,
         ActionFlag $actionFlag,
         UrlInterface $url,
         Session $session,
-        TfaSessionInterface $tfaSession
+        TfaSessionInterface $tfaSession,
+        TrustedManagerInterface $trustedManager
     ) {
         $this->tfa = $tfa;
         $this->actionFlag = $actionFlag;
         $this->url = $url;
         $this->tfaSession = $tfaSession;
         $this->session = $session;
+        $this->trustedManager = $trustedManager;
     }
 
     /**
@@ -96,7 +103,10 @@ class ControllerActionPredispatch implements ObserverInterface
 
         $user = $this->getUser();
 
-        if (!$this->tfaSession->getIsGranted() || count($this->tfa->getProvidersToActivate($user))) {
+        $accessGranted = ($this->tfaSession->getIsGranted() || $this->trustedManager->isTrustedDevice()) &&
+            !count($this->tfa->getProvidersToActivate($user));
+
+        if (!$accessGranted) {
             $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
             $url = $this->url->getUrl('msp_twofactorauth/tfa/index');
             $controllerAction->getResponse()->setRedirect($url);

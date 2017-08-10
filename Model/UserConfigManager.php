@@ -23,9 +23,9 @@ namespace MSP\TwoFactorAuth\Model;
 use Magento\Framework\Json\DecoderInterface;
 use Magento\Framework\Json\EncoderInterface;
 use Magento\User\Api\Data\UserInterface;
-use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 
-class UserConfigManagement implements UserConfigManagementInterface
+class UserConfigManager implements UserConfigManagerInterface
 {
     protected $configurationRegistry = [];
 
@@ -169,7 +169,7 @@ class UserConfigManagement implements UserConfigManagementInterface
             $config = [];
         }
 
-        $config[UserConfigManagementInterface::ACTIVE_CONFIG_KEY] = true;
+        $config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY] = true;
         $this->setProviderConfig($user, $providerCode, $config);
         return $this;
     }
@@ -184,7 +184,7 @@ class UserConfigManagement implements UserConfigManagementInterface
     {
         $config = $this->getProviderConfig($user, $providerCode);
         return $config &&
-            isset($config[UserConfigManagementInterface::ACTIVE_CONFIG_KEY]) &&
-            $config[UserConfigManagementInterface::ACTIVE_CONFIG_KEY];
+            isset($config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY]) &&
+            $config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY];
     }
 }

@@ -50,6 +50,12 @@ interface ProviderInterface
     public function getName();
 
     /**
+     * Get icon
+     * @return string
+     */
+    public function getIcon();
+
+    /**
      * Return true if this provider configuration can be reset
      * @return boolean
      */

@@ -1,0 +1,53 @@
+<?php
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/** @var $block \MSP\TwoFactorAuth\Block\ChangeProvider */
+$providers = $block->getProvidersList();
+?>
+<?php if (count($providers) && $block->getCurrentProviderIsActive()) : ?>
+    <a id="tfa_msp_change_provider_trigger" href="#" onclick="openTfaMethodSelector()">
+        <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png') ?>" />
+        <span>
+            <?php echo __('Select a different 2FA method') ?>
+        </span>
+    </a>
+
+    <div id="tfa_msp_change_provider">
+        <h3><?php echo __('Select a different 2FA method:') ?></h3>
+
+        <div class="tfa_msp_provider_list">
+            <?php foreach ($providers as $provider) : ?>
+                <a class="tfa_msp_provider" href="<?php echo $block->getUrl($provider->getAuthAction()) ?>">
+                    <img src="<?php echo $block->getViewFileUrl($provider->getIcon()) ?>" />
+                    <span>
+                        <?php echo $provider->getName() ?>
+                    </span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function openTfaMethodSelector() {
+            document.getElementById('tfa_msp_change_provider').style.display = 'block';
+            document.getElementById('tfa_msp_change_provider_trigger').style.display = 'none';
+        }
+    </script>
+<?php endif; ?>

@@ -22,20 +22,19 @@ namespace MSP\TwoFactorAuth\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
-use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Api\UserConfigManagementInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 
 class AdminUserLoadAfter implements ObserverInterface
 {
     /**
-     * @var UserConfigManagementInterface
+     * @var UserConfigManagerInterface
      */
-    private $userConfigManagement;
+    private $userConfigManager;
 
     public function __construct(
-        UserConfigManagementInterface $userConfigManagement
+        UserConfigManagerInterface $userConfigManager
     ) {
-        $this->userConfigManagement = $userConfigManagement;
+        $this->userConfigManager = $userConfigManager;
     }
 
     /**
@@ -45,6 +44,6 @@ class AdminUserLoadAfter implements ObserverInterface
     public function execute(Observer $observer)
     {
         $user = $observer->getEvent()->getObject();
-        $user->setData('msp_tfa_providers', $this->userConfigManagement->getProvidersCodes($user));
+        $user->setData('msp_tfa_providers', $this->userConfigManager->getProvidersCodes($user));
     }
 }

@@ -34,4 +34,7 @@
     <event name="admin_user_load_after">
         <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\AdminUserLoadAfter"/>
     </event>
+    <event name="backend_auth_user_login_success">
+        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\BackendAuthUserLoginSuccess"/>
+    </event>
 </config>

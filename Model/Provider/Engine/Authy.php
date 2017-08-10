@@ -13,34 +13,38 @@
  * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
- * @package    MSP_TwoFactorAuth
+ * @package    MSP_NoSpam
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Block\Provider\Google;
+namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
-use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Api\TfaInterface;
+use Magento\Framework\App\RequestInterface;
+use Magento\User\Api\Data\UserInterface;
+use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
-class Auth extends Template
+class Authy implements EngineInterface
 {
-    /**
-     * @var TfaInterface
-     */
-    private $tfa;
+    const CODE = 'duo_security'; // Must be the same as defined in di.xml
 
-    public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-        $this->tfa = $tfa;
+    /**
+     * Return true if this provider has been enabled by admin
+     * @return boolean
+     */
+    public function getIsEnabled()
+    {
+        return true;
     }
 
-    public function getPostUrl()
+    /**
+     * Return true on token validation
+     * @param UserInterface $user
+     * @param RequestInterface $request
+     * @return bool
+     */
+    public function verify(UserInterface $user, RequestInterface $request)
     {
-        return $this->getUrl('*/*/authpost');
+        return true;
     }
 }
