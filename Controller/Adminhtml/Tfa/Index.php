@@ -24,6 +24,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\Exception\LocalizedException;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 
 class Index extends Action
 {
@@ -37,14 +38,21 @@ class Index extends Action
      */
     private $session;
 
+    /**
+     * @var UserConfigManagerInterface
+     */
+    private $userConfigManager;
+
     public function __construct(
         Action\Context $context,
         Session $session,
+        UserConfigManagerInterface $userConfigManager,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
+        $this->userConfigManager = $userConfigManager;
     }
 
     /**
@@ -58,7 +66,6 @@ class Index extends Action
 
     public function execute()
     {
-        $providerCode = $this->getRequest()->getParam(TfaInterface::PROVIDER_PROVIDER_GET_PARAM);
         $user = $this->getUser();
 
         $providersToConfigure = $this->tfa->getProvidersToActivate($user);
@@ -66,16 +73,21 @@ class Index extends Action
             return $this->_redirect($providersToConfigure[0]->getConfigureAction());
         }
 
+        $providerCode = '';
+
+        $defaultProviderCode = $this->userConfigManager->getDefaultProvider($user);
+        if ($this->tfa->getProviderIsAllowed($user, $defaultProviderCode)) {
+            $providerCode = $defaultProviderCode;
+        }
+
         if (!$providerCode) {
             $providers = $this->tfa->getUserProviders($user);
-            if (!count($providers)) {
-                $providerCode = '';
-            } else {
+            if (count($providers)) {
                 $providerCode = $providers[0]->getCode();
             }
         }
 
-        if (!$this->tfa->getProviderIsAllowed($user, $providerCode)) {
+        if (!$providerCode) {
             return $this->_redirect('/');
         }
 

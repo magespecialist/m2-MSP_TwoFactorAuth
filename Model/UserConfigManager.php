@@ -187,4 +187,30 @@ class UserConfigManager implements UserConfigManagerInterface
             isset($config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY]) &&
             $config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY];
     }
+
+    /**
+     * Set default provider
+     * @param UserInterface $user
+     * @param string $providerCode
+     * @return $this
+     */
+    public function setDefaultProvider(UserInterface $user, $providerCode)
+    {
+        $userConfig = $this->getUserConfiguration($user);
+        $userConfig->setData('default_provider', $providerCode);
+        $userConfig->getResource()->save($userConfig);
+
+        return $this;
+    }
+
+    /**
+     * get default provider
+     * @param UserInterface $user
+     * @return string
+     */
+    public function getDefaultProvider(UserInterface $user)
+    {
+        $userConfig = $this->getUserConfiguration($user);
+        return $userConfig->getData('default_provider');
+    }
 }

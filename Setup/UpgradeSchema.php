@@ -130,7 +130,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         ]);
     }
 
-    protected function upgradeTo010300(SchemaSetupInterface $setup)
+    protected function upgradeTo020000(SchemaSetupInterface $setup)
     {
         $connection = $setup->getConnection();
         $tfaAdminUserTable = $setup->getTable('msp_tfa_user_config');
@@ -238,7 +238,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         }
 
         if (version_compare($context->getVersion(), '2.0.0') < 0) {
-            $this->upgradeTo010300($setup);
+            $this->upgradeTo020000($setup);
         }
 
         $setup->endSetup();

@@ -32,6 +32,12 @@ interface EngineInterface
     public function getIsEnabled();
 
     /**
+     * Return true if this provider allows trusted devices
+     * @return boolean
+     */
+    public function getAllowTrustedDevices();
+
+    /**
      * Return true on token validation
      * @param UserInterface $user
      * @param RequestInterface $request

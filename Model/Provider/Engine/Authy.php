@@ -47,4 +47,13 @@ class Authy implements EngineInterface
     {
         return true;
     }
+
+    /**
+     * Return true if this provider allows trusted devices
+     * @return boolean
+     */
+    public function getAllowTrustedDevices()
+    {
+        return false;
+    }
 }

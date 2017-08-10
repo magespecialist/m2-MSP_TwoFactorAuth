@@ -33,6 +33,7 @@ use Endroid\QrCode\Writer\PngWriter;
 class Google implements EngineInterface
 {
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/google/enabled';
+    const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite_twofactorauth/google/allow_trusted_devices';
     const CODE = 'google'; // Must be the same as defined in di.xml
 
     protected $totp = null;
@@ -161,5 +162,14 @@ class Google implements EngineInterface
     public function getIsEnabled()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED);
+    }
+
+    /**
+     * Return true if this provider allows trusted devices
+     * @return boolean
+     */
+    public function getAllowTrustedDevices()
+    {
+        return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }
 }

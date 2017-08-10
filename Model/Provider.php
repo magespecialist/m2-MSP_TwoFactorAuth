@@ -88,14 +88,12 @@ class Provider implements ProviderInterface
         $configureAction,
         $authAction,
         $extraActions = [],
-        $canReset = true,
-        $allowTrustedDevices = true
+        $canReset = true
     ) {
         $this->engine = $engine;
         $this->userConfigManager = $userConfigManager;
         $this->code = $code;
         $this->name = $name;
-        $this->allowTrustedDevices = $allowTrustedDevices;
         $this->configureAction = $configureAction;
         $this->authAction = $authAction;
         $this->extraActions = $extraActions;
@@ -163,7 +161,7 @@ class Provider implements ProviderInterface
      */
     public function getAllowTrustedDevices()
     {
-        return $this->allowTrustedDevices;
+        return $this->engine->getAllowTrustedDevices();
     }
 
     /**

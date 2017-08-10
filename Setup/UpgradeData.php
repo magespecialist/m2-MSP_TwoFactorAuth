@@ -106,7 +106,7 @@ class UpgradeData implements UpgradeDataInterface
         $this->config->saveConfig(DuoSecurity::XML_PATH_APPLICATION_KEY, $randomString, 'default', 0);
     }
 
-    protected function upgradeTo010300(ModuleDataSetupInterface $setup)
+    protected function upgradeTo020000(ModuleDataSetupInterface $setup)
     {
         $this->configMigration->doConfigMigration(
             $setup,
@@ -131,7 +131,7 @@ class UpgradeData implements UpgradeDataInterface
         }
 
         if (version_compare($context->getVersion(), '2.0.0') < 0) {
-            $this->upgradeTo010300($setup);
+            $this->upgradeTo020000($setup);
         }
 
         $setup->endSetup();

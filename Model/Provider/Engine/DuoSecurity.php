@@ -210,4 +210,13 @@ class DuoSecurity implements EngineInterface
             !!$this->getApiHostname() &&
             !!$this->getSecretKey();
     }
+
+    /**
+     * Return true if this provider allows trusted devices
+     * @return boolean
+     */
+    public function getAllowTrustedDevices()
+    {
+        return false;
+    }
 }
