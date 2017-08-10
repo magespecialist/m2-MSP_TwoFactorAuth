@@ -36,6 +36,8 @@ use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 
 class TrustedManager implements TrustedManagerInterface
 {
+    protected $isTrustedDevice = null;
+
     /**
      * @var TfaInterface
      */
@@ -207,20 +209,24 @@ class TrustedManager implements TrustedManagerInterface
      */
     public function isTrustedDevice()
     {
-        $user = $this->getUser();
-        $tokenCollection = $this->getTokenCollection();
+        if (is_null($this->isTrustedDevice)) { // Must cache this ina single session to avoid rotation issues
+            $user = $this->getUser();
+            $tokenCollection = $this->getTokenCollection();
 
-        if (isset($tokenCollection[$user->getUserName()])) {
-            $token = $tokenCollection[$user->getUserName()];
+            if (isset($tokenCollection[$user->getUserName()])) {
+                $token = $tokenCollection[$user->getUserName()];
 
-            /** @var $trustEntry Trusted */
-            $trustEntry = $this->trustedFactory->create();
-            $this->trustedResourceModel->load($trustEntry, $token, 'token');
+                /** @var $trustEntry Trusted */
+                $trustEntry = $this->trustedFactory->create();
+                $this->trustedResourceModel->load($trustEntry, $token, 'token');
 
-            return $trustEntry->getId() && ($trustEntry->getUserId() == $user->getId());
+                $this->isTrustedDevice = $trustEntry->getId() && ($trustEntry->getUserId() == $user->getId());
+            } else {
+                $this->isTrustedDevice = false;
+            }
         }
 
-        return false;
+        return $this->isTrustedDevice;
     }
 
     /**

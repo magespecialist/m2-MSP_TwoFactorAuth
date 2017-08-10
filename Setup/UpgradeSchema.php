@@ -237,7 +237,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             $this->upgradeTo010200($setup);
         }
 
-        if (version_compare($context->getVersion(), '1.3.0') < 0) {
+        if (version_compare($context->getVersion(), '2.0.0') < 0) {
             $this->upgradeTo010300($setup);
         }
 
