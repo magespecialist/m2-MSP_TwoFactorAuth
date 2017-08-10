@@ -23,9 +23,11 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Configurepost extends Action
 {
@@ -53,12 +55,18 @@ class Configurepost extends Action
      */
     private $tfaSession;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         PageFactory $pageFactory,
         Google $google,
         TfaSessionInterface $tfaSession,
+        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -67,6 +75,7 @@ class Configurepost extends Action
         $this->pageFactory = $pageFactory;
         $this->google = $google;
         $this->tfaSession = $tfaSession;
+        $this->event = $event;
     }
 
     /**
@@ -85,6 +94,12 @@ class Configurepost extends Action
         if ($this->google->verify($user, $this->getRequest())) {
             $this->tfa->getProvider(Google::CODE)->activate($user);
             $this->tfaSession->grantAccess();
+
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'New Google Authenticator code issued',
+                'username' => $user->getUserName(),
+            ]);
 
             return $this->_redirect('/');
         } else {

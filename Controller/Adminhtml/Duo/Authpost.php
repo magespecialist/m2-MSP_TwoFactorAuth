@@ -23,9 +23,11 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Authpost extends Action
 {
@@ -54,12 +56,18 @@ class Authpost extends Action
      */
     private $duoSecurity;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         PageFactory $pageFactory,
         DuoSecurity $duoSecurity,
         TfaSessionInterface $tfaSession,
+        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -68,6 +76,7 @@ class Authpost extends Action
         $this->pageFactory = $pageFactory;
         $this->tfaSession = $tfaSession;
         $this->duoSecurity = $duoSecurity;
+        $this->event = $event;
     }
 
     /**
@@ -88,6 +97,12 @@ class Authpost extends Action
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Access denied using DuoSecurity Authenticator',
+                'username' => $user->getUserName(),
+            ]);
+
             return $this->_redirect('*/*/auth');
         }
     }

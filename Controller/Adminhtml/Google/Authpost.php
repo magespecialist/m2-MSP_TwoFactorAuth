@@ -23,10 +23,12 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Authpost extends Action
 {
@@ -59,6 +61,11 @@ class Authpost extends Action
      */
     private $trustedManager;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -66,6 +73,7 @@ class Authpost extends Action
         Google $google,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
+        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -75,6 +83,7 @@ class Authpost extends Action
         $this->google = $google;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
+        $this->event = $event;
     }
 
     /**
@@ -95,6 +104,12 @@ class Authpost extends Action
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Access denied using Google Authenticator',
+                'username' => $user->getUserName(),
+            ]);
+
             $this->messageManager->addErrorMessage('Invalid code');
             return $this->_redirect('*/*/auth');
         }
