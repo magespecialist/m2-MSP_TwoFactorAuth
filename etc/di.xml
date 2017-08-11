@@ -106,11 +106,12 @@
             <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey</argument>
             <argument name="code" xsi:type="string">u2fkey</argument>
             <argument name="name" xsi:type="string">U2F (Yubikey and others)</argument>
-            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/authy.png</argument>
-            <argument name="configureAction" xsi:type="string">msp_twofactorauth/u2f/register</argument>
-            <argument name="authAction" xsi:type="string">msp_twofactorauth/duo/auth</argument>
+            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/u2fkey.png</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/u2f/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/u2f/auth</argument>
             <argument name="extraActions" xsi:type="array">
-                <item name="authpost" xsi:type="string">msp_twofactorauth/authy/authpost</item>
+                <item name="configurepost" xsi:type="string">msp_twofactorauth/u2f/configurepost</item>
+                <item name="authpost" xsi:type="string">msp_twofactorauth/u2f/authpost</item>
             </argument>
             <argument name="canReset" xsi:type="boolean">true</argument>
         </arguments>

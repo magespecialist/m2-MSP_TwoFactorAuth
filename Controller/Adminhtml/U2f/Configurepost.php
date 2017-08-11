@@ -21,10 +21,12 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\U2f;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\JsonFactory;
+use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
 
-class Register extends Action
+class Configurepost extends Action
 {
 
     /**
@@ -36,15 +38,36 @@ class Register extends Action
      */
     private $session;
 
+    /**
+     * @var U2fKey
+     */
+    private $u2fKey;
+
+    /**
+     * @var JsonFactory
+     */
+    private $jsonFactory;
+
+    /**
+     * @var TfaSessionInterface
+     */
+    private $tfaSession;
+
     public function __construct(
         Tfa $tfa,
         Session $session,
+        JsonFactory $jsonFactory,
+        TfaSessionInterface $tfaSession,
+        U2fKey $u2fKey,
         Action\Context $context
-    )
-    {
+    ) {
+        parent::__construct($context);
+
         $this->tfa = $tfa;
         $this->session = $session;
-        parent::__construct($context);
+        $this->u2fKey = $u2fKey;
+        $this->jsonFactory = $jsonFactory;
+        $this->tfaSession = $tfaSession;
     }
 
     /**
@@ -55,10 +78,22 @@ class Register extends Action
      */
     public function execute()
     {
-        $this->_view->loadLayout();
-        $this->_view->renderLayout();
+        $result = $this->jsonFactory->create();
 
-        return $this->getResponse();
+        try {
+            $request = $this->getRequest()->getParam('request');
+            $response = $this->getRequest()->getParam('response');
+
+            $this->u2fKey->registerDevice($this->getUser(), $request, $response);
+            $this->tfaSession->grantAccess();
+
+            $res = ['success' => true];
+        } catch (\Exception $e) {
+            $res = ['success' => false, 'message' => $e->getMessage()];
+        }
+
+        $result->setData($res);
+        return $result;
     }
 
     /**

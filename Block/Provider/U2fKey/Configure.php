@@ -19,35 +19,48 @@
 namespace MSP\TwoFactorAuth\Block\Provider\U2fKey;
 
 use Magento\Backend\Block\Template;
-use Magento\Store\Model\Store;
+use Magento\Framework\Json\EncoderInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
-use Zend\Json\Json;
 
-class Register extends Template
+class Configure extends Template
 {
-
     /**
      * @var U2fKey
      */
     private $u2fKey;
 
+    /**
+     * @var EncoderInterface
+     */
+    private $encoder;
+
     public function __construct(
         Template\Context $context,
+        EncoderInterface $encoder,
         U2fKey $u2fKey,
         array $data = []
     )
     {
-        $this->u2fKey = $u2fKey;
         parent::__construct($context, $data);
+        $this->u2fKey = $u2fKey;
+        $this->encoder = $encoder;
     }
 
+    /**
+     * Get register data JSON payload
+     * @return string
+     */
     public function getRegisterData()
     {
-        return Json::encode($this->u2fKey->getRegisterData());
+        return $this->encoder->encode($this->u2fKey->getRegisterData());
     }
 
-    public function getApplicationName()
+    /**
+     * Get register post URL
+     * @return string
+     */
+    public function getConfigurePostUrl()
     {
-        return $this->_storeManager->getStore(Store::ADMIN_CODE)->getBaseUrl();
+        return $this->getUrl('*/*/configurepost');
     }
 }

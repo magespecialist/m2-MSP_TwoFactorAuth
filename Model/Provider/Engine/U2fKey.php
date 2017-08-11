@@ -20,9 +20,9 @@
 
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
-use Magento\Customer\Api\Data\CustomerInterface;
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
@@ -39,7 +39,7 @@ class U2fKey implements EngineInterface
     /**
      * @var UserConfigManagerInterface
      */
-    private $configManager;
+    private $userConfigManager;
 
     /**
      * @var StoreManagerInterface
@@ -54,27 +54,52 @@ class U2fKey implements EngineInterface
     public function __construct(
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
-        UserConfigManagerInterface $configManager
+        UserConfigManagerInterface $userConfigManager
     ) {
-        $this->configManager = $configManager;
+        $this->userConfigManager = $userConfigManager;
         $this->storeManager = $storeManager;
         $this->scopeConfig = $scopeConfig;
+    }
+
+    /**
+     * Converts array to object
+     * @param array $hash
+     * @return \stdClass
+     */
+    protected function hashToObject(array $hash)
+    {
+        $object = new \stdClass();
+        foreach ($hash as $key => $value)
+        {
+            $object->$key = $value;
+        }
+
+        return $object;
     }
 
     /**
      * Return true on token validation
      * @param UserInterface $user
      * @param RequestInterface $request
-     * @return bool
+     * @return true
+     * @throws LocalizedException
      */
     public function verify(UserInterface $user, RequestInterface $request)
     {
-        $token = $request->getParam('tfa_code');
+        $u2f = $this->getU2f();
 
-        $totp = $this->getTotp($user);
-        $totp->now();
+        $registration = $this->getRegistration($user);
+        if (is_null($registration)) {
+            throw new LocalizedException(__('Missing registration data'));
+        }
 
-        return $totp->verify($token);
+        $requests = [$this->hashToObject($request->getParam('request')[0])];
+        $registrations = [$this->hashToObject($registration)];
+        $response = $this->hashToObject($request->getParam('response'));
+
+        // it triggers an error in case of auth failure
+        $u2f->doAuthenticate($requests, $registrations, $response);
+        return true;
     }
 
     /**
@@ -88,15 +113,66 @@ class U2fKey implements EngineInterface
     }
 
     /**
-     * Create the authentication challenge
-     * @param CustomerInterface $customer
+     * Get authenticate data
+     * @param UserInterface $user
+     * @return array
+     * @throws LocalizedException
+     */
+    public function getAuthenticateData(UserInterface $user)
+    {
+        $u2f = $this->getU2f();
+
+        $registration = $this->getRegistration($user);
+        if (is_null($registration)) {
+            throw new LocalizedException(__('Missing registration data'));
+        }
+
+        return $u2f->getAuthenticateData([$this->hashToObject($registration)]);
+    }
+
+    /**
+     * Get registration information
+     * @param UserInterface $user
      * @return array
      */
-    public function getAuthChallenge(CustomerInterface $customer)
+    protected function getRegistration(UserInterface $user)
     {
-       $u2f = $this->getU2f();
+        $providerConfig = $this->userConfigManager->getProviderConfig($user, static::CODE);
 
-       return $u2f->getAuthenticateData($customer->getAuthData());
+        if (!isset($providerConfig['registration'])) {
+            return null;
+        }
+
+        return $providerConfig['registration'];
+    }
+
+    /**
+     * Register a new key
+     * @param UserInterface $user
+     * @param $request
+     * @param $response
+     * @return \u2flib_server\Registration
+     */
+    public function registerDevice(UserInterface $user, array $request, array $response)
+    {
+        // Must convert to object
+        $request = $this->hashToObject($request);
+        $response = $this->hashToObject($response);
+
+        $u2f = $this->getU2f();
+        $res = $u2f->doRegister($request, $response);
+
+        $this->userConfigManager->addProviderConfig($user, static::CODE, [
+            'registration' => [
+                'certificate' => $res->certificate,
+                'keyHandle' => $res->keyHandle,
+                'publicKey' => $res->publicKey,
+                'counter' => $res->counter,
+            ]
+        ]);
+        $this->userConfigManager->activateProviderConfiguration($user, static::CODE);
+
+        return $res;
     }
 
     /**

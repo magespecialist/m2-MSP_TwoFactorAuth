@@ -1,0 +1,60 @@
+<?php
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/** @var $block \MSP\TwoFactorAuth\Block\Provider\U2fKey\Configure */
+?>
+
+<textarea cols="80" rows="30">
+    <?php print_r($block->getRegisterData()) ?>
+</textarea>
+
+<form>
+    <fieldset class="admin__fieldset">
+        <label for="register"><?= __("Press your key button") ?></label>
+        <input type="password" name="register" id="register">
+    </fieldset>
+</form>
+
+<script>
+  require(['jquery', 'MSP_TwoFactorAuth/js/u2f'], function ($) {
+    var registerData = <?= $block->getRegisterData() ?>;
+    var requestData = registerData[0];
+    var signs = registerData[1];
+
+    setTimeout(u2f.register(
+      [requestData],
+      signs,
+      function (registerResponse) {
+        $.post('<?= $block->getConfigurePostUrl() ?>', {
+          'request': requestData,
+          'response': registerResponse
+        }).done(function (res) {
+          if (res['success']) {
+            alert('ok');
+          } else {
+            alert('error');
+          }
+        }).fail(function () {
+          alert('error');
+        })
+      }, 10
+    ), 3)
+  });
+</script>
+
+
