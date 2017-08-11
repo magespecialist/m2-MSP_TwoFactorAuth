@@ -80,7 +80,9 @@ If you need to manually reset one single user configuration (so you can restart 
 e.g.:
 
 `php bin/magento msp:security:tfa:reset admin google`
+
 `php bin/magento msp:security:tfa:reset admin u2fkey`
+
 `php bin/magento msp:security:tfa:reset admin authy`
 
 This will disable two factor auth globally.
