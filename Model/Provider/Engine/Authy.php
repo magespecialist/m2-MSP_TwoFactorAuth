@@ -309,7 +309,7 @@ class Authy implements EngineInterface
             'details[URL]' => $this->storeManager->getStore()->getBaseUrl(),
             'details[User]' => $user->getUserName(),
             'details[Email]' => $user->getEmail(),
-            'seconds_to_expire' => 10,
+            'seconds_to_expire' => 300,
         ]);
 
         $response = $this->decoder->decode($curl->getBody());
