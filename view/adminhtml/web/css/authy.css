@@ -33,6 +33,7 @@
 
 #authy-one-touch {
     display: none;
+    height: 115px;
     text-align: center;
     background: #f0f0f0;
     padding: 1em;
@@ -51,6 +52,7 @@
 }
 
 #authy-one-touch-login {
+    height: 115px;
     display: none;
     text-align: center;
     background: #f0f0f0;
@@ -58,5 +60,5 @@
 }
 
 #authy-one-touch-login img {
-    width: 72px;
+    width: 64px;
 }
