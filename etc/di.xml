@@ -13,34 +13,108 @@
  * obtain it through the world-wide-web, please send an email
  * to info@magespecialist.it so we can send you a copy immediately.
  *
- * @category   MSP
- * @package    MSP_TwoFactorAuth
- * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
- * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ * @category     MSP
+ * @package        MSP_TwoFactorAuth
+ * @copyright    Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license        http://opensource.org/licenses/osl-3.0.php    Open Software License (OSL 3.0)
  */
 -->
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
-    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
-    <preference for="\MSP\TwoFactorAuth\Api\ProviderManagementInterface" type="\MSP\TwoFactorAuth\Model\ProviderManagement"/>
-    <preference for="\MSP\TwoFactorAuth\Api\ProviderConfigInterface" type="\MSP\TwoFactorAuth\Model\ProviderConfig"/>
-    <preference for="\MSP\TwoFactorAuth\Api\Data\TrustedInterface" type="\MSP\TwoFactorAuth\Model\Trusted"/>
 
-    <type name="MSP\TwoFactorAuth\Api\ProviderManagementInterface">
-        <arguments>
-            <argument name="providers" xsi:type="array">
-                <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
-                <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
-                <!--<item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>-->
-            </argument>
-        </arguments>
-    </type>
+    <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
+    <preference for="MSP\TwoFactorAuth\Api\UserConfigManagerInterface"
+                type="MSP\TwoFactorAuth\Model\UserConfigManager"/>
+    <preference for="MSP\TwoFactorAuth\Api\TrustedManagerInterface" type="MSP\TwoFactorAuth\Model\TrustedManager"/>
+    <preference for="MSP\TwoFactorAuth\Api\TfaSessionInterface" type="MSP\TwoFactorAuth\Model\TfaSession"/>
 
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="msp_twofactorauth" xsi:type="object">MSP\TwoFactorAuth\Command\Tfa</item>
+                <item name="msp_twofactorauth_disable" xsi:type="object">MSP\TwoFactorAuth\Command\TfaDisable</item>
+                <item name="msp_twofactorauth_reset" xsi:type="object">MSP\TwoFactorAuth\Command\TfaReset</item>
             </argument>
         </arguments>
     </type>
+
+    <type name="MSP\TwoFactorAuth\Api\TfaInterface">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <!-- Parameter "name" must be the same as defined in virtualType "code" parameter -->
+                <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
+                <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
+                <item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>
+                <item name="u2fkey" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\U2fKey</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\Google" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\Google</argument>
+            <argument name="code" xsi:type="string">google</argument>
+            <argument name="name" xsi:type="string">Google Authenticator</argument>
+            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/google.png</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/google/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/google/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="qr" xsi:type="string">msp_twofactorauth/google/qr</item>
+                <item name="configurepost" xsi:type="string">msp_twofactorauth/google/configurepost</item>
+                <item name="authpost" xsi:type="string">msp_twofactorauth/google/authpost</item>
+            </argument>
+            <argument name="canReset" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\DuoSecurity" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity</argument>
+            <argument name="code" xsi:type="string">duo_security</argument>
+            <argument name="name" xsi:type="string">Duo Security</argument>
+            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/duo_security.png</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/duo/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/duo/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="authpost" xsi:type="string">msp_twofactorauth/duo/authpost</item>
+            </argument>
+            <argument name="canReset" xsi:type="boolean">false</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\Authy" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\Authy</argument>
+            <argument name="code" xsi:type="string">authy</argument>
+            <argument name="name" xsi:type="string">Authy</argument>
+            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/authy.png</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/authy/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/authy/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="configurepost" xsi:type="string">msp_twofactorauth/authy/configurepost</item>
+                <item name="verify" xsi:type="string">msp_twofactorauth/authy/verify</item>
+                <item name="verifypost" xsi:type="string">msp_twofactorauth/authy/verifypost</item>
+                <item name="authpost" xsi:type="string">msp_twofactorauth/authy/authpost</item>
+                <item name="token" xsi:type="string">msp_twofactorauth/authy/token</item>
+                <item name="onetouch" xsi:type="string">msp_twofactorauth/authy/onetouch</item>
+                <item name="verifyonetouch" xsi:type="string">msp_twofactorauth/authy/verifyonetouch</item>
+            </argument>
+            <argument name="canReset" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\U2fKey" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey</argument>
+            <argument name="code" xsi:type="string">u2fkey</argument>
+            <argument name="name" xsi:type="string">U2F (Yubikey and others)</argument>
+            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/u2fkey.png</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/u2f/configure</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/u2f/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="configurepost" xsi:type="string">msp_twofactorauth/u2f/configurepost</item>
+                <item name="authpost" xsi:type="string">msp_twofactorauth/u2f/authpost</item>
+            </argument>
+            <argument name="canReset" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
 </config>

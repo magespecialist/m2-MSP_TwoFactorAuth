@@ -21,12 +21,12 @@
     width: 100%;
     min-width: 304px;
     max-width: 620px;
-    height: 400px;
+    height: 330px;
     background: transparent;
     border: 0;
+    margin-bottom: 1em;
 }
 
 .page-layout-admin-login .page-wrapper {
     max-width: 50rem;
-    height: 600px;
 }

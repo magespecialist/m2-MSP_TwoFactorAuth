@@ -29,8 +29,15 @@
 
     <body>
         <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Google\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/google/auth.phtml" />
+            <block class="MSP\TwoFactorAuth\Block\Provider\Google\Auth" name="content"
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/google/auth.phtml">
+
+                <block class="MSP\TwoFactorAuth\Block\TrustDevice" name="msp_twofactorauth_trust_device"
+                       as="trust-device" template="MSP_TwoFactorAuth::msp_twofactorauth/trust_device.phtml" />
+
+                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
+                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml" />
+            </block>
         </referenceContainer>
     </body>
 </page>

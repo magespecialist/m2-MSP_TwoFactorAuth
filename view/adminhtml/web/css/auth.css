@@ -25,3 +25,78 @@
 .field-tfa_trusted label span {
     margin-left: 10px !important;
 }
+
+#tfa_msp_change_provider {
+    margin-bottom: 1em;
+    display: none;
+}
+
+#tfa_msp_change_provider_trigger {
+    margin-bottom: 1em;
+    display: block;
+}
+
+.tfa_msp_provider {
+    display: block;
+    background: #f0f0f0;
+    border-top: 1px solid #cccccc;
+    height: 46px;
+    padding-top: 7px;
+    padding-left: 7px;
+    cursor: pointer;
+    color: #333;
+}
+
+.tfa_msp_provider:hover {
+    color: #888;
+}
+
+.tfa_msp_provider::after {
+    clear: both;
+}
+
+.tfa_msp_provider:first-child {
+    border-top: none !important;
+}
+
+.tfa_msp_provider img {
+    width: 32px;
+    margin-right: 1em;
+    float: left;
+}
+
+.tfa_msp_provider span {
+    font-size: 14px;
+    font-weight: bold;
+    line-height: 32px;
+    float: left;
+}
+
+#tfa_msp_change_provider_trigger:hover {
+    background: #f0f0f0;
+}
+
+#tfa_msp_change_provider_trigger {
+    color: #333333;
+    background: #e0e0e0;
+    text-align: center;
+    padding: 8px;
+    height: 40px;
+}
+
+#tfa_msp_change_provider_trigger img {
+    margin-right: 10px;
+    width: 24px;
+    display: block;
+    float: left;
+}
+
+#tfa_msp_change_provider_trigger span {
+    float: left;
+    display: block;
+    line-height: 24px;
+}
+
+#tfa_msp_change_provider_trigger::after {
+    clear: both;
+}

@@ -20,38 +20,69 @@
 
 namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 
+use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Backend\App\Action\Context;
+use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Provider\DuoSecurity;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
 class Auth extends Action
 {
-    /**
-     * @var PageFactory
-     */
-    private $pageFactory;
-
     /**
      * @var TfaInterface
      */
     private $tfa;
 
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var PageFactory
+     */
+    private $pageFactory;
+    /**
+     * @var Registry
+     */
+    private $registry;
+
+    /**
+     * @var UserConfigManagerInterface
+     */
+    private $userConfigManager;
+
     public function __construct(
-        Context $context,
+        Action\Context $context,
+        Session $session,
+        Registry $registry,
         PageFactory $pageFactory,
+        UserConfigManagerInterface $userConfigManager,
         TfaInterface $tfa
     ) {
-
         parent::__construct($context);
-        $this->pageFactory = $pageFactory;
         $this->tfa = $tfa;
+        $this->session = $session;
+        $this->pageFactory = $pageFactory;
+        $this->registry = $registry;
+        $this->userConfigManager = $userConfigManager;
+    }
+
+    /**
+     * Get current user
+     * @return \Magento\User\Model\User|null
+     */
+    protected function getUser()
+    {
+        return $this->session->getUser();
     }
 
     public function execute()
     {
-        $this->tfa->activateUserTfa(DuoSecurity::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser(), DuoSecurity::CODE);
+        $this->registry->register('msp_tfa_current_provider', DuoSecurity::CODE);
         return $this->pageFactory->create();
     }
 
@@ -62,7 +93,8 @@ class Auth extends Action
      */
     protected function _isAllowed()
     {
-        $provider = $this->tfa->getUserProvider();
-        return $provider && ($provider->getCode() == DuoSecurity::CODE);
+        // Do not check for activation
+        return
+            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE);
     }
 }

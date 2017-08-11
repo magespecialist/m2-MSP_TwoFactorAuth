@@ -1,4 +1,4 @@
-# MSP TwoFactorAuth
+MSP TwoFactorAuth
 
 Two Factor Authentication module for maximum **backend access protection** in Magento 2.
 
@@ -7,6 +7,27 @@ Two Factor Authentication module for maximum **backend access protection** in Ma
 > See: https://github.com/magespecialist/m2-MSP_Security_Suite
 
 Did you lock yourself out from Magento backend? <a href="https://github.com/magespecialist/m2-MSP_TwoFactorAuth#emergency-commandline-disable">click here.</a>
+
+## Main features:
+
+* Providers:
+    * Google authenticator
+        * QR code enroll
+    * Authy
+        * SMS
+        * Call
+        * Token
+        * One touch
+    * U2F keys (Yubico and others)
+    * Duo Security
+        * SMS
+        * Push notification
+* Trusted devices
+    * High security rolling codes
+* Trusted devices revoke list
+* Central security suite events logging
+* Per user configuration
+* Forced global 2FA configuration
 
 ## Installing on Magento2:
 
@@ -24,28 +45,42 @@ Enable from **Store > Config > SecuritySuite > Two Factor Authentication**.
 
 **3. Enable two factor authentication for your user**
 
-You can choose among different 2FA providers.
+You can select between a set of different 2FA providers. **Multiple concurrent providers** are supported.
 
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/user_tfa.png" />
 
-**4. Google Authenticator example**
+**4. Subscribe / Configure your 2FA provider(s):**
 
-**4.1. Scan the QR code with your Two Factor Authentication application**
+**4.1 Google Authenticator example**
 
-<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/token.png" />
+<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/google_qr.png" />
 
-**4.2. Login and type a valid two factor authentication code**
+**4.2. Duo Security example**
 
-<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/login_token.png" />
+<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/duo_auth.png" />
 
-**5. Duo Security example**
+**4.3. U2F key (Yubico and others) example**
 
-<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/duo.png" />
+<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/u2f_auth.png" />
+
+**4.4. Authy example**
+
+<img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/authy_auth.png" />
 
 ## Emergency commandline disable:
 
 If you messed up with two factor authentication you can disable it from command-line:
 
 `php bin/magento msp:security:tfa:disable`
+
+If you need to manually reset one single user configuration (so you can restart configuration / subscription), type:
+ 
+`php bin/magento msp:security:tfa:reset <username> <provider>`
+
+e.g.:
+
+`php bin/magento msp:security:tfa:reset admin google`
+`php bin/magento msp:security:tfa:reset admin u2fkey`
+`php bin/magento msp:security:tfa:reset admin authy`
 
 This will disable two factor auth globally.

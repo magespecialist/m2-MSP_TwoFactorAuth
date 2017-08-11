@@ -1,0 +1,64 @@
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+#authy-actions-list button span {
+    display: block;
+}
+
+#authy-actions-list button {
+    display: block;
+    width: 100%;
+    margin-bottom: .8em !important;
+}
+
+.authy-request-code {
+    display: none;
+}
+
+#authy-one-touch {
+    display: none;
+    height: 115px;
+    text-align: center;
+    background: #f0f0f0;
+    padding: 1em;
+}
+
+#authy-one-touch img {
+    width: 64px;
+}
+
+#authy-switch-method {
+    display: none;
+}
+
+#authy-switch-method::after {
+    clear: both;
+}
+
+#authy-one-touch-login {
+    height: 115px;
+    display: none;
+    text-align: center;
+    background: #f0f0f0;
+    padding: 1em;
+}
+
+#authy-one-touch-login img {
+    width: 64px;
+}

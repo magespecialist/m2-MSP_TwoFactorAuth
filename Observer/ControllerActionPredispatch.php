@@ -18,15 +18,17 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-
 namespace MSP\TwoFactorAuth\Observer;
 
+use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\Model\UrlInterface;
 use Magento\Framework\App\ActionFlag;
 use Magento\Framework\App\Action\Action;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 
 class ControllerActionPredispatch implements ObserverInterface
 {
@@ -45,14 +47,44 @@ class ControllerActionPredispatch implements ObserverInterface
      */
     private $url;
 
+    /**
+     * @var TfaSessionInterface
+     */
+    private $tfaSession;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var TrustedManagerInterface
+     */
+    private $trustedManager;
+
     public function __construct(
         TfaInterface $tfa,
         ActionFlag $actionFlag,
-        UrlInterface $url
+        UrlInterface $url,
+        Session $session,
+        TfaSessionInterface $tfaSession,
+        TrustedManagerInterface $trustedManager
     ) {
         $this->tfa = $tfa;
         $this->actionFlag = $actionFlag;
         $this->url = $url;
+        $this->tfaSession = $tfaSession;
+        $this->session = $session;
+        $this->trustedManager = $trustedManager;
+    }
+
+    /**
+     * Get current user
+     * @return \Magento\User\Model\User|null
+     */
+    protected function getUser()
+    {
+        return $this->session->getUser();
     }
 
     /**
@@ -65,42 +97,20 @@ class ControllerActionPredispatch implements ObserverInterface
         $controllerAction = $observer->getEvent()->getControllerAction();
         $fullActionName = $controllerAction->getRequest()->getFullActionName();
 
-        $allowedUrls = [
-            'adminhtml_auth_login',
-            'adminhtml_auth_logout',
-            'msp_twofactorauth_authpost_verify',
-        ];
+        if (in_array($fullActionName, $this->tfa->getAllowedUrls())) {
+            return;
+        }
 
-        if ($provider = $this->tfa->getUserProvider()) {
-            $allowedUrls[] = str_replace('/', '_', $provider->getActivatePath());
-            $allowedUrls[] = str_replace('/', '_', $provider->getAuthPath());
-            if ($provider->isEnabled()) {
-                $allowedUrls = array_merge($allowedUrls, $provider->getAllowedExtraActions());
-            }
+        $user = $this->getUser();
 
-            if (in_array($fullActionName, $allowedUrls)) {
-                return;
-            }
+        if (count($this->tfa->getUserProviders($user))) {
+            $accessGranted = ($this->tfaSession->getIsGranted() || $this->trustedManager->isTrustedDevice()) &&
+                !count($this->tfa->getProvidersToActivate($user));
 
-            if ($this->tfa->getUserMustActivateTfa()) {
-                // Must activate TFA
+            if (!$accessGranted) {
                 $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-                $url = $this->url->getUrl($provider->getActivatePath());
+                $url = $this->url->getUrl('msp_twofactorauth/tfa/index');
                 $controllerAction->getResponse()->setRedirect($url);
-            } else {
-                if ($this->tfa->getUserMustAuth() &&
-                    $provider->allowTrustedDevices() &&
-                    $this->tfa->isTrustedDevice()
-                ) {
-                    // Trusted devices
-                    $this->tfa->setTwoAuthFactorPassed(true);
-                    $this->tfa->rotateTrustedDeviceToken();
-                } else if ($this->tfa->getUserMustAuth()) {
-                    // non-Trusted devices
-                    $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-                    $url = $this->url->getUrl($provider->getAuthPath());
-                    $controllerAction->getResponse()->setRedirect($url);
-                }
             }
         }
     }

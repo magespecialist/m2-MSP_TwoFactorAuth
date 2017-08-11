@@ -20,23 +20,53 @@
 
 namespace MSP\TwoFactorAuth\Api;
 
+use Magento\Framework\Exception\LocalizedException;
+use Magento\User\Api\Data\UserInterface;
+use MSP\TwoFactorAuth\Model\ProviderInterface;
+
 interface TfaInterface
 {
-    const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/general/enabled';
+    const XML_PATH_FORCED_PROVIDERS = 'msp_securitysuite_twofactorauth/general/force_providers';
 
     /**
-     * Get user's provider
-     * @param \Magento\User\Model\User $user = null
+     * Return true if 2FA is enabled
+     * @return boolean
+     */
+    public function getIsEnabled();
+
+    /**
+     * Get provider by code
+     * @param string $providerCode
+     * @param bool $onlyEnabled = true
      * @return ProviderInterface|null
      */
-    public function getUserProvider(\Magento\User\Model\User $user = null);
+    public function getProvider($providerCode, $onlyEnabled = true);
 
     /**
-     * Return true if enabled
-     * @return bool
+     * Retrieve forced providers list
+     * @return ProviderInterface[]
      */
-    public function getEnabled();
+    public function getForcedProviders();
+
+    /**
+     * Get a user provider
+     * @param UserInterface $user
+     * @return ProviderInterface[]
+     */
+    public function getUserProviders(UserInterface $user);
+
+    /**
+     * Get a list of providers
+     * @return ProviderInterface[]
+     */
+    public function getAllProviders();
+
+    /**
+     * Get a list of providers
+     * @return ProviderInterface[]
+     */
+    public function getAllEnabledProviders();
 
     /**
      * Return a list of trusted devices for given user id
@@ -46,66 +76,23 @@ interface TfaInterface
     public function getTrustedDevices($userId);
 
     /**
-     * Return true if user must activate his TFA
-     * @return bool
+     * Get allowed URLs
+     * @return array
      */
-    public function getUserMustActivateTfa();
+    public function getAllowedUrls();
 
     /**
-     * Return true if user must authenticate via TFA
-     * @return bool
+     * Returns a list of providers to configure/enroll
+     * @param UserInterface $user
+     * @return ProviderInterface[]
      */
-    public function getUserMustAuth();
+    public function getProvidersToActivate(UserInterface $user);
 
     /**
-     * Return true if user has TFA activated
-     * @return bool
-     */
-    public function getUserTfaIsActive();
-
-    /**
-     * Activate user TFA
+     * Return true if a provider is allowed for a given user
+     * @param UserInterface $user
      * @param string $providerCode
-     * @return TfaInterface
-     * @throws \Exception
+     * @return mixed
      */
-    public function activateUserTfa($providerCode);
-
-    /**
-     * Set TFA pass status
-     * @param $status
-     * @return TfaInterface
-     */
-    public function setTwoAuthFactorPassed($status);
-
-    /**
-     * Get TFA pass status
-     * @return bool
-     */
-    public function getTwoAuthFactorPassed();
-
-    /**
-     * Trust device and return secret token
-     * @return void
-     */
-    public function trustDevice();
-
-    /**
-     * Return true if device is trusted
-     * @return bool
-     */
-    public function isTrustedDevice();
-
-    /**
-     * Rotate secret token
-     * @return string
-     */
-    public function rotateTrustedDeviceToken();
-
-    /**
-     * Revoke trusted device
-     * @param int $tokenId
-     * @return void
-     */
-    public function revokeTrustedDevice($tokenId);
+    public function getProviderIsAllowed(UserInterface $user, $providerCode);
 }

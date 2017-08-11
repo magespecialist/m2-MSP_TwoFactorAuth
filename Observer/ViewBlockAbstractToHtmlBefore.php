@@ -18,13 +18,13 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-
 namespace MSP\TwoFactorAuth\Observer;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Registry;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 {
@@ -38,10 +38,17 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     private $registry;
 
+    /**
+     * @var TfaInterface
+     */
+    private $tfa;
+
     public function __construct(
         Session $session,
+        TfaInterface $tfa,
         Registry $registry
     ) {
+        $this->tfa = $tfa;
         $this->session = $session;
         $this->registry = $registry;
     }
@@ -52,6 +59,10 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        if (!count($this->tfa->getAllEnabledProviders())) {
+            return;
+        }
+
         /** @var $block \Magento\User\Block\User\Edit\Tabs */
         $block = $observer->getBlock();
 
@@ -65,8 +76,8 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
             $block->addTabAfter(
                 'msp_twofactorauth',
                 [
-                    'label' => __('Two Factor Authentication'),
-                    'title' => __('Two Factor Authentication'),
+                    'label' => __('2FA'),
+                    'title' => __('2FA'),
                     'content' => $tfaForm,
                     'active' => true
                 ],

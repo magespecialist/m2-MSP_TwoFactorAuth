@@ -13,7 +13,7 @@
  * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
- * @package    MSP_TwoFactorAuth
+ * @package    MSP_NoSpam
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -21,77 +21,25 @@
 namespace MSP\TwoFactorAuth\Model;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
-use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
-use Magento\Framework\Session\SessionManagerInterface;
-use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
-use Magento\Framework\Stdlib\CookieManagerInterface;
-use Magento\Framework\Stdlib\DateTime\DateTime;
-use Magento\Store\Model\StoreManagerInterface;
-use MSP\TwoFactorAuth\Api\ProviderInterface;
-use MSP\TwoFactorAuth\Api\ProviderManagementInterface;
-use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
-use MSP\TwoFactorAuth\Api\Data\TrustedInterface;
-use MSP\TwoFactorAuth\Api\Data\TrustedInterfaceFactory;
+use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use Magento\Backend\Model\Auth\Session;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
 
 class Tfa implements TfaInterface
 {
+    protected $forcedProviders = null;
+    protected $allowedUrls = null;
+
+    /**
+     * @var ProviderInterface[]
+     */
+    private $providers;
+
     /**
      * @var ScopeConfigInterface
      */
     private $scopeConfig;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var StoreManagerInterface
-     */
-    private $storeManager;
-
-    /**
-     * @var TrustedInterfaceFactory
-     */
-    private $trustedInterfaceFactory;
-
-    /**
-     * @var DateTime
-     */
-    private $dateTime;
-
-    /**
-     * @var RequestInterface
-     */
-    private $request;
-
-    /**
-     * @var TrustedResourceModel
-     */
-    private $trustedResourceModel;
-
-    /**
-     * @var RemoteAddress
-     */
-    private $remoteAddress;
-
-    /**
-     * @var CookieManagerInterface
-     */
-    private $cookieManager;
-
-    /**
-     * @var CookieMetadataFactory
-     */
-    private $cookieMetadataFactory;
-
-    /**
-     * @var SessionManagerInterface
-     */
-    private $sessionManager;
 
     /**
      * @var TrustedResourceModel\CollectionFactory
@@ -99,79 +47,119 @@ class Tfa implements TfaInterface
     private $collectionFactory;
 
     /**
-     * @var ProviderManagementInterface
+     * @var UserConfigManagerInterface
      */
-    private $providerManagement;
+    private $userConfigManager;
 
     public function __construct(
-        Session $session,
-        StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
-        RequestInterface $request,
-        DateTime $dateTime,
-        TrustedInterfaceFactory $trustedInterfaceFactory,
-        TrustedResourceModel $trustedResourceModel,
-        RemoteAddress $remoteAddress,
-        CookieManagerInterface $cookieManager,
-        CookieMetadataFactory $cookieMetadataFactory,
-        SessionManagerInterface $sessionManager,
         TrustedResourceModel\CollectionFactory $collectionFactory,
-        ProviderManagementInterface $providerManagement
+        UserConfigManagerInterface $userConfigManager,
+        $providers = []
     ) {
-        $this->session = $session;
-        $this->storeManager = $storeManager;
+        $this->providers = $providers;
         $this->scopeConfig = $scopeConfig;
-        $this->trustedInterfaceFactory = $trustedInterfaceFactory;
-        $this->dateTime = $dateTime;
-        $this->request = $request;
-        $this->trustedResourceModel = $trustedResourceModel;
-        $this->remoteAddress = $remoteAddress;
-        $this->cookieManager = $cookieManager;
-        $this->cookieMetadataFactory = $cookieMetadataFactory;
-        $this->sessionManager = $sessionManager;
         $this->collectionFactory = $collectionFactory;
-        $this->providerManagement = $providerManagement;
+        $this->userConfigManager = $userConfigManager;
     }
 
     /**
-     * Get device name
-     * @return string
+     * Get a list of providers
+     * @return ProviderInterface[]
      */
-    private function getDeviceName()
+    public function getAllProviders()
     {
-        $browser = parse_user_agent();
-        return $browser['platform'] . ' ' . $browser['browser'] . ' ' . $browser['version'];
+        return array_values($this->providers);
     }
 
     /**
-     * Get user's provider
-     * @param \Magento\User\Model\User $user = null
-     * @return ProviderInterface|null
+     * Get a list of providers
+     * @return ProviderInterface[]
      */
-    public function getUserProvider(\Magento\User\Model\User $user = null)
+    public function getAllEnabledProviders()
     {
-        return $this->providerManagement->getUserProvider($user);
-    }
-
-    /**
-     * Return true if enabled
-     * @return bool
-     */
-    public function getEnabled()
-    {
-        if (!$this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED)) {
-            return false;
+        if (!$this->getIsEnabled()) {
+            return [];
         }
 
-        // Require at least one provider enabled
-        $providers = $this->providerManagement->getAllProviders();
+        $res = [];
+
+        $providers = $this->getAllProviders();
         foreach ($providers as $provider) {
-            if ($provider->isEnabled()) {
-                return true;
+            if ($provider->getIsEnabled()) {
+                $res[] = $provider;
             }
         }
 
-        return false;
+        return $res;
+    }
+
+    /**
+     * Get provider by code
+     * @param string $providerCode
+     * @param bool $onlyEnabled = true
+     * @return ProviderInterface|null
+     */
+    public function getProvider($providerCode, $onlyEnabled = true)
+    {
+        if (!$providerCode || !isset($this->providers[$providerCode])) {
+            return null;
+        }
+
+        if ($onlyEnabled && !$this->providers[$providerCode]->getIsEnabled()) {
+            return null;
+        }
+
+        return $this->providers[$providerCode];
+    }
+
+    /**
+     * Retrieve forced providers list
+     * @return ProviderInterface[]
+     */
+    public function getForcedProviders()
+    {
+        if (is_null($this->forcedProviders)) {
+            $forcedProvidersCodes =
+                preg_split('/\s*,\s*/', $this->scopeConfig->getValue(TfaInterface::XML_PATH_FORCED_PROVIDERS));
+
+            $this->forcedProviders = [];
+
+            foreach ($forcedProvidersCodes as $forcedProviderCode) {
+                $provider = $this->getProvider($forcedProviderCode);
+                if ($provider) {
+                    $this->forcedProviders[] = $provider;
+                }
+            }
+        }
+
+        return $this->forcedProviders;
+    }
+
+    /**
+     * Get a user provider
+     * @param UserInterface $user
+     * @return ProviderInterface[]
+     */
+    public function getUserProviders(UserInterface $user)
+    {
+        $forcedProviders = $this->getForcedProviders();
+
+        if (count($forcedProviders)) {
+            return $forcedProviders;
+        }
+
+        $providersCodes = $this->userConfigManager->getProvidersCodes($user);
+
+        $res = [];
+        foreach ($providersCodes as $providerCode) {
+            $provider = $this->getProvider($providerCode);
+            if ($provider) {
+                $res[] = $provider;
+            }
+        }
+
+        return $res;
     }
 
     /**
@@ -189,192 +177,75 @@ class Tfa implements TfaInterface
     }
 
     /**
-     * Get current admin user
-     * @return \Magento\User\Model\User|null
+     * Get allowed URLs
+     * @return array
      */
-    protected function getUser()
+    public function getAllowedUrls()
     {
-        return $this->session->getUser();
+        if (is_null($this->allowedUrls)) {
+            $this->allowedUrls = [
+                'adminhtml_auth_login',
+                'adminhtml_auth_logout',
+                'msp_twofactorauth_tfa_index'
+            ];
+
+            $providers = $this->getAllProviders();
+            foreach ($providers as $provider) {
+                $this->allowedUrls[] = str_replace('/', '_', $provider->getConfigureAction());
+                $this->allowedUrls[] = str_replace('/', '_', $provider->getAuthAction());
+
+                foreach (array_values($provider->getExtraActions()) as $extraAction) {
+                    $this->allowedUrls[] = str_replace('/', '_', $extraAction);
+                }
+            }
+        }
+
+        return $this->allowedUrls;
     }
 
     /**
-     * Return true if user must activate his TFA
-     * @return bool
+     * Returns a list of providers to activate/enroll
+     * @param UserInterface $user
+     * @return ProviderInterface[]
      */
-    public function getUserMustActivateTfa()
+    public function getProvidersToActivate(UserInterface $user)
     {
-        if (!$this->getEnabled()) {
-            return false;
+        $providers = $this->getUserProviders($user);
+
+        $res = [];
+        foreach ($providers as $provider) {
+            if (!$provider->getIsActive($user)) {
+                $res[] = $provider;
+            }
         }
 
-        return (
-            ($this->getUserProvider() || $this->getForceAllUsers()) &&
-            !$this->getUserTfaIsActive()
-        );
+        return $res;
     }
 
     /**
-     * Return true if user must authenticate via TFA
-     * @return bool
-     */
-    public function getUserMustAuth()
-    {
-        if (!$this->getEnabled()) {
-            return false;
-        }
-
-        if (!$this->getUserTfaIsActive()) {
-            return false;
-        }
-
-        return !$this->getTwoAuthFactorPassed();
-    }
-
-    /**
-     * Return true if user has TFA activated
-     * @return bool
-     */
-    public function getUserTfaIsActive()
-    {
-        if (!$this->getEnabled()) {
-            return false;
-        }
-
-        $user = $this->getUser();
-        $provider = $this->getUserProvider();
-
-        return ($provider && $provider->getUserIsConfigured($user) && $user->getMspTfaActivated());
-    }
-
-    /**
-     * Activate user TFA
+     * Return true if a provider is allowed for a given user
+     * @param UserInterface $user
      * @param string $providerCode
-     * @return TfaInterface
-     * @throws \Exception
+     * @return mixed
      */
-    public function activateUserTfa($providerCode)
+    public function getProviderIsAllowed(UserInterface $user, $providerCode)
     {
-        $user = $this->getUser();
-        if (!$user) {
-            return $this;
+        $providers = $this->getUserProviders($user);
+        foreach ($providers as $provider) {
+            if ($provider->getCode() == $providerCode) {
+                return true;
+            }
         }
 
-        $user
-            ->setMspTfaActivated(true)
-            ->setMspTfaProvider($providerCode)
-            ->save();
-
-        return $this;
+        return false;
     }
 
     /**
-     * Set TFA pass status
-     * @param $status
-     * @return TfaInterface
+     * Return true if 2FA is enabled
+     * @return boolean
      */
-    public function setTwoAuthFactorPassed($status)
+    public function getIsEnabled()
     {
-        $this->session->setMspTfaPassed($status);
-        return $this;
-    }
-
-    /**
-     * Get TFA pass status
-     * @return bool
-     */
-    public function getTwoAuthFactorPassed()
-    {
-        return $this->session->getMspTfaPassed();
-    }
-
-    /**
-     * Trust device and return secret token
-     * @return void
-     */
-    public function trustDevice()
-    {
-        if (!$this->getUserProvider()->allowTrustedDevices()) {
-            return;
-        }
-
-        $token = md5(uniqid(time()));
-
-        /** @var $trustEntry TrustedInterface */
-        $trustEntry = $this->trustedInterfaceFactory->create();
-        $trustEntry
-            ->setToken($token)
-            ->setDateTime($this->dateTime->date())
-            ->setUserId($this->getUser()->getId())
-            ->setLastIp($this->remoteAddress->getRemoteAddress())
-            ->setDeviceName($this->getDeviceName())
-            ->setUserAgent($this->request->getServer('HTTP_USER_AGENT'));
-
-        $this->trustedResourceModel->save($trustEntry);
-
-        $this->sendTokenCookie($token);
-    }
-
-    /**
-     * Send token as cookie
-     * @param string $token
-     */
-    private function sendTokenCookie($token)
-    {
-        // Enable cookie
-        $cookieMetadata = $this->cookieMetadataFactory->createPublicCookieMetadata()
-            ->setDurationOneYear()
-            ->setHttpOnly(true)
-            ->setPath($this->sessionManager->getCookiePath())
-            ->setDomain($this->sessionManager->getCookieDomain());
-
-        $this->cookieManager->setPublicCookie(TfaInterface::TRUSTED_DEVICE_COOKIE, $token, $cookieMetadata);
-    }
-
-    /**
-     * Rotate secret trust token
-     * @return void
-     */
-    public function rotateTrustedDeviceToken()
-    {
-        $token = $this->cookieManager->getCookie(TfaInterface::TRUSTED_DEVICE_COOKIE);
-
-        /** @var $trustEntry TrustedInterface */
-        $trustEntry = $this->trustedInterfaceFactory->create();
-        $this->trustedResourceModel->load($trustEntry, $token, TrustedInterface::TOKEN);
-        if ($trustEntry->getId()) {
-            $token = md5(uniqid(time()));
-
-            $trustEntry->setToken($token);
-            $this->trustedResourceModel->save($trustEntry);
-
-            $this->sendTokenCookie($token);
-        }
-    }
-
-    /**
-     * Return true if device is trusted
-     * @return bool
-     */
-    public function isTrustedDevice()
-    {
-        $token = $this->cookieManager->getCookie(TfaInterface::TRUSTED_DEVICE_COOKIE);
-
-        /** @var $trustEntry TrustedInterface */
-        $trustEntry = $this->trustedInterfaceFactory->create();
-        $this->trustedResourceModel->load($trustEntry, $token, TrustedInterface::TOKEN);
-
-        return $trustEntry->getId() && ($trustEntry->getUserId() == $this->getUser()->getId());
-    }
-
-    /**
-     * Revoke trusted device
-     * @param int $tokenId
-     * @return void
-     */
-    public function revokeTrustedDevice($tokenId)
-    {
-        $trustEntry = $this->trustedInterfaceFactory->create();
-        $this->trustedResourceModel->load($trustEntry, $tokenId);
-        $this->trustedResourceModel->delete($trustEntry);
+        return !!$this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED);
     }
 }

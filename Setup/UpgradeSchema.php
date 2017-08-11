@@ -20,6 +20,9 @@
 
 namespace MSP\TwoFactorAuth\Setup;
 
+use Magento\Framework\DB\Adapter\AdapterInterface;
+use Magento\Framework\Json\DecoderInterface;
+use Magento\Framework\Json\EncoderInterface;
 use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
@@ -28,6 +31,24 @@ use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
+    /**
+     * @var EncoderInterface
+     */
+    private $encoder;
+
+    /**
+     * @var DecoderInterface
+     */
+    private $decoder;
+
+    public function __construct(
+        EncoderInterface $encoder,
+        DecoderInterface $decoder
+    ) {
+        $this->encoder = $encoder;
+        $this->decoder = $decoder;
+    }
+
     protected function upgradeTo010100(SchemaSetupInterface $setup)
     {
         $tableName = $setup->getTable('msp_tfa_trusted');
@@ -110,6 +131,142 @@ class UpgradeSchema implements UpgradeSchemaInterface
         ]);
     }
 
+    protected function upgradeTo020000(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+        $tfaAdminUserTable = $setup->getTable('msp_tfa_user_config');
+        $adminUserTable = $connection->getTableName('admin_user');
+
+        $table = $setup->getConnection()
+            ->newTable($tfaAdminUserTable)
+            ->addColumn(
+                'msp_tfa_user_config_id',
+                Table::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+                'TFA admin user ID'
+            )
+            ->addColumn(
+                'user_id',
+                Table::TYPE_INTEGER,
+                null,
+                ['nullable' => false, 'unsigned' => true],
+                'User ID'
+            )
+            ->addColumn(
+                'encoded_providers',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => true],
+                'Encoded providers list'
+            )
+            ->addColumn(
+                'encoded_config',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => true],
+                'Encoded providers configuration'
+            )
+            ->addColumn(
+                'default_provider',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => true],
+                'Default provider'
+            )
+            ->addForeignKey(
+                $setup->getFkName(
+                    $setup->getTable('msp_tfa_user_config'),
+                    'user_id',
+                    $setup->getTable('admin_user'),
+                    'user_id'
+                ),
+                'user_id',
+                $setup->getTable('admin_user'),
+                'user_id',
+                Table::ACTION_CASCADE,
+                Table::ACTION_CASCADE
+            );
+
+        $connection->createTable($table);
+
+        // Migrate data from old configuration
+        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
+        foreach ($users as $user) {
+            try {
+                $providerConfig = $this->decoder->decode($user['msp_tfa_config']);
+                if (isset($providerConfig[$user['msp_tfa_provider']])) {
+                    $providerConfig[$user['msp_tfa_provider']]['active'] = $user['msp_tfa_activated'];
+                }
+            } catch (\Exception $e) {
+                $providerConfig = [];
+            }
+
+            $providerCode = $user['msp_tfa_provider'];
+            if ($providerCode == 'none') {
+                $providerCode = '';
+            }
+
+            $connection->insert($tfaAdminUserTable, [
+                'user_id' => $user['user_id'],
+                'encoded_config' => $this->encoder->encode($providerConfig),
+                'encoded_providers' => $this->encoder->encode([$providerCode]),
+            ]);
+        }
+
+        $connection->dropColumn($adminUserTable, 'msp_tfa_provider');
+        $connection->dropColumn($adminUserTable, 'msp_tfa_config');
+        $connection->dropColumn($adminUserTable, 'msp_tfa_activated');
+    }
+
+    protected function upgradeTo020001(SchemaSetupInterface $setup)
+    {
+        $connection = $setup->getConnection();
+        $tableName = $setup->getTable('msp_tfa_country_codes');
+
+        $table = $setup->getConnection()
+            ->newTable($tableName)
+            ->addColumn(
+                'msp_tfa_country_codes_id',
+                Table::TYPE_INTEGER,
+                null,
+                ['identity' => true, 'unsigned' => true, 'nullable' => false, 'primary' => true],
+                'TFA admin user ID'
+            )
+            ->addColumn(
+                'code',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => false],
+                'Country code'
+            )
+            ->addColumn(
+                'name',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => false],
+                'Country name'
+            )
+            ->addColumn(
+                'dial_code',
+                Table::TYPE_TEXT,
+                null,
+                ['nullable' => false],
+                'Prefix'
+            )
+            ->addIndex(
+                $setup->getIdxName(
+                    $tableName,
+                    ['code'],
+                    AdapterInterface::INDEX_TYPE_INDEX
+                ),
+                [['name' => 'code', 'size' => 128]],
+                ['type' => AdapterInterface::INDEX_TYPE_INDEX]
+            );
+
+        $connection->createTable($table);
+    }
+
     /**
      * Upgrades DB schema for a module
      *
@@ -127,6 +284,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
 
         if (version_compare($context->getVersion(), '1.2.0') < 0) {
             $this->upgradeTo010200($setup);
+        }
+
+        if (version_compare($context->getVersion(), '2.0.0') < 0) {
+            $this->upgradeTo020000($setup);
+        }
+
+        if (version_compare($context->getVersion(), '2.0.1') < 0) {
+            $this->upgradeTo020001($setup);
         }
 
         $setup->endSetup();
