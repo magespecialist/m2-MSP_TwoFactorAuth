@@ -103,13 +103,15 @@ class ControllerActionPredispatch implements ObserverInterface
 
         $user = $this->getUser();
 
-        $accessGranted = ($this->tfaSession->getIsGranted() || $this->trustedManager->isTrustedDevice()) &&
-            !count($this->tfa->getProvidersToActivate($user));
+        if (count($this->tfa->getUserProviders($user))) {
+            $accessGranted = ($this->tfaSession->getIsGranted() || $this->trustedManager->isTrustedDevice()) &&
+                !count($this->tfa->getProvidersToActivate($user));
 
-        if (!$accessGranted) {
-            $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
-            $url = $this->url->getUrl('msp_twofactorauth/tfa/index');
-            $controllerAction->getResponse()->setRedirect($url);
+            if (!$accessGranted) {
+                $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);
+                $url = $this->url->getUrl('msp_twofactorauth/tfa/index');
+                $controllerAction->getResponse()->setRedirect($url);
+            }
         }
     }
 }

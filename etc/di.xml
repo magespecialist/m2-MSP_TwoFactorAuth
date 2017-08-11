@@ -42,6 +42,7 @@
                 <item name="google" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Google</item>
                 <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
                 <!--<item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>-->
+                <item name="u2fkey" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\U2fKey</item>
             </argument>
         </arguments>
     </type>
@@ -86,6 +87,21 @@
             <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/authy.png</argument>
             <argument name="configureAction" xsi:type="string">msp_twofactorauth/authy/configure</argument>
             <argument name="authAction" xsi:type="string">msp_twofactorauth/authy/auth</argument>
+            <argument name="extraActions" xsi:type="array">
+                <item name="authpost" xsi:type="string">msp_twofactorauth/authy/authpost</item>
+            </argument>
+            <argument name="canReset" xsi:type="boolean">true</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="MSP\TwoFactorAuth\Model\Provider\U2fKey" type="MSP\TwoFactorAuth\Model\Provider">
+        <arguments>
+            <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey</argument>
+            <argument name="code" xsi:type="string">u2fkey</argument>
+            <argument name="name" xsi:type="string">U2F (Yubikey and others)</argument>
+            <argument name="icon" xsi:type="string">MSP_TwoFactorAuth::images/providers/authy.png</argument>
+            <argument name="configureAction" xsi:type="string">msp_twofactorauth/u2f/register</argument>
+            <argument name="authAction" xsi:type="string">msp_twofactorauth/duo/auth</argument>
             <argument name="extraActions" xsi:type="array">
                 <item name="authpost" xsi:type="string">msp_twofactorauth/authy/authpost</item>
             </argument>
