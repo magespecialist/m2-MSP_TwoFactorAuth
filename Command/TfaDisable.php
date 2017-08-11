@@ -27,7 +27,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class Tfa extends Command
+class TfaDisable extends Command
 {
     /**
      * @var ConfigInterface

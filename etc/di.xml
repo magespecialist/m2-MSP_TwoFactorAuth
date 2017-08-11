@@ -31,7 +31,8 @@
     <type name="Magento\Framework\Console\CommandList">
         <arguments>
             <argument name="commands" xsi:type="array">
-                <item name="msp_twofactorauth" xsi:type="object">MSP\TwoFactorAuth\Command\Tfa</item>
+                <item name="msp_twofactorauth_disable" xsi:type="object">MSP\TwoFactorAuth\Command\TfaDisable</item>
+                <item name="msp_twofactorauth_reset" xsi:type="object">MSP\TwoFactorAuth\Command\TfaReset</item>
             </argument>
         </arguments>
     </type>
