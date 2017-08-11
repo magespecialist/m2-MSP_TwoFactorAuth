@@ -56,6 +56,15 @@ class Configure extends Template
     }
 
     /**
+     * Get success URL
+     * @return string
+     */
+    public function getSuccessUrl()
+    {
+        return $this->getUrl('/');
+    }
+
+    /**
      * Get register post URL
      * @return string
      */

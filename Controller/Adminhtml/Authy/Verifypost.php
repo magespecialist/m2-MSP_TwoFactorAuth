@@ -23,8 +23,9 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Registry;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
@@ -47,11 +48,6 @@ class Verifypost extends Action
     private $tfa;
 
     /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
      * @var Authy
      */
     private $authy;
@@ -61,13 +57,19 @@ class Verifypost extends Action
      */
     private $tfaSession;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         TfaInterface $tfa,
         TfaSessionInterface $tfaSession,
         Authy $authy,
-        PageFactory $pageFactory
+        PageFactory $pageFactory,
+        EventInterface $event
     ) {
         parent::__construct($context);
         $this->pageFactory = $pageFactory;
@@ -75,6 +77,7 @@ class Verifypost extends Action
         $this->tfa = $tfa;
         $this->authy = $authy;
         $this->tfaSession = $tfaSession;
+        $this->event = $event;
     }
 
     /**
@@ -101,8 +104,19 @@ class Verifypost extends Action
             $this->authy->enroll($this->getUser());
             $this->tfaSession->grantAccess();
 
-            $this->messageManager->addSuccessMessage(__('Identity confirmed'));
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Authy identity verified',
+                'username' => $this->getUser()->getUserName(),
+            ]);
         } catch (\Exception $e) {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Authy identity verification failure',
+                'username' => $this->getUser()->getUserName(),
+                'additional' => $e->getMessage(),
+            ]);
+
             $this->messageManager->addErrorMessage($e->getMessage());
             return $this->_redirect('*/*/verify');
         }

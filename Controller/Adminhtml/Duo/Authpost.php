@@ -99,7 +99,7 @@ class Authpost extends Action
         } else {
             $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
                 'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Access denied using DuoSecurity Authenticator',
+                'message' => 'DuoSecurity invalid auth',
                 'username' => $user->getUserName(),
             ]);
 

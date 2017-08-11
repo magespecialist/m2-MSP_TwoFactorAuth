@@ -33,6 +33,9 @@
             <authy>
                 <allow_trusted_devices>1</allow_trusted_devices>
             </authy>
+            <u2fkey>
+                <allow_trusted_devices>1</allow_trusted_devices>
+            </u2fkey>
         </msp_securitysuite_twofactorauth>
     </default>
 </config>

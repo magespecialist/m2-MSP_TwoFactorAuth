@@ -106,7 +106,7 @@ class Authpost extends Action
         } else {
             $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
                 'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Access denied using Google Authenticator',
+                'message' => 'Google auth invalid token',
                 'username' => $user->getUserName(),
             ]);
 

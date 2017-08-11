@@ -22,9 +22,11 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Configurepost extends Action
 {
@@ -53,12 +55,18 @@ class Configurepost extends Action
      */
     private $tfaSession;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Tfa $tfa,
         Session $session,
         JsonFactory $jsonFactory,
         TfaSessionInterface $tfaSession,
         U2fKey $u2fKey,
+        EventInterface $event,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -68,6 +76,7 @@ class Configurepost extends Action
         $this->u2fKey = $u2fKey;
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
+        $this->event = $event;
     }
 
     /**
@@ -87,8 +96,21 @@ class Configurepost extends Action
             $this->u2fKey->registerDevice($this->getUser(), $request, $response);
             $this->tfaSession->grantAccess();
 
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'U2F New device registered',
+                'username' => $this->getUser()->getUserName(),
+            ]);
+
             $res = ['success' => true];
         } catch (\Exception $e) {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'U2F error while adding device',
+                'username' => $this->getUser()->getUserName(),
+                'additional' => $e->getMessage(),
+            ]);
+
             $res = ['success' => false, 'message' => $e->getMessage()];
         }
 

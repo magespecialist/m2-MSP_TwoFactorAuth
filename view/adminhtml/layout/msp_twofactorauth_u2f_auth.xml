@@ -23,10 +23,22 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
     <update handle="admin_login" />
 
+    <head>
+        <css src="MSP_TwoFactorAuth::css/u2f.css"/>
+        <css src="MSP_TwoFactorAuth::css/auth.css"/>
+    </head>
+
     <body>
         <referenceContainer name="login.content">
             <block class="MSP\TwoFactorAuth\Block\Provider\U2fKey\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/u2fkey/auth.phtml" />
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/u2fkey/auth.phtml">
+
+                <block class="MSP\TwoFactorAuth\Block\TrustDevice" name="msp_twofactorauth_trust_device"
+                       as="trust-device" template="MSP_TwoFactorAuth::msp_twofactorauth/trust_device.phtml" />
+
+                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
+                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml" />
+            </block>
         </referenceContainer>
     </body>
 </page>

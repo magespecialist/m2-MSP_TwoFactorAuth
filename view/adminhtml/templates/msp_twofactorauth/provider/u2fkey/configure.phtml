@@ -18,42 +18,55 @@
 
 /** @var $block \MSP\TwoFactorAuth\Block\Provider\U2fKey\Configure */
 ?>
-
-<textarea cols="80" rows="30">
-    <?php print_r($block->getRegisterData()) ?>
-</textarea>
-
 <form>
     <fieldset class="admin__fieldset">
-        <label for="register"><?= __("Press your key button") ?></label>
-        <input type="password" name="register" id="register">
+        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - U2F key registration') ?></span></legend>
+        <br/>
+        <div id="u2f-touch-key">
+            <h3><?= __('Plug in your U2F key, then touch button') ?></h3>
+            <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/u2f/touch.png') ?>" />
+        </div>
+
+        <div id="u2f-login">
+            <img class="loading" src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif') ?>"/>
+            <h3><?php echo __('Approved, redirecting you to Magento...') ?></h3>
+        </div>
+
     </fieldset>
+
+    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
 
 <script>
   require(['jquery', 'MSP_TwoFactorAuth/js/u2f'], function ($) {
-    var registerData = <?= $block->getRegisterData() ?>;
-    var requestData = registerData[0];
-    var signs = registerData[1];
+    function waitForTouch() {
+      var registerData = <?= $block->getRegisterData() ?>;
+      var requestData = registerData[0];
+      var signs = registerData[1];
 
-    setTimeout(u2f.register(
-      [requestData],
-      signs,
-      function (registerResponse) {
-        $.post('<?= $block->getConfigurePostUrl() ?>', {
-          'request': requestData,
-          'response': registerResponse
-        }).done(function (res) {
-          if (res['success']) {
-            alert('ok');
-          } else {
-            alert('error');
-          }
-        }).fail(function () {
-          alert('error');
-        })
-      }, 10
-    ), 3)
+      u2f.register(
+        [requestData],
+        signs,
+        function (registerResponse) {
+          $.post('<?= $block->getConfigurePostUrl() ?>', {
+            'request': requestData,
+            'response': registerResponse
+          }).done(function (res) {
+            if (res['success']) {
+              $('#u2f-login').css('display', 'block');
+              $('#u2f-touch-key').css('display', 'none');
+              self.location.href='<?= $block->getSuccessUrl() ?>'
+            } else {
+              waitForTouch();
+            }
+          }).fail(function () {
+            alert('<?= $block->escapeJsQuote('Unable to register your device') ?>');
+          })
+        }, 120
+      );
+    }
+
+    waitForTouch();
   });
 </script>
 

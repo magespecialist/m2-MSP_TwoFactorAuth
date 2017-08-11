@@ -162,8 +162,9 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         this.setCodeRequestVisibility(true);
 
         if (via !== 'token') {
+          var tfa_trust_device = $('#tfa_trust_device') ? $('#tfa_trust_device')[0].checked : false;
           var me = this;
-          $.getJSON('<?php echo $block->getTokenRequestUrl() ?>?via=' + via)
+          $.getJSON('<?php echo $block->getTokenRequestUrl() ?>?via=' + via + '&tfa_trust_device=' + tfa_trust_device)
             .fail(function (res) {
               alert('There was an error trying to contact Authy services');
               me.switchAnotherMethod();
@@ -181,7 +182,8 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         $('#authy-one-touch-wait').css('display', 'none');
 
         var me = this;
-        $.getJSON('<?php echo $block->getOneTouchUrl() ?>')
+        var tfa_trust_device = $('#tfa_trust_device') ? $('#tfa_trust_device')[0].checked : false;
+        $.getJSON('<?php echo $block->getOneTouchUrl() ?>?tfa_trust_device=' + tfa_trust_device)
           .done(function (res) {
             me.waitForOneTouchApproval();
           })

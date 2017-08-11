@@ -250,6 +250,7 @@ class Authy implements EngineInterface
         $this->userConfigManager->addProviderConfig($user, Authy::CODE, [
             'phone_confirmed' => true,
         ]);
+        $this->userConfigManager->activateProviderConfiguration($user, Authy::CODE);
 
         return true;
     }

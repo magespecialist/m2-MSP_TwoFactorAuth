@@ -23,10 +23,12 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\JsonFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Verifyonetouch extends Action
 {
@@ -60,12 +62,18 @@ class Verifyonetouch extends Action
      */
     private $tfaSession;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Action\Context $context,
         JsonFactory $jsonFactory,
         TrustedManagerInterface $trustedManager,
         TfaSessionInterface $tfaSession,
         TfaInterface $tfa,
+        EventInterface $event,
         Authy $authy,
         Session $session
     ) {
@@ -76,6 +84,7 @@ class Verifyonetouch extends Action
         $this->tfa = $tfa;
         $this->trustedManager = $trustedManager;
         $this->tfaSession = $tfaSession;
+        $this->event = $event;
     }
 
     /**
@@ -99,10 +108,25 @@ class Verifyonetouch extends Action
                 $res = ['success' => true, 'status' => 'approved'];
             } else {
                 $res = ['success' => false, 'status' => $res];
+
+                if ($res == 'denied') {
+                    $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                        'module' => 'MSP_TwoFactorAuth',
+                        'message' => 'Authy onetouch auth denied',
+                        'username' => $this->getUser()->getUserName(),
+                    ]);
+                }
             }
         } catch (\Exception $e) {
             $result->setHttpResponseCode(500);
             $res = ['success' => false, 'message' => $e->getMessage()];
+
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Authy onetouch error',
+                'username' => $this->getUser()->getUserName(),
+                'additional' => $e->getMessage(),
+            ]);
         }
 
         $result->setData($res);

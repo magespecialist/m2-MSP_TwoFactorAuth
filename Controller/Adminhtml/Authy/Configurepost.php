@@ -24,8 +24,10 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Configurepost extends Action
 {
@@ -49,11 +51,17 @@ class Configurepost extends Action
      */
     private $authy;
 
+    /**
+     * @var EventInterface
+     */
+    private $event;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         Authy $authy,
         TfaInterface $tfa,
+        EventInterface $event,
         PageFactory $pageFactory
     ) {
         parent::__construct($context);
@@ -61,6 +69,7 @@ class Configurepost extends Action
         $this->session = $session;
         $this->tfa = $tfa;
         $this->authy = $authy;
+        $this->event = $event;
     }
 
     /**
@@ -89,7 +98,21 @@ class Configurepost extends Action
                 $request->getParam('tfa_phone'),
                 $request->getParam('tfa_method')
             );
+
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'New authy verification request via ' . $request->getParam('tfa_method'),
+                'username' => $this->getUser()->getUserName(),
+            ]);
+
         } catch (\Exception $e) {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'Authy verification request failure via ' . $request->getParam('tfa_method'),
+                'username' => $this->getUser()->getUserName(),
+                'additional' => $e->getMessage(),
+            ]);
+
             $this->messageManager->addErrorMessage($e->getMessage());
             return $this->_redirect('*/*/configure');
         }

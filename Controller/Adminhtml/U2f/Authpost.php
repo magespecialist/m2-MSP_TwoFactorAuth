@@ -22,14 +22,15 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
+use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Authpost extends Action
 {
-
     /**
      * @var Tfa
      */
@@ -58,6 +59,10 @@ class Authpost extends Action
      * @var TrustedManagerInterface
      */
     private $trustedManager;
+    /**
+     * @var EventInterface
+     */
+    private $event;
 
     public function __construct(
         Tfa $tfa,
@@ -66,6 +71,7 @@ class Authpost extends Action
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         U2fKey $u2fKey,
+        EventInterface $event,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -76,6 +82,7 @@ class Authpost extends Action
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
+        $this->event = $event;
     }
 
     /**
@@ -95,6 +102,13 @@ class Authpost extends Action
 
             $res = ['success' => true];
         } catch (\Exception $e) {
+            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+                'module' => 'MSP_TwoFactorAuth',
+                'message' => 'U2F error',
+                'username' => $this->getUser()->getUserName(),
+                'additional' => $e->getMessage(),
+            ]);
+
             $res = ['success' => false, 'message' => $e->getMessage()];
         }
 

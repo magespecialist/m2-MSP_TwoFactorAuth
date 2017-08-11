@@ -110,7 +110,8 @@ class Authpost extends Action
             $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Authy error',
-                'username' => $e->getMessage(),
+                'username' => $this->getUser()->getUserName(),
+                'additional' => $e->getMessage(),
             ]);
 
             return $this->_redirect('*/*/auth');

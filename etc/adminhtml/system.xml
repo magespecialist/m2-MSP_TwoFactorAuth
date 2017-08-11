@@ -43,7 +43,7 @@
                 <field canRestore="1" id="force_providers" translate="label" type="multiselect" sortOrder="30" showInDefault="1" showInWebsite="0" showInStore="0">
                     <label>Force providers</label>
                     <source_model>MSP\TwoFactorAuth\Model\Config\Source\Provider</source_model>
-                    <comment>Force providers to be used by all users in this system. Leave empty to let users decide by their own.</comment>
+                    <comment>Force providers to be used by all users in this system. Leave empty to allow individual selection.</comment>
                 </field>
             </group>
 
