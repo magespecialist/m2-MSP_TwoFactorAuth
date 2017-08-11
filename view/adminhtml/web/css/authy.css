@@ -27,6 +27,36 @@
     margin-bottom: .8em !important;
 }
 
-.request-code {
+.authy-request-code {
     display: none;
+}
+
+#authy-one-touch {
+    display: none;
+    text-align: center;
+    background: #f0f0f0;
+    padding: 1em;
+}
+
+#authy-one-touch img {
+    width: 64px;
+}
+
+#authy-switch-method {
+    display: none;
+}
+
+#authy-switch-method::after {
+    clear: both;
+}
+
+#authy-one-touch-login {
+    display: none;
+    text-align: center;
+    background: #f0f0f0;
+    padding: 1em;
+}
+
+#authy-one-touch-login img {
+    width: 72px;
 }

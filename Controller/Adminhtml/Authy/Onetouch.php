@@ -26,7 +26,7 @@ use Magento\Framework\Controller\Result\JsonFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Token extends Action
+class Onetouch extends Action
 {
     /**
      * @var Authy
@@ -73,12 +73,11 @@ class Token extends Action
 
     public function execute()
     {
-        $via = $this->getRequest()->getParam('via');
         $result = $this->jsonFactory->create();
 
         try {
-            $this->authy->requestToken($this->getUser(), $via);
-            $res = ['success' => true];
+            $approvalCode = $this->authy->requestOneTouch($this->getUser());
+            $res = ['success' => true, 'code' => $approvalCode];
         } catch (\Exception $e) {
             $result->setHttpResponseCode(500);
             $res = ['success' => false, 'message' => $e->getMessage()];

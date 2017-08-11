@@ -25,12 +25,12 @@ $providers = $block->getProvidersList();
     <a id="tfa_msp_change_provider_trigger" href="#" onclick="openTfaMethodSelector()">
         <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png') ?>" />
         <span>
-            <?php echo __('Select a different 2FA method') ?>
+            <?php echo __('Select a different 2FA provider') ?>
         </span>
     </a>
 
     <div id="tfa_msp_change_provider">
-        <h3><?php echo __('Select a different 2FA method:') ?></h3>
+        <h3><?php echo __('Select a different 2FA provider:') ?></h3>
 
         <div class="tfa_msp_provider_list">
             <?php foreach ($providers as $provider) : ?>

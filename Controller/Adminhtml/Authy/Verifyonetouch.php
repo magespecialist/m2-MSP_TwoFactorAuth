@@ -24,9 +24,11 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Token extends Action
+class Verifyonetouch extends Action
 {
     /**
      * @var Authy
@@ -48,9 +50,21 @@ class Token extends Action
      */
     private $tfa;
 
+    /**
+     * @var TrustedManagerInterface
+     */
+    private $trustedManager;
+
+    /**
+     * @var TfaSessionInterface
+     */
+    private $tfaSession;
+
     public function __construct(
         Action\Context $context,
         JsonFactory $jsonFactory,
+        TrustedManagerInterface $trustedManager,
+        TfaSessionInterface $tfaSession,
         TfaInterface $tfa,
         Authy $authy,
         Session $session
@@ -60,6 +74,8 @@ class Token extends Action
         $this->session = $session;
         $this->jsonFactory = $jsonFactory;
         $this->tfa = $tfa;
+        $this->trustedManager = $trustedManager;
+        $this->tfaSession = $tfaSession;
     }
 
     /**
@@ -73,12 +89,17 @@ class Token extends Action
 
     public function execute()
     {
-        $via = $this->getRequest()->getParam('via');
         $result = $this->jsonFactory->create();
 
         try {
-            $this->authy->requestToken($this->getUser(), $via);
-            $res = ['success' => true];
+            $res = $this->authy->verifyOneTouch($this->getUser());
+            if ($res == 'approved') {
+                $this->trustedManager->handleTrustDeviceRequest(Authy::CODE, $this->getRequest());
+                $this->tfaSession->grantAccess();
+                $res = ['success' => true, 'status' => 'approved'];
+            } else {
+                $res = ['success' => false, 'status' => $res];
+            }
         } catch (\Exception $e) {
             $result->setHttpResponseCode(500);
             $res = ['success' => false, 'message' => $e->getMessage()];

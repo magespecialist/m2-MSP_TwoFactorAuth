@@ -48,4 +48,19 @@ class Auth extends Template
     {
         return $this->getUrl('*/*/token');
     }
+
+    public function getOneTouchUrl()
+    {
+        return $this->getUrl('*/*/onetouch');
+    }
+
+    public function getOneTouchVerifyUrl()
+    {
+        return $this->getUrl('*/*/verifyonetouch');
+    }
+
+    public function getSuccessUrl()
+    {
+        return $this->getUrl('/');
+    }
 }

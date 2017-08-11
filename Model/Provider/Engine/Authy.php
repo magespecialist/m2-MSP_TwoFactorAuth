@@ -26,6 +26,7 @@ use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Json\DecoderInterface;
 use Magento\Framework\Stdlib\DateTime\DateTime;
+use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
@@ -38,7 +39,7 @@ class Authy implements EngineInterface
     const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite_twofactorauth/authy/allow_trusted_devices';
     const XML_PATH_API_KEY = 'msp_securitysuite_twofactorauth/authy/api_key';
 
-    const AUTHY_BASE_ENDPOINT = 'https://api.authy.com/protected/';
+    const AUTHY_BASE_ENDPOINT = 'https://api.authy.com/';
 
     /**
      * @var ScopeConfigInterface
@@ -65,10 +66,16 @@ class Authy implements EngineInterface
      */
     private $dateTime;
 
+    /**
+     * @var StoreManagerInterface
+     */
+    private $storeManager;
+
     public function __construct(
         ScopeConfigInterface $scopeConfig,
         DecoderInterface $decoder,
         UserConfigManagerInterface $userConfigManager,
+        StoreManagerInterface $storeManager,
         DateTime $dateTime,
         CurlFactory $curlFactory
     ) {
@@ -77,6 +84,7 @@ class Authy implements EngineInterface
         $this->decoder = $decoder;
         $this->userConfigManager = $userConfigManager;
         $this->dateTime = $dateTime;
+        $this->storeManager = $storeManager;
     }
 
     /**
@@ -93,9 +101,19 @@ class Authy implements EngineInterface
      * @param string $path
      * @return string
      */
-    protected function getApiEndpoint($path)
+    protected function getProtectedApiEndpoint($path)
     {
-        return static::AUTHY_BASE_ENDPOINT . 'json/' . $path;
+        return static::AUTHY_BASE_ENDPOINT . 'protected/json/' . $path;
+    }
+
+    /**
+     * Get authy API endpoint
+     * @param string $path
+     * @return string
+     */
+    protected function getOneTouchApiEndpoint($path)
+    {
+        return static::AUTHY_BASE_ENDPOINT . 'onetouch/json/' . $path;
     }
 
     /**
@@ -129,7 +147,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Missing phone information'));
         }
 
-        $url = $this->getApiEndpoint('users/new');
+        $url = $this->getProtectedApiEndpoint('users/new');
         $curl = $this->curlFactory->create();
 
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
@@ -165,7 +183,7 @@ class Authy implements EngineInterface
      */
     public function requestPhoneNumberVerification(UserInterface $user, $country, $phoneNumber, $method)
     {
-        $url = $this->getApiEndpoint('phones/verification/start');
+        $url = $this->getProtectedApiEndpoint('phones/verification/start');
 
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
@@ -213,7 +231,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Missing verify request information'));
         }
 
-        $url = $this->getApiEndpoint('phones/verification/check');
+        $url = $this->getProtectedApiEndpoint('phones/verification/check');
 
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
@@ -254,7 +272,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Missing user information'));
         }
 
-        $url = $this->getApiEndpoint($via . '/' . $providerInfo['user']) . '?force=true';
+        $url = $this->getProtectedApiEndpoint('' . $via . '/' . $providerInfo['user']) . '?force=true';
 
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
@@ -267,6 +285,100 @@ class Authy implements EngineInterface
         }
 
         return true;
+    }
+
+    /**
+     * Request one-touch
+     * @param UserInterface $user
+     * @return true
+     * @throws LocalizedException
+     */
+    public function requestOneTouch(UserInterface $user)
+    {
+        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        if (!isset($providerInfo['user'])) {
+            throw new LocalizedException(__('Missing user information'));
+        }
+
+        $url = $this->getOneTouchApiEndpoint( 'users/' . $providerInfo['user'] . '/approval_requests');
+
+        $curl = $this->curlFactory->create();
+        $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
+        $curl->post($url, [
+            'message' => ''.__('Login request for %1', $this->storeManager->getStore()->getName()),
+            'details[URL]' => $this->storeManager->getStore()->getBaseUrl(),
+            'details[User]' => $user->getUserName(),
+            'details[Email]' => $user->getEmail(),
+            'seconds_to_expire' => 10,
+        ]);
+
+        $response = $this->decoder->decode($curl->getBody());
+
+        if ($errorMessage = $this->getErrorFromResponse($response)) {
+            throw new LocalizedException(__($errorMessage));
+        }
+
+        $this->userConfigManager->addProviderConfig($user, Authy::CODE, [
+            'pending_approval' => $response['approval_request']['uuid'],
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Verify one-touch
+     * @param UserInterface $user
+     * @return string
+     * @throws LocalizedException
+     */
+    public function verifyOneTouch(UserInterface $user)
+    {
+        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        if (!isset($providerInfo['user'])) {
+            throw new LocalizedException(__('Missing user information'));
+        }
+
+        if (!isset($providerInfo['pending_approval'])) {
+            throw new LocalizedException(__('No approval requests for this user'));
+        }
+
+        $approvalCode = $providerInfo['pending_approval'];
+
+        if (!preg_match('/^\w[\w\-]+\w$/', $approvalCode)) {
+            throw new LocalizedException(__('Invalid approval code'));
+        }
+
+        $url = $this->getOneTouchApiEndpoint( 'approval_requests/' . $approvalCode);
+
+        $times = 10;
+
+        for ($i=0; $i<$times; $i++) {
+            $curl = $this->curlFactory->create();
+            $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
+            $curl->get($url);
+
+            $response = $this->decoder->decode($curl->getBody());
+
+            if ($errorMessage = $this->getErrorFromResponse($response)) {
+                throw new LocalizedException(__($errorMessage));
+            }
+
+            $status = $response['approval_request']['status'];
+            if ($status == 'pending') {
+                // @codingStandardsIgnoreStart
+                sleep(1);
+                // @codingStandardsIgnoreEnd
+                continue;
+            }
+
+            if ($status == 'approved') {
+                return $status;
+            }
+
+            return $status;
+        }
+
+        return 'retry';
     }
 
     /**
@@ -299,7 +411,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Missing user information'));
         }
 
-        $url = $this->getApiEndpoint('/verify/' . $code . '/' . $providerInfo['user']);
+        $url = $this->getProtectedApiEndpoint('verify/' . $code . '/' . $providerInfo['user']);
 
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
