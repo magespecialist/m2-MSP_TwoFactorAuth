@@ -73,6 +73,10 @@ If you messed up with two factor authentication you can disable it from command-
 
 `php bin/magento msp:security:tfa:disable`
 
+This will disable two factor auth globally.
+
+## Emergency commandline reset:
+
 If you need to manually reset one single user configuration (so you can restart configuration / subscription), type:
  
 `php bin/magento msp:security:tfa:reset <username> <provider>`
@@ -85,4 +89,14 @@ e.g.:
 
 `php bin/magento msp:security:tfa:reset admin authy`
 
-This will disable two factor auth globally.
+## Emergency of emergency and your house is on fire, your dog is lost and your wife doesn't love you anymore:
+
+**DO NOT ATTEMPT TO MODIFY ANY DB INFORMATION UNLESS YOU UNDERSTAND WHAT YOU ARE DOING**
+
+Table `core_config_data`:
+* `msp/twofactorauth/enabled`: Set to zero to disble globally
+* `msp/twofactorauth/force_providers`: Delete this entry to remove forced providers option
+
+Table `msp_tfa_user_config`:
+* Delete one user row to reset user's 2FA preference and configuration
+
