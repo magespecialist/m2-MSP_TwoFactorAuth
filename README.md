@@ -45,7 +45,7 @@ Enable from **Store > Config > SecuritySuite > Two Factor Authentication**.
 
 **3. Enable two factor authentication for your user**
 
-You can select between a set of different 2FA providers. **Multiple concurrent providers** are supported.
+You can select among a set of different 2FA providers. **Multiple concurrent providers** are supported.
 
 <img src="https://raw.githubusercontent.com/magespecialist/m2-MSP_TwoFactorAuth/master/screenshots/user_tfa.png" />
 
@@ -94,7 +94,7 @@ e.g.:
 **DO NOT ATTEMPT TO MODIFY ANY DB INFORMATION UNLESS YOU UNDERSTAND WHAT YOU ARE DOING**
 
 Table `core_config_data`:
-* `msp/twofactorauth/enabled`: Set to zero to disble globally
+* `msp/twofactorauth/enabled`: Set to zero to disable 2fa globally
 * `msp/twofactorauth/force_providers`: Delete this entry to remove forced providers option
 
 Table `msp_tfa_user_config`:
