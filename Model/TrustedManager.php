@@ -249,7 +249,11 @@ class TrustedManager implements TrustedManagerInterface
     public function handleTrustDeviceRequest($providerCode, RequestInterface $request)
     {
         if ($provider = $this->tfa->getProvider($providerCode)) {
-            if ($provider->getAllowTrustedDevices() && $request->getParam('tfa_trust_device')) {
+            if (
+                $provider->getAllowTrustedDevices() &&
+                $request->getParam('tfa_trust_device') &&
+                ($request->getParam('tfa_trust_device') != "false") // u2fkey submit translates into a string
+            ) {
                 $token = md5(uniqid(time()));
 
                 /** @var $trustEntry Trusted */
