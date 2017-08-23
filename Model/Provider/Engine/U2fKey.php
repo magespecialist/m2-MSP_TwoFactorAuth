@@ -198,7 +198,14 @@ class U2fKey implements EngineInterface
         /** @var Store $store */
         $store = $this->storeManager->getStore(Store::ADMIN_CODE);
 
+        $baseUrl = $store->getBaseUrl();
+        if (preg_match('/^(https?:\/\/.+?)\//', $baseUrl, $matches)) {
+            $domain = $matches[1];
+        } else {
+            throw new LocalizedException(__('Unexpected error while parsing domain name'));
+        }
+
         /** @var U2F $u2f */
-        return new U2F(trim($store->getBaseUrl(), '/'));
+        return new U2F($domain);
     }
 }
