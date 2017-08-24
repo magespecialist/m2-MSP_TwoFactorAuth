@@ -129,6 +129,27 @@ class UpgradeSchema implements UpgradeSchemaInterface
             'nullable' => true,
             'comment' => 'Two Factor Authentication Config',
         ]);
+
+        // Migrate information
+        $connection->update($adminUserTable, [
+            'msp_tfa_provider' => 'none',
+        ], 'msp_tfa_provider=0');
+
+        $connection->update($adminUserTable, [
+            'msp_tfa_provider' => 'google'
+        ], 'msp_tfa_provider=1');
+
+        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
+        foreach ($users as $user) {
+            $tfaSecret = $user['msp_tfa_config'];
+            if ($tfaSecret) {
+                $connection->update($adminUserTable, ['msp_tfa_config' => $this->encoder->encode([
+                    'google' => [
+                        'secret' => $tfaSecret,
+                    ]
+                ])], 'user_id='.intval($user['user_id']));
+            }
+        }
     }
 
     protected function upgradeTo020000(SchemaSetupInterface $setup)

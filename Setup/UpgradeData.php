@@ -68,29 +68,6 @@ class UpgradeData implements UpgradeDataInterface
 
     protected function upgradeTo010200(ModuleDataSetupInterface $setup)
     {
-        $connection = $setup->getConnection();
-        $adminUserTable = $setup->getTable('admin_user');
-
-        $connection->update($adminUserTable, [
-            'msp_tfa_provider' => 'none',
-        ], 'msp_tfa_provider=0');
-
-        $connection->update($adminUserTable, [
-            'msp_tfa_provider' => 'google'
-        ], 'msp_tfa_provider=1');
-
-        $users = $connection->fetchAll($connection->select()->from($adminUserTable));
-        foreach ($users as $user) {
-            $tfaSecret = $user['msp_tfa_config'];
-            if ($tfaSecret) {
-                $connection->update($adminUserTable, ['msp_tfa_config' => $this->encoder->encode([
-                    'google' => [
-                        'secret' => $tfaSecret,
-                    ]
-                ])], 'user_id='.intval($user['user_id']));
-            }
-        }
-
         $this->configMigration->doConfigMigration(
             $setup,
             'msp_securitysuite/twofactorauth/allow_trusted_devices',
