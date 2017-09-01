@@ -73,7 +73,6 @@ class Verifyonetouch extends Action
         TrustedManagerInterface $trustedManager,
         TfaSessionInterface $tfaSession,
         TfaInterface $tfa,
-        EventInterface $event,
         Authy $authy,
         Session $session
     ) {
@@ -84,7 +83,7 @@ class Verifyonetouch extends Action
         $this->tfa = $tfa;
         $this->trustedManager = $trustedManager;
         $this->tfaSession = $tfaSession;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**

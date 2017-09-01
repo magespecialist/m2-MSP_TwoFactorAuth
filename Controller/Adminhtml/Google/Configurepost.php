@@ -66,7 +66,6 @@ class Configurepost extends Action
         PageFactory $pageFactory,
         Google $google,
         TfaSessionInterface $tfaSession,
-        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -75,7 +74,7 @@ class Configurepost extends Action
         $this->pageFactory = $pageFactory;
         $this->google = $google;
         $this->tfaSession = $tfaSession;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**

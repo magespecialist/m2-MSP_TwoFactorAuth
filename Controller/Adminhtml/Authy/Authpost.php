@@ -74,7 +74,6 @@ class Authpost extends Action
         Authy $authy,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
-        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -83,7 +82,7 @@ class Authpost extends Action
         $this->pageFactory = $pageFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
         $this->authy = $authy;
     }
 

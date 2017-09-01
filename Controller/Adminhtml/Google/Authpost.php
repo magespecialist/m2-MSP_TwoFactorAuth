@@ -73,7 +73,6 @@ class Authpost extends Action
         Google $google,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
-        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -83,7 +82,7 @@ class Authpost extends Action
         $this->google = $google;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**

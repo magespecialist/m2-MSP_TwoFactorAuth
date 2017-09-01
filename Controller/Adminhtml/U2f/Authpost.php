@@ -71,7 +71,6 @@ class Authpost extends Action
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         U2fKey $u2fKey,
-        EventInterface $event,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -82,7 +81,7 @@ class Authpost extends Action
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**

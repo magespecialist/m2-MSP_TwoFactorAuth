@@ -68,8 +68,7 @@ class Verifypost extends Action
         TfaInterface $tfa,
         TfaSessionInterface $tfaSession,
         Authy $authy,
-        PageFactory $pageFactory,
-        EventInterface $event
+        PageFactory $pageFactory
     ) {
         parent::__construct($context);
         $this->pageFactory = $pageFactory;
@@ -77,7 +76,7 @@ class Verifypost extends Action
         $this->tfa = $tfa;
         $this->authy = $authy;
         $this->tfaSession = $tfaSession;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**

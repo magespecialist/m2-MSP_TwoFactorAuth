@@ -66,7 +66,6 @@ class Configurepost extends Action
         JsonFactory $jsonFactory,
         TfaSessionInterface $tfaSession,
         U2fKey $u2fKey,
-        EventInterface $event,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -76,7 +75,7 @@ class Configurepost extends Action
         $this->u2fKey = $u2fKey;
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**

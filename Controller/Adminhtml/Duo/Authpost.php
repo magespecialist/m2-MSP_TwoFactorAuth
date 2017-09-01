@@ -67,7 +67,6 @@ class Authpost extends Action
         PageFactory $pageFactory,
         DuoSecurity $duoSecurity,
         TfaSessionInterface $tfaSession,
-        EventInterface $event,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -76,7 +75,7 @@ class Authpost extends Action
         $this->pageFactory = $pageFactory;
         $this->tfaSession = $tfaSession;
         $this->duoSecurity = $duoSecurity;
-        $this->event = $event;
+        $this->event = $context->getEventManager();
     }
 
     /**
