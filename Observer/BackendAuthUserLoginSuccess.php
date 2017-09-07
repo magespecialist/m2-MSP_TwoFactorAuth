@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Observer;
 
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
+use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 
 class BackendAuthUserLoginSuccess implements ObserverInterface
@@ -31,10 +32,17 @@ class BackendAuthUserLoginSuccess implements ObserverInterface
      */
     private $trustedManager;
 
+    /**
+     * @var TfaInterface
+     */
+    private $tfa;
+
     public function __construct(
+        TfaInterface $tfa,
         TrustedManagerInterface $trustedManager
     ) {
         $this->trustedManager = $trustedManager;
+        $this->tfa = $tfa;
     }
 
     /**
@@ -43,6 +51,10 @@ class BackendAuthUserLoginSuccess implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
+        if (!$this->tfa->getIsEnabled()) {
+            return;
+        }
+
         if ($this->trustedManager->isTrustedDevice()) {
             $this->trustedManager->rotateTrustedDeviceToken();
         }
