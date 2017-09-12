@@ -156,7 +156,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
     {
         $connection = $setup->getConnection();
         $tfaAdminUserTable = $setup->getTable('msp_tfa_user_config');
-        $adminUserTable = $connection->getTableName('admin_user');
+        $adminUserTable = $setup->getTable('admin_user');
 
         $table = $setup->getConnection()
             ->newTable($tfaAdminUserTable)
