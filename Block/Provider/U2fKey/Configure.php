@@ -39,8 +39,8 @@ class Configure extends Template
         EncoderInterface $encoder,
         U2fKey $u2fKey,
         array $data = []
-    )
-    {
+    ) {
+    
         parent::__construct($context, $data);
         $this->u2fKey = $u2fKey;
         $this->encoder = $encoder;

@@ -23,7 +23,7 @@
         <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - U2F key registration') ?></span></legend>
         <br/>
         <div id="u2f-touch-key">
-            <h3><?= __('Plug in your U2F key, then touch button') ?></h3>
+            <h3><?php echo __('Plug in your U2F key, then touch button') ?></h3>
             <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/u2f/touch.png') ?>" />
         </div>
 
@@ -40,7 +40,7 @@
 <script>
   require(['jquery', 'MSP_TwoFactorAuth/js/u2f'], function ($) {
     function waitForTouch() {
-      var registerData = <?= $block->getRegisterData() ?>;
+      var registerData = <?php echo $block->getRegisterData() ?>;
       var requestData = registerData[0];
       var signs = registerData[1];
 
@@ -48,19 +48,19 @@
         [requestData],
         signs,
         function (registerResponse) {
-          $.post('<?= $block->getConfigurePostUrl() ?>', {
+          $.post('<?php echo $block->getConfigurePostUrl() ?>', {
             'request': requestData,
             'response': registerResponse
           }).done(function (res) {
             if (res['success']) {
               $('#u2f-login').css('display', 'block');
               $('#u2f-touch-key').css('display', 'none');
-              self.location.href='<?= $block->getSuccessUrl() ?>'
+              self.location.href='<?php echo $block->getSuccessUrl() ?>'
             } else {
               waitForTouch();
             }
           }).fail(function () {
-            alert('<?= $block->escapeJsQuote('Unable to register your device') ?>');
+            alert('<?php echo $block->escapeJsQuote('Unable to register your device') ?>');
           })
         }, 120
       );

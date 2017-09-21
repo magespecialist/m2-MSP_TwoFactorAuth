@@ -97,7 +97,6 @@ class Configurepost extends Action
                 'message' => 'New authy verification request via ' . $request->getParam('tfa_method'),
                 'username' => $this->getUser()->getUserName(),
             ]);
-
         } catch (\Exception $e) {
             $this->_eventManager->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
                 'module' => 'MSP_TwoFactorAuth',

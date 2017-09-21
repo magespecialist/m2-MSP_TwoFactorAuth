@@ -63,9 +63,11 @@ class Tfa extends Generic
         $form->setHtmlIdPrefix('tfa_');
 
         $tfaFieldset = $form->addFieldset(
-            'base_fieldset', [
+            'base_fieldset',
+            [
             'legend' => __('2FA')
-        ]);
+            ]
+        );
 
         $forcedProviders = $this->tfa->getForcedProviders();
         if (count($forcedProviders)) {

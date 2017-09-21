@@ -146,7 +146,8 @@ class TrustedManager implements TrustedManagerInterface
     {
         try {
             return $this->decoder->decode(
-                $this->cookieManager->getCookie(TrustedManagerInterface::TRUSTED_DEVICE_COOKIE));
+                $this->cookieManager->getCookie(TrustedManagerInterface::TRUSTED_DEVICE_COOKIE)
+            );
         } catch (\Exception $e) {
             return [];
         }
@@ -249,8 +250,7 @@ class TrustedManager implements TrustedManagerInterface
     public function handleTrustDeviceRequest($providerCode, RequestInterface $request)
     {
         if ($provider = $this->tfa->getProvider($providerCode)) {
-            if (
-                $provider->getAllowTrustedDevices() &&
+            if ($provider->getAllowTrustedDevices() &&
                 $request->getParam('tfa_trust_device') &&
                 ($request->getParam('tfa_trust_device') != "false") // u2fkey submit translates into a string
             ) {

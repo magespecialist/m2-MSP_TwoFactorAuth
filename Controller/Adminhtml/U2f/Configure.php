@@ -40,8 +40,8 @@ class Configure extends Action
         Tfa $tfa,
         Session $session,
         Action\Context $context
-    )
-    {
+    ) {
+    
         $this->tfa = $tfa;
         $this->session = $session;
         parent::__construct($context);

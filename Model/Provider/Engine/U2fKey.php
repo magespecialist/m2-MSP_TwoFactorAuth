@@ -69,8 +69,7 @@ class U2fKey implements EngineInterface
     protected function hashToObject(array $hash)
     {
         $object = new \stdClass();
-        foreach ($hash as $key => $value)
-        {
+        foreach ($hash as $key => $value) {
             $object->$key = $value;
         }
 

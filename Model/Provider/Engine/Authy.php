@@ -301,7 +301,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Missing user information'));
         }
 
-        $url = $this->getOneTouchApiEndpoint( 'users/' . $providerInfo['user'] . '/approval_requests');
+        $url = $this->getOneTouchApiEndpoint('users/' . $providerInfo['user'] . '/approval_requests');
 
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
@@ -349,7 +349,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Invalid approval code'));
         }
 
-        $url = $this->getOneTouchApiEndpoint( 'approval_requests/' . $approvalCode);
+        $url = $this->getOneTouchApiEndpoint('approval_requests/' . $approvalCode);
 
         $times = 10;
 
