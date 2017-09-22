@@ -21,7 +21,6 @@
 namespace MSP\TwoFactorAuth\Observer;
 
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Registry;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -34,23 +33,16 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
     private $session;
 
     /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
      * @var TfaInterface
      */
     private $tfa;
 
     public function __construct(
         Session $session,
-        TfaInterface $tfa,
-        Registry $registry
+        TfaInterface $tfa
     ) {
         $this->tfa = $tfa;
         $this->session = $session;
-        $this->registry = $registry;
     }
 
     /**
