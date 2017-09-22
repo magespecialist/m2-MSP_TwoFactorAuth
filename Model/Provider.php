@@ -21,8 +21,6 @@
 namespace MSP\TwoFactorAuth\Model;
 
 use Magento\User\Api\Data\UserInterface;
-use Magento\User\Block\User;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
@@ -42,11 +40,6 @@ class Provider implements ProviderInterface
      * @var string
      */
     private $name;
-
-    /**
-     * @var boolean
-     */
-    private $allowTrustedDevices;
 
     /**
      * @var UserConfigManagerInterface
@@ -74,10 +67,9 @@ class Provider implements ProviderInterface
     private $canReset;
 
     /**
-     * @var
+     * @var string
      */
     private $icon;
-
 
     public function __construct(
         EngineInterface $engine,
@@ -105,9 +97,9 @@ class Provider implements ProviderInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
-        return $this->getEngine()->getIsEnabled();
+        return $this->getEngine()->isEnabled();
     }
 
     /**
@@ -150,7 +142,7 @@ class Provider implements ProviderInterface
      * Return true if this provider configuration can be reset
      * @return boolean
      */
-    public function getCanReset()
+    public function isResetAllowed()
     {
         return $this->canReset;
     }
@@ -159,9 +151,9 @@ class Provider implements ProviderInterface
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices()
+    public function isTrustedDevicesAllowed()
     {
-        return $this->engine->getAllowTrustedDevices();
+        return $this->engine->isTrustedDevicesAllowed();
     }
 
     /**
@@ -180,9 +172,9 @@ class Provider implements ProviderInterface
      * @param UserInterface $user
      * @return bool
      */
-    public function getIsConfigured(UserInterface $user)
+    public function isConfigured(UserInterface $user)
     {
-        return !is_null($this->getConfiguration($user));
+        return $this->getConfiguration($user) !== null;
     }
 
     /**
@@ -200,9 +192,9 @@ class Provider implements ProviderInterface
      * @param UserInterface $user
      * @return bool
      */
-    public function getIsActive(UserInterface $user)
+    public function isActive(UserInterface $user)
     {
-        return $this->userConfigManager->getProviderConfigurationIsActive($user, $this->getCode());
+        return $this->userConfigManager->isProviderConfigurationActive($user, $this->getCode());
     }
 
     /**

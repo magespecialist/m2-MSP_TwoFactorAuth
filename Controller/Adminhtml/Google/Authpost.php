@@ -89,7 +89,7 @@ class Authpost extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -125,6 +125,6 @@ class Authpost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            $this->tfa->getProvider(Google::CODE)->getIsActive($user);
+            $this->tfa->getProvider(Google::CODE)->isActive($user);
     }
 }

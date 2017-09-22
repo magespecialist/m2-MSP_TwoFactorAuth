@@ -65,7 +65,7 @@ class DuoSecurity implements EngineInterface
      * Get application key
      * @return string
      */
-    protected function getApplicationKey()
+    private function getApplicationKey()
     {
         return $this->scopeConfig->getValue(static::XML_PATH_APPLICATION_KEY);
     }
@@ -74,7 +74,7 @@ class DuoSecurity implements EngineInterface
      * Get secret key
      * @return string
      */
-    protected function getSecretKey()
+    private function getSecretKey()
     {
         return $this->scopeConfig->getValue(static::XML_PATH_SECRET_KEY);
     }
@@ -83,7 +83,7 @@ class DuoSecurity implements EngineInterface
      * Get integration key
      * @return string
      */
-    protected function getIntegrationKey()
+    private function getIntegrationKey()
     {
         return $this->scopeConfig->getValue(static::XML_PATH_INTEGRATION_KEY);
     }
@@ -97,7 +97,7 @@ class DuoSecurity implements EngineInterface
      * @param int $time
      * @return string
      */
-    protected function signValues($key, $values, $prefix, $expire, $time)
+    private function signValues($key, $values, $prefix, $expire, $time)
     {
         $exp = $time + $expire;
         $cookie = $prefix . '|' . base64_encode($values . '|' . $exp);
@@ -114,11 +114,11 @@ class DuoSecurity implements EngineInterface
      * @param int $time
      * @return string|false
      */
-    protected function parseValues($key, $val, $prefix, $time)
+    private function parseValues($key, $val, $prefix, $time)
     {
         $integrationKey = $this->getIntegrationKey();
 
-        $ts = ($time ? $time : time());
+        $timestamp = ($time ? $time : time());
 
         $parts = explode('|', $val);
         if (count($parts) !== 3) {
@@ -135,16 +135,19 @@ class DuoSecurity implements EngineInterface
             return false;
         }
 
-        $cookie_parts = explode('|', base64_decode($uB64));
-        if (count($cookie_parts) !== 3) {
+        // @codingStandardsIgnoreStart
+        $cookieParts = explode('|', base64_decode($uB64));
+        // @codingStandardsIgnoreEnd
+
+        if (!empty($cookieParts) !== 3) {
             return false;
         }
-        list($user, $uIkey, $exp) = $cookie_parts;
+        list($user, $uIkey, $exp) = $cookieParts;
 
         if ($uIkey !== $integrationKey) {
             return false;
         }
-        if ($ts >= intval($exp)) {
+        if ($timestamp >= (int) $exp) {
             return false;
         }
 
@@ -201,7 +204,7 @@ class DuoSecurity implements EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
         return
             !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED) &&
@@ -215,7 +218,7 @@ class DuoSecurity implements EngineInterface
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices()
+    public function isTrustedDevicesAllowed()
     {
         return false;
     }

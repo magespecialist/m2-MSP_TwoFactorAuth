@@ -50,7 +50,6 @@ class Configurepost extends Action
      */
     private $authy;
 
-
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -69,7 +68,7 @@ class Configurepost extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -123,6 +122,6 @@ class Configurepost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            !$this->tfa->getProvider(Authy::CODE)->getIsActive($user);
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
     }
 }

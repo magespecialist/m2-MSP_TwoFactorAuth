@@ -82,7 +82,7 @@ class ControllerActionPredispatch implements ObserverInterface
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -93,7 +93,7 @@ class ControllerActionPredispatch implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!$this->tfa->getIsEnabled()) {
+        if (!$this->tfa->isEnabled()) {
             return;
         }
 
@@ -106,9 +106,9 @@ class ControllerActionPredispatch implements ObserverInterface
         }
 
         $user = $this->getUser();
-        if ($user && count($this->tfa->getUserProviders($user))) {
+        if ($user && !empty($this->tfa->getUserProviders($user))) {
             $accessGranted = ($this->tfaSession->getIsGranted() || $this->trustedManager->isTrustedDevice()) &&
-                !count($this->tfa->getProvidersToActivate($user));
+                empty($this->tfa->getProvidersToActivate($user));
 
             if (!$accessGranted) {
                 $this->actionFlag->set('', Action::FLAG_NO_DISPATCH, true);

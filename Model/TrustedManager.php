@@ -36,7 +36,7 @@ use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 
 class TrustedManager implements TrustedManagerInterface
 {
-    protected $isTrustedDevice = null;
+    private $isTrustedDevice = null;
 
     /**
      * @var TfaInterface
@@ -104,7 +104,7 @@ class TrustedManager implements TrustedManagerInterface
         CookieManagerInterface $cookieManager,
         SessionManagerInterface $sessionManager,
         TrustedFactory $trustedFactory,
-        CookieMetadataFactory $cookieMetadataFactory
+        CookieMetadataFactory $cookieMdFactory
     ) {
         $this->tfa = $tfa;
         $this->trustedFactory = $trustedFactory;
@@ -114,7 +114,7 @@ class TrustedManager implements TrustedManagerInterface
         $this->trustedResourceModel = $trustedResourceModel;
         $this->cookieManager = $cookieManager;
         $this->sessionManager = $sessionManager;
-        $this->cookieMetadataFactory = $cookieMetadataFactory;
+        $this->cookieMetadataFactory = $cookieMdFactory;
         $this->encoder = $encoder;
         $this->decoder = $decoder;
     }
@@ -123,7 +123,7 @@ class TrustedManager implements TrustedManagerInterface
      * Get current user
      * @return User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -132,7 +132,7 @@ class TrustedManager implements TrustedManagerInterface
      * Get device name
      * @return string
      */
-    protected function getDeviceName()
+    private function getDeviceName()
     {
         $browser = parse_user_agent();
         return $browser['platform'] . ' ' . $browser['browser'] . ' ' . $browser['version'];
@@ -142,7 +142,7 @@ class TrustedManager implements TrustedManagerInterface
      * Get token collection from cookie
      * @return array
      */
-    protected function getTokenCollection()
+    private function getTokenCollection()
     {
         try {
             return $this->decoder->decode(
@@ -157,7 +157,7 @@ class TrustedManager implements TrustedManagerInterface
      * Send token as cookie
      * @param string $token
      */
-    protected function sendTokenCookie($token)
+    private function sendTokenCookie($token)
     {
         $user = $this->getUser();
         $tokenCollection = $this->getTokenCollection();
@@ -194,7 +194,7 @@ class TrustedManager implements TrustedManagerInterface
             $trustEntry = $this->trustedFactory->create();
             $this->trustedResourceModel->load($trustEntry, $token, 'token');
             if ($trustEntry->getId() && ($trustEntry->getUserId() == $user->getId())) {
-                $token = md5(uniqid(time()));
+                $token = sha1(uniqid(time()));
 
                 $trustEntry->setToken($token);
                 $this->trustedResourceModel->save($trustEntry);
@@ -210,7 +210,7 @@ class TrustedManager implements TrustedManagerInterface
      */
     public function isTrustedDevice()
     {
-        if (is_null($this->isTrustedDevice)) { // Must cache this ina single session to avoid rotation issues
+        if ($this->isTrustedDevice === null) { // Must cache this ina single session to avoid rotation issues
             $user = $this->getUser();
             $tokenCollection = $this->getTokenCollection();
 
@@ -250,11 +250,11 @@ class TrustedManager implements TrustedManagerInterface
     public function handleTrustDeviceRequest($providerCode, RequestInterface $request)
     {
         if ($provider = $this->tfa->getProvider($providerCode)) {
-            if ($provider->getAllowTrustedDevices() &&
+            if ($provider->isTrustedDevicesAllowed() &&
                 $request->getParam('tfa_trust_device') &&
                 ($request->getParam('tfa_trust_device') != "false") // u2fkey submit translates into a string
             ) {
-                $token = md5(uniqid(time()));
+                $token = sha1(uniqid(time()));
 
                 /** @var $trustEntry Trusted */
                 $trustEntry = $this->trustedFactory->create();

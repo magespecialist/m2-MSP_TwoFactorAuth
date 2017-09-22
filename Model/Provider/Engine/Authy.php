@@ -91,7 +91,7 @@ class Authy implements EngineInterface
      * Get API key
      * @return string
      */
-    protected function getApiKey()
+    private function getApiKey()
     {
         return $this->scopeConfig->getValue(static::XML_PATH_API_KEY);
     }
@@ -101,7 +101,7 @@ class Authy implements EngineInterface
      * @param string $path
      * @return string
      */
-    protected function getProtectedApiEndpoint($path)
+    private function getProtectedApiEndpoint($path)
     {
         return static::AUTHY_BASE_ENDPOINT . 'protected/json/' . $path;
     }
@@ -111,7 +111,7 @@ class Authy implements EngineInterface
      * @param string $path
      * @return string
      */
-    protected function getOneTouchApiEndpoint($path)
+    private function getOneTouchApiEndpoint($path)
     {
         return static::AUTHY_BASE_ENDPOINT . 'onetouch/json/' . $path;
     }
@@ -121,7 +121,7 @@ class Authy implements EngineInterface
      * @param array $response
      * @return string
      */
-    protected function getErrorFromResponse($response)
+    private function getErrorFromResponse($response)
     {
         if ($response === false) {
             return 'Invalid authy webservice response';
@@ -386,7 +386,7 @@ class Authy implements EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
         return
             !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED) &&
@@ -431,7 +431,7 @@ class Authy implements EngineInterface
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices()
+    public function isTrustedDevicesAllowed()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }

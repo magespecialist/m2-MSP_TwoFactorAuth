@@ -23,16 +23,16 @@
 <form>
     <fieldset class="admin__fieldset">
         <iframe id="duo_iframe"
-                data-host="<?php echo $this->getApiHost(); ?>"
-                data-sig-request="<?php echo $this->getSignature(); ?>"
-                data-post-action="<?php echo $this->getPostAction(); ?>"
+                data-host="<?= $this->getApiHost(); ?>"
+                data-sig-request="<?= $this->getSignature(); ?>"
+                data-post-action="<?= $this->getPostAction(); ?>"
         ></iframe>
         <script type="text/javascript">
           require(['MSP_TwoFactorAuth/js/duo'], function(duo) { duo.init(); });
         </script>
     </fieldset>
 
-    <?php echo $block->getChildHtml('change-provider') ?>
+    <?= $block->getChildHtml('change-provider') ?>
 
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>

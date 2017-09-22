@@ -35,6 +35,7 @@ class Authpost extends Action
      * @var Tfa
      */
     private $tfa;
+
     /**
      * @var Session
      */
@@ -59,6 +60,7 @@ class Authpost extends Action
      * @var TrustedManagerInterface
      */
     private $trustedManager;
+
     /**
      * @var EventInterface
      */
@@ -118,7 +120,7 @@ class Authpost extends Action
     /**
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -134,6 +136,6 @@ class Authpost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->getIsActive($user);
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($user);
     }
 }

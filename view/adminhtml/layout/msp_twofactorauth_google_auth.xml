@@ -33,10 +33,18 @@
                    template="MSP_TwoFactorAuth::msp_twofactorauth/provider/google/auth.phtml">
 
                 <block class="MSP\TwoFactorAuth\Block\TrustDevice" name="msp_twofactorauth_trust_device"
-                       as="trust-device" template="MSP_TwoFactorAuth::msp_twofactorauth/trust_device.phtml" />
+                       as="trust-device" template="MSP_TwoFactorAuth::msp_twofactorauth/trust_device.phtml">
+                    <arguments>
+                        <argument name="provider" xsi:type="string">google</argument>
+                    </arguments>
+                </block>
 
                 <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
-                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml" />
+                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml">
+                    <arguments>
+                        <argument name="provider" xsi:type="string">authy</argument>
+                    </arguments>
+                </block>
             </block>
         </referenceContainer>
     </body>

@@ -70,7 +70,7 @@ class Tfa extends Generic
         );
 
         $forcedProviders = $this->tfa->getForcedProviders();
-        if (count($forcedProviders)) {
+        if (!empty($forcedProviders)) {
             $names = [];
             foreach ($forcedProviders as $forcedProvider) {
                 $names[] = $forcedProvider->getName();
@@ -104,7 +104,7 @@ class Tfa extends Generic
         $providers = $this->tfa->getAllEnabledProviders();
         foreach ($providers as $provider) {
             /** @var ProviderInterface $provider */
-            if ($provider->getIsConfigured($user) && $provider->getCanReset()) {
+            if ($provider->isConfigured($user) && $provider->isResetAllowed()) {
                 $resetUrl = $this->getUrl('msp_twofactorauth/tfa/reset', [
                     'id' => $user->getId(),
                     'provider' => $provider->getCode(),
@@ -130,7 +130,7 @@ class Tfa extends Generic
         $trustedDevices = $this->tfa->getTrustedDevices($user->getId());
 
         // TODO: Make it better
-        if (count($trustedDevices)) {
+        if (!empty($trustedDevices)) {
             $devicesHtml = ['<div class="msp_tfa-trusted_devices">'];
 
             $devicesHtml[] = '<div class="msp_tfa-trusted_devices-head">';

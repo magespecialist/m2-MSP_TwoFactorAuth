@@ -26,7 +26,7 @@
     <fieldset class="admin__fieldset">
         <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Google Auth') ?></span></legend><br/>
 
-        <?php echo $block->getBlockHtml('formkey')?>
+        <?= $block->getBlockHtml('formkey')?>
 
         <div class="admin__field _required field-tfa_code">
             <label for="tfa_code" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Authenticator code') ?></span></label>
@@ -42,7 +42,7 @@
                     placeholder="<?php /* @escapeNotVerified */ echo __('Your code') ?>"/>
             </div>
         </div>
-        <?php echo $block->getChildHtml('trust-device') ?>
+        <?= $block->getChildHtml('trust-device') ?>
 
         <div class="form-actions">
             <div class="actions">
@@ -55,7 +55,7 @@
         </div>
     </fieldset>
 
-    <?php echo $block->getChildHtml('change-provider') ?>
+    <?= $block->getChildHtml('change-provider') ?>
 
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>

@@ -30,11 +30,11 @@ use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 class Configurepost extends Action
 {
-
     /**
      * @var Tfa
      */
     private $tfa;
+
     /**
      * @var Session
      */
@@ -120,7 +120,7 @@ class Configurepost extends Action
     /**
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -136,6 +136,6 @@ class Configurepost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            !$this->tfa->getProvider(U2fKey::CODE)->getIsActive($user);
+            !$this->tfa->getProvider(U2fKey::CODE)->isActive($user);
     }
 }

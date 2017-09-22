@@ -28,8 +28,8 @@ $verifyInfo = $block->getVerifyInfo();
         <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span></legend><br/>
 
         <p>
-            <strong><?php echo $verifyInfo['message'] ?></strong><br />
-            <a href="<?php echo $block->getConfigUrl() ?>"><?php echo __('Click here to change your phone number') ?></a>
+            <strong><?= $verifyInfo['message'] ?></strong><br />
+            <a href="<?= $block->getConfigUrl() ?>"><?= __('Click here to change your phone number') ?></a>
         </p><br />
 
         <div class="admin__field _required field-tfa_verify">
@@ -58,11 +58,11 @@ $verifyInfo = $block->getVerifyInfo();
         </div>
     </fieldset>
 
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
 
 <script type="text/javascript">
     window.setTimeout(function () {
-      self.location.href='<?php echo $block->getConfigUrl() ?>';
-    }, <?php echo $verifyInfo['seconds_to_expire'] * 1000 ?>);
+      self.location.href='<?= $block->getConfigUrl() ?>';
+    }, <?= $verifyInfo['seconds_to_expire'] * 1000 ?>);
 </script>

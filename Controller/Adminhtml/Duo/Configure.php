@@ -22,9 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
 class Configure extends Action
 {
@@ -46,15 +44,6 @@ class Configure extends Action
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
-    }
-
-    /**
-     * Get current user
-     * @return \Magento\User\Model\User|null
-     */
-    protected function getUser()
-    {
-        return $this->session->getUser();
     }
 
     public function execute()

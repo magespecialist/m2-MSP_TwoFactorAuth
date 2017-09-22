@@ -74,7 +74,7 @@ class Auth extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -95,6 +95,6 @@ class Auth extends Action
     {
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->getIsActive($this->getUser());
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($this->getUser());
     }
 }

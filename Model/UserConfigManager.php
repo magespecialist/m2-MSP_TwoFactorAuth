@@ -27,7 +27,7 @@ use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 
 class UserConfigManager implements UserConfigManagerInterface
 {
-    protected $configurationRegistry = [];
+    private $configurationRegistry = [];
 
     /**
      * @var EncoderInterface
@@ -84,7 +84,7 @@ class UserConfigManager implements UserConfigManagerInterface
         $userConfig = $this->getUserConfiguration($user);
         $providersConfig = $userConfig->getData('config');
 
-        if (is_null($config)) {
+        if ($config === null) {
             if (isset($providersConfig[$providerCode])) {
                 unset($providersConfig[$providerCode]);
             }
@@ -107,7 +107,7 @@ class UserConfigManager implements UserConfigManagerInterface
     public function addProviderConfig(UserInterface $user, $providerCode, $config)
     {
         $userConfig = $this->getProviderConfig($user, $providerCode);
-        if (is_null($userConfig)) {
+        if ($userConfig === null) {
             $newConfig = $config;
         } else {
             $newConfig = array_merge($userConfig, $config);
@@ -133,7 +133,7 @@ class UserConfigManager implements UserConfigManagerInterface
      * @param UserInterface $user
      * @return UserConfig
      */
-    protected function getUserConfiguration(UserInterface $user)
+    private function getUserConfiguration(UserInterface $user)
     {
         $key = $user->getId();
 
@@ -195,7 +195,7 @@ class UserConfigManager implements UserConfigManagerInterface
      * @param $providerCode
      * @return boolean
      */
-    public function getProviderConfigurationIsActive(UserInterface $user, $providerCode)
+    public function isProviderConfigurationActive(UserInterface $user, $providerCode)
     {
         $config = $this->getProviderConfig($user, $providerCode);
         return $config &&

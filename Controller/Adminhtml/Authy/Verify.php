@@ -76,7 +76,7 @@ class Verify extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -85,7 +85,7 @@ class Verify extends Action
      * Get verify information
      * @return verify payload
      */
-    protected function getVerifyInformation()
+    private function getVerifyInformation()
     {
         $providerConfig = $this->userConfigManager->getProviderConfig($this->getUser(), Authy::CODE);
         if (!isset($providerConfig['verify'])) {
@@ -121,6 +121,6 @@ class Verify extends Action
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
             $this->getVerifyInformation() &&
-            !$this->tfa->getProvider(Authy::CODE)->getIsActive($user);
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
     }
 }

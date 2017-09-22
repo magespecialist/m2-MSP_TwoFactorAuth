@@ -31,10 +31,10 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
                 echo __('2FA - Authy Auth') ?></span></legend>
         <br/>
 
-        <?php echo $block->getBlockHtml('formkey') ?>
+        <?= $block->getBlockHtml('formkey') ?>
 
         <div id="authy-actions-list">
-            <h3><?php echo __('Verification methods:') ?></h3>
+            <h3><?= __('Verification methods:') ?></h3>
 
             <button
                     onclick="authy.runOnetouch()"
@@ -53,7 +53,7 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
             </button>
 
             <br/>
-            <h3><?php echo __('Emergency methods:') ?></h3>
+            <h3><?= __('Emergency methods:') ?></h3>
 
             <button
                     onclick="authy.runSendCode('sms')"
@@ -73,14 +73,14 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         </div>
 
         <div id="authy-one-touch">
-            <img class="loading" src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/loading.gif') ?>"/>
-            <div id="authy-one-touch-send"><?php echo __('Sending push notification...') ?></div>
-            <div id="authy-one-touch-wait"><?php echo __('Waiting for approval...') ?></div>
+            <img class="loading" src="<?= $block->getViewFileUrl('MSP_TwoFactorAuth::images/loading.gif') ?>"/>
+            <div id="authy-one-touch-send"><?= __('Sending push notification...') ?></div>
+            <div id="authy-one-touch-wait"><?= __('Waiting for approval...') ?></div>
         </div>
 
         <div id="authy-one-touch-login">
-            <img class="loading" src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif') ?>"/>
-            <div><?php echo __('Access granted, redirecting you to Magento...') ?></div>
+            <img class="loading" src="<?= $block->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif') ?>"/>
+            <div><?= __('Access granted, redirecting you to Magento...') ?></div>
         </div>
 
         <div class="admin__field _required field-tfa_code authy-request-code">
@@ -101,7 +101,7 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         </div>
 
         <div class="authy-request-code">
-            <?php echo $block->getChildHtml('trust-device') ?>
+            <?= $block->getChildHtml('trust-device') ?>
         </div>
         <br/>
 
@@ -117,13 +117,13 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         </div>
 
         <a id="authy-switch-method" href="#"
-           onclick="authy.switchAnotherMethod()"><?php echo __('Switch to another method') ?></a>
+           onclick="authy.switchAnotherMethod()"><?= __('Switch to another method') ?></a>
     </fieldset>
 
     <br/>
-    <?php echo $block->getChildHtml('change-provider') ?>
+    <?= $block->getChildHtml('change-provider') ?>
 
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
 
 <script type="text/javascript">
@@ -164,7 +164,7 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         if (via !== 'token') {
           var tfa_trust_device = $('#tfa_trust_device') ? $('#tfa_trust_device')[0].checked : false;
           var me = this;
-          $.getJSON('<?php echo $block->getTokenRequestUrl() ?>?via=' + via + '&tfa_trust_device=' + tfa_trust_device)
+          $.getJSON('<?= $block->getTokenRequestUrl() ?>?via=' + via + '&tfa_trust_device=' + tfa_trust_device)
             .fail(function (res) {
               alert('There was an error trying to contact Authy services');
               me.switchAnotherMethod();
@@ -183,7 +183,7 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
 
         var me = this;
         var tfa_trust_device = $('#tfa_trust_device') ? $('#tfa_trust_device')[0].checked : false;
-        $.getJSON('<?php echo $block->getOneTouchUrl() ?>?tfa_trust_device=' + tfa_trust_device)
+        $.getJSON('<?= $block->getOneTouchUrl() ?>?tfa_trust_device=' + tfa_trust_device)
           .done(function (res) {
             me.waitForOneTouchApproval();
           })
@@ -198,22 +198,22 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
         $('#authy-one-touch-wait').css('display', 'block');
 
         var me = this;
-        $.getJSON('<?php echo $block->getOneTouchVerifyUrl() ?>')
+        $.getJSON('<?= $block->getOneTouchVerifyUrl() ?>')
           .done(function (res) {
             if (res['status'] === 'retry') {
               me.waitForOneTouchApprovalTimeout = window.setTimeout(function () {
                 me.waitForOneTouchApproval();
               }, 1000);
             } else if (res['status'] === 'expired') {
-              alert('<?php echo $block->escapeJsQuote(__('Your request has been expired')) ?>');
+              alert('<?= $block->escapeJsQuote(__('Your request has been expired')) ?>');
               me.switchAnotherMethod();
             } else if (res['status'] === 'denied') {
-              alert('<?php echo $block->escapeJsQuote(__('Your request has been rejected')) ?>');
+              alert('<?= $block->escapeJsQuote(__('Your request has been rejected')) ?>');
               me.switchAnotherMethod();
             } else if (res['status'] === 'approved') {
               $('#authy-one-touch').css('display', 'none');
               $('#authy-one-touch-login').css('display', 'block');
-              self.location.href = '<?php echo $this->getSuccessUrl() ?>';
+              self.location.href = '<?= $this->getSuccessUrl() ?>';
             }
           })
           .fail(function (res) {

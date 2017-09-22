@@ -44,6 +44,7 @@ class Auth extends Action
      * @var PageFactory
      */
     private $pageFactory;
+
     /**
      * @var Registry
      */
@@ -74,7 +75,7 @@ class Auth extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }

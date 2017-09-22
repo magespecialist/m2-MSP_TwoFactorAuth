@@ -36,7 +36,7 @@ class Google implements EngineInterface
     const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite_twofactorauth/google/allow_trusted_devices';
     const CODE = 'google'; // Must be the same as defined in di.xml
 
-    protected $totp = null;
+    private $totp = null;
 
     /**
      * @var UserConfigManagerInterface
@@ -67,7 +67,7 @@ class Google implements EngineInterface
      * Generate random secret
      * @return string
      */
-    protected function generateSecret()
+    private function generateSecret()
     {
         $secret = random_bytes(128);
         return preg_replace('/[^A-Za-z0-9]/', '', Base32::encode($secret));
@@ -78,15 +78,17 @@ class Google implements EngineInterface
      * @param UserInterface $user
      * @return \OTPHP\TOTP
      */
-    protected function getTotp(UserInterface $user)
+    private function getTotp(UserInterface $user)
     {
-        if (is_null($this->totp)) {
+        if ($this->totp === null) {
             $config = $this->configManager->getProviderConfig($user, static::CODE);
 
+            // @codingStandardsIgnoreStart
             $this->totp = new \OTPHP\TOTP(
                 $user->getEmail(),
                 $config['secret']
             );
+            // @codingStandardsIgnoreEnd
         }
 
         return $this->totp;
@@ -97,7 +99,7 @@ class Google implements EngineInterface
      * @param UserInterface $user
      * @return string
      */
-    protected function getProvisioningUrl(UserInterface $user)
+    private function getProvisioningUrl(UserInterface $user)
     {
         $config = $this->configManager->getProviderConfig($user, static::CODE);
         if (!isset($config['secret'])) {
@@ -140,17 +142,18 @@ class Google implements EngineInterface
      */
     public function getQrCodeAsPng(UserInterface $user)
     {
+        // @codingStandardsIgnoreStart
         $qrCode = new QrCode($this->getProvisioningUrl($user));
-        $qrCode
-            ->setSize(400)
-            ->setErrorCorrectionLevel('high')
-            ->setForegroundColor(['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0])
-            ->setBackgroundColor(['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0])
-            ->setLabelFontSize(16)
-            ->setEncoding('UTF-8');
+        $qrCode->setSize(400);
+        $qrCode->setErrorCorrectionLevel('high');
+        $qrCode->setForegroundColor(['r' => 0, 'g' => 0, 'b' => 0, 'a' => 0]);
+        $qrCode->setBackgroundColor(['r' => 255, 'g' => 255, 'b' => 255, 'a' => 0]);
+        $qrCode->setLabelFontSize(16);
+        $qrCode->setEncoding('UTF-8');
 
         $writer = new PngWriter();
         $pngData = $writer->writeString($qrCode);
+        // @codingStandardsIgnoreEnd
 
         return $pngData;
     }
@@ -159,7 +162,7 @@ class Google implements EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED);
     }
@@ -168,7 +171,7 @@ class Google implements EngineInterface
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices()
+    public function isTrustedDevicesAllowed()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }

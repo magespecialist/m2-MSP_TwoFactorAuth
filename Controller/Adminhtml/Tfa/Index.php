@@ -59,7 +59,7 @@ class Index extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -69,7 +69,7 @@ class Index extends Action
         $user = $this->getUser();
 
         $providersToConfigure = $this->tfa->getProvidersToActivate($user);
-        if (count($providersToConfigure)) {
+        if (!empty($providersToConfigure)) {
             return $this->_redirect($providersToConfigure[0]->getConfigureAction());
         }
 
@@ -82,7 +82,7 @@ class Index extends Action
 
         if (!$providerCode) {
             $providers = $this->tfa->getUserProviders($user);
-            if (count($providers)) {
+            if (!empty($providers)) {
                 $providerCode = $providers[0]->getCode();
             }
         }

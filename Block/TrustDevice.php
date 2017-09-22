@@ -57,15 +57,6 @@ class TrustDevice extends Template
     }
 
     /**
-     * Get user
-     * @return User|null
-     */
-    protected function getUser()
-    {
-        return $this->session->getUser();
-    }
-
-    /**
      * Get current 2FA provider if defined
      * @return string|null
      */
@@ -81,6 +72,6 @@ class TrustDevice extends Template
     public function canShowTrustDevice()
     {
         $provider = $this->tfa->getProvider($this->getCurrentProviderCode());
-        return $provider->getAllowTrustedDevices();
+        return $provider->isTrustedDevicesAllowed();
     }
 }

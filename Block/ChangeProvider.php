@@ -23,7 +23,6 @@ namespace MSP\TwoFactorAuth\Block;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Registry;
-use Magento\User\Api\Data\UserInterface;
 use Magento\User\Model\User;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\ProviderInterface;
@@ -47,7 +46,6 @@ class ChangeProvider extends Template
 
     public function __construct(
         Template\Context $context,
-        Registry $registry,
         Session $session,
         TfaInterface $tfa,
         array $data = []
@@ -62,7 +60,7 @@ class ChangeProvider extends Template
      * Get user
      * @return User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -80,10 +78,10 @@ class ChangeProvider extends Template
      * Return true if current provider is active
      * @return bool
      */
-    public function getCurrentProviderIsActive()
+    public function isCurrentProviderActive()
     {
         $currentProvider = $this->tfa->getProvider($this->getCurrentProviderCode());
-        return $currentProvider->getIsActive($this->getUser());
+        return $currentProvider->isActive($this->getUser());
     }
 
     /**

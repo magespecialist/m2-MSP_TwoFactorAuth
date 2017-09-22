@@ -29,13 +29,13 @@ interface EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled();
+    public function isEnabled();
 
     /**
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices();
+    public function isTrustedDevicesAllowed();
 
     /**
      * Return true on token validation

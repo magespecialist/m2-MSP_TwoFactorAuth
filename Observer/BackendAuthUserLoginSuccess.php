@@ -51,7 +51,7 @@ class BackendAuthUserLoginSuccess implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!$this->tfa->getIsEnabled()) {
+        if (!$this->tfa->isEnabled()) {
             return;
         }
 

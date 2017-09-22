@@ -33,7 +33,7 @@ interface TfaInterface
      * Return true if 2FA is enabled
      * @return boolean
      */
-    public function getIsEnabled();
+    public function isEnabled();
 
     /**
      * Get provider by code

@@ -27,7 +27,7 @@ $countries = $block->getCountriesList();
     <fieldset class="admin__fieldset">
         <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span></legend><br/>
 
-        <h3><?php echo __('Please register yourself to Authy') ?></h3>
+        <h3><?= __('Please register yourself to Authy') ?></h3>
 
         <div class="admin__field _required field-tfa_phone_prefix">
             <label for="tfa_phone_prefix" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Country') ?></span></label>
@@ -39,7 +39,7 @@ $countries = $block->getCountriesList();
                     data-validate="{required:true}">
 
                     <?php foreach ($countries as $country) : ?>
-                        <option value="<?php echo $country['dial_code'] ?>"><?php echo $country['name'] ?></option>
+                        <option value="<?= $country['dial_code'] ?>"><?= $country['name'] ?></option>
                     <?php endforeach; ?>
 
                 </select>
@@ -70,8 +70,8 @@ $countries = $block->getCountriesList();
                         name="tfa_method"
                         data-validate="{required:true}">
 
-                    <option value="sms" selected><?php echo __('Send me an SMS') ?></option>
-                    <option value="call"><?php echo __('Call me') ?></option>
+                    <option value="sms" selected><?= __('Send me an SMS') ?></option>
+                    <option value="call"><?= __('Call me') ?></option>
 
                 </select>
             </div>
@@ -88,5 +88,5 @@ $countries = $block->getCountriesList();
         </div>
     </fieldset>
 
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
