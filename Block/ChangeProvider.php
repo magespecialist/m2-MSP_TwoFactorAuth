@@ -22,18 +22,13 @@ namespace MSP\TwoFactorAuth\Block;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Registry;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\User\Model\User;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\ProviderInterface;
 
 class ChangeProvider extends Template
 {
-    /**
-     * @var Registry
-     */
-    private $registry;
-
     /**
      * @var TfaInterface
      */
@@ -44,6 +39,8 @@ class ChangeProvider extends Template
      */
     private $session;
 
+    private $providerCode = null;
+
     public function __construct(
         Template\Context $context,
         Session $session,
@@ -51,7 +48,6 @@ class ChangeProvider extends Template
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->registry = $registry;
         $this->tfa = $tfa;
         $this->session = $session;
     }
@@ -67,11 +63,19 @@ class ChangeProvider extends Template
 
     /**
      * Get current 2FA provider if defined
-     * @return string|null
+     * @return null|string
+     * @throws LocalizedException
      */
     public function getCurrentProviderCode()
     {
-        return $this->registry->registry('msp_tfa_current_provider');
+        if ($this->providerCode === null) {
+            $this->providerCode = $this->getData('provider');
+            if (!$this->providerCode) {
+                throw new LocalizedException(__('A provider must be defined for this block'));
+            }
+        }
+
+        return $this->providerCode;
     }
 
     /**

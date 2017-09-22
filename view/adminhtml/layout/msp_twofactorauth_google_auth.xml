@@ -42,7 +42,7 @@
                 <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
                        as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml">
                     <arguments>
-                        <argument name="provider" xsi:type="string">authy</argument>
+                        <argument name="provider" xsi:type="string">google</argument>
                     </arguments>
                 </block>
             </block>
