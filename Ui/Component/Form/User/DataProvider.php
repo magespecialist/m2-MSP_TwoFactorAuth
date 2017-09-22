@@ -92,21 +92,24 @@ class DataProvider extends AbstractDataProvider
     /**
      * Get reset provider urls
      * @param User $user
-     * @param $providers
      * @return array
      */
-    private function getResetProviderUrls(User $user, $providers)
+    private function getResetProviderUrls(User $user)
     {
+        $providers = $this->tfa->getAllEnabledProviders();
+
         $resetProviders = [];
         foreach ($providers as $provider) {
-            $resetProviders[] = [
-                'value' => $provider['value'],
-                'label' => $provider['label'],
-                'url' => $this->url->getUrl('msp_twofactorauth/tfa/reset', [
-                    'id' => $user->getId(),
-                    'provider' => $provider['value'],
-                ]),
-            ];
+            if ($provider->isConfigured($user) && $provider->isResetAllowed()) {
+                $resetProviders[] = [
+                    'value' => $provider->getCode(),
+                    'label' => __('Reset %1', $provider->getName()),
+                    'url' => $this->url->getUrl('msp_twofactorauth/tfa/reset', [
+                        'id' => $user->getId(),
+                        'provider' => $provider->getCode(),
+                    ]),
+                ];
+            }
         }
 
         return $resetProviders;
@@ -123,7 +126,7 @@ class DataProvider extends AbstractDataProvider
             /** @var User $feed */
             foreach ($items as $user) {
                 $providerCodes = $this->userConfigManager->getProvidersCodes($user);
-                $resetProviders = $this->getResetProviderUrls($user, $enabledProviders);
+                $resetProviders = $this->getResetProviderUrls($user);
 
                 $data = [
                     'forced_providers' => $forcedProviders,

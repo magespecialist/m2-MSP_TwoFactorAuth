@@ -23,7 +23,15 @@ $canShow = $block->canShowTrustDevice();
 ?>
 <?php if ($canShow) : ?>
     <div class="admin__field field-tfa_trusted">
-        <input id="tfa_trust_device" name="tfa_trust_device" value="1" type="checkbox" class="admin__control-checkbox"/>&nbsp;
-        <label for="tfa_trust_device"><span><?= __('Trust this device, do not ask again') ?></span></label>
+        <input
+                id="tfa_trust_device"
+                name="tfa_trust_device"
+                value="1"
+                type="checkbox"
+                class="admin__control-checkbox" />&nbsp;
+
+        <label for="tfa_trust_device">
+            <span><?= __('Trust this device, do not ask again') ?></span>
+        </label>
     </div>
 <?php endif ?>

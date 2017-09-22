@@ -64,7 +64,7 @@
                     <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/form/element/providers</item>
                     <item name="template" xsi:type="string">ui/form/field</item>
                     <item name="elementTmpl" xsi:type="string">MSP_TwoFactorAuth/form/element/providers</item>
-                    <item name="label" xsi:type="string">2FA Providers</item>
+                    <item name="label" xsi:type="string">Providers selection</item>
                     <item name="visible" xsi:type="boolean">true</item>
                     <item name="dataType" xsi:type="string">text</item>
                     <item name="formElement" xsi:type="string">input</item>
@@ -73,6 +73,13 @@
                 </item>
             </argument>
         </field>
+    </fieldset>
+    <fieldset name="reset_fieldset">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Configuration reset</item>
+            </item>
+        </argument>
 
         <field name="msp_tfa_reset_providers">
             <argument name="data" xsi:type="array">

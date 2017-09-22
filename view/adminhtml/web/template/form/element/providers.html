@@ -28,6 +28,7 @@
 </div>
 <!-- /ko -->
 <!-- ko if: !getForcedProviders().length -->
+<input type="hidden" data-bind="attr: { name: inputName + '[]' }" value="" />
 <select
         multiple
         class="select multiselect admin__control-multiselect"

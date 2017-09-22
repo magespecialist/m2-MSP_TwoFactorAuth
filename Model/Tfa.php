@@ -30,6 +30,7 @@ class Tfa implements TfaInterface
 {
     private $forcedProviders = null;
     private $allowedUrls = null;
+    private $enabledProviders = null;
 
     /**
      * @var ProviderInterface[]
@@ -78,20 +79,20 @@ class Tfa implements TfaInterface
      */
     public function getAllEnabledProviders()
     {
-        if (!$this->isEnabled()) {
-            return [];
-        }
+        if ($this->enabledProviders === null) {
+            $this->enabledProviders = [];
 
-        $res = [];
-
-        $providers = $this->getAllProviders();
-        foreach ($providers as $provider) {
-            if ($provider->isEnabled()) {
-                $res[] = $provider;
+            if ($this->isEnabled()) {
+                $providers = $this->getAllProviders();
+                foreach ($providers as $provider) {
+                    if ($provider->isEnabled()) {
+                        $this->enabledProviders[] = $provider;
+                    }
+                }
             }
         }
 
-        return $res;
+        return $this->enabledProviders;
     }
 
     /**
