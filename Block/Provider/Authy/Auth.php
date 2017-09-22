@@ -21,24 +21,9 @@
 namespace MSP\TwoFactorAuth\Block\Provider\Authy;
 
 use Magento\Backend\Block\Template;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class Auth extends Template
 {
-    /**
-     * @var TfaInterface
-     */
-    private $tfa;
-
-    public function __construct(
-        Template\Context $context,
-        TfaInterface $tfa,
-        array $data = []
-    ) {
-        parent::__construct($context, $data);
-        $this->tfa = $tfa;
-    }
-
     public function getPostUrl()
     {
         return $this->getUrl('*/*/authpost');

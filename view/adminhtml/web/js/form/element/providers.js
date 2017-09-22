@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-<!--
 /**
  * MageSpecialist
  *
@@ -18,16 +16,19 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 
-    <head>
-        <css src="MSP_TwoFactorAuth::css/auth.css"/>
-        <css src="MSP_TwoFactorAuth::css/tfa.css"/>
-    </head>
+define(['Magento_Ui/js/form/element/abstract'], function(Abstract) {
+  return Abstract.extend({
+    defaults: {
 
-    <body>
-        <uiComponent name="msp_twofactorauth_edit_user_form" />
-    </body>
-</page>
+    },
+
+    getForcedProviders: function() {
+      return this.source.data['forced_providers'];
+    },
+
+    getEnabledProviders: function() {
+      return this.source.data['enabled_providers'];
+    }
+  });
+});

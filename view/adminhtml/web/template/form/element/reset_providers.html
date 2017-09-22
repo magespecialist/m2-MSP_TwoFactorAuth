@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!--
 /**
  * MageSpecialist
@@ -19,15 +18,16 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 -->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-
-    <head>
-        <css src="MSP_TwoFactorAuth::css/auth.css"/>
-        <css src="MSP_TwoFactorAuth::css/tfa.css"/>
-    </head>
-
-    <body>
-        <uiComponent name="msp_twofactorauth_edit_user_form" />
-    </body>
-</page>
+<!-- ko if: getResetProviders().length -->
+<div class="msp_tfa-reset_providers">
+    <div  data-bind="foreach: getResetProviders()">
+        <button type="button" data-bind="
+            text: $data.label,
+            click: $parent.resetProvider
+        "></button>
+    </div>
+</div>
+<!-- /ko -->
+<!-- ko if: !getResetProviders().length -->
+<!-- ko i18n: "Not available" --><!-- /ko -->
+<!-- /ko -->

@@ -51,7 +51,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!count($this->tfa->getAllEnabledProviders())) {
+        if (empty($this->tfa->getAllEnabledProviders())) {
             return;
         }
 
@@ -60,10 +60,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 
         $nameInLayout = $block->getNameInLayout();
         if ($nameInLayout == 'adminhtml.user.edit.tabs') {
-            $tfaForm = $block->getLayout()->createBlock(
-                'MSP\TwoFactorAuth\Block\User\Edit\Tab\Tfa',
-                'msp.user.tfa.edit'
-            )->toHtml();
+            $tfaForm = $block->getLayout()->renderElement('msp_twofactorauth_edit_user_form');
 
             $block->addTabAfter(
                 'msp_twofactorauth',

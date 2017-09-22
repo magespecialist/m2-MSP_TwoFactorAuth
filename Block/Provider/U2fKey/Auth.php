@@ -23,16 +23,10 @@ namespace MSP\TwoFactorAuth\Block\Provider\U2fKey;
 use Magento\Backend\Block\Template;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Json\EncoderInterface;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 
 class Auth extends Template
 {
-    /**
-     * @var TfaInterface
-     */
-    private $tfa;
-
     /**
      * @var U2fKey
      */
@@ -50,14 +44,12 @@ class Auth extends Template
 
     public function __construct(
         Template\Context $context,
-        TfaInterface $tfa,
         Session $session,
         EncoderInterface $encoder,
         U2fKey $u2fKey,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->tfa = $tfa;
         $this->u2fKey = $u2fKey;
         $this->encoder = $encoder;
         $this->session = $session;

@@ -62,3 +62,13 @@
 .msp_tfa-trusted_devices-revoke button {
     font-size: 85%;
 }
+
+.msp_tfa-forced_providers ul {
+    margin-left: 3em;
+}
+
+.msp_tfa-reset_providers button {
+    width: 250px;
+    margin-bottom: .4em;
+    display: block;
+}

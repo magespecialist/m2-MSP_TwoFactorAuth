@@ -22,7 +22,6 @@ namespace MSP\TwoFactorAuth\Block\Provider\Duo;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Model\Auth\Session;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
 class Auth extends Template
@@ -33,25 +32,18 @@ class Auth extends Template
     private $duoSecurity;
 
     /**
-     * @var TfaInterface
-     */
-    private $tfa;
-
-    /**
      * @var Session
      */
     private $session;
 
     public function __construct(
         Template\Context $context,
-        TfaInterface $tfa,
         Session $session,
         DuoSecurity $duoSecurity,
         array $data = []
     ) {
         parent::__construct($context, $data);
         $this->duoSecurity = $duoSecurity;
-        $this->tfa = $tfa;
         $this->session = $session;
     }
 
