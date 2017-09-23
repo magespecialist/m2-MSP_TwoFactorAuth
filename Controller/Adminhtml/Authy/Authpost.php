@@ -22,6 +22,8 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\DataObjectFactory;
+use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -67,6 +69,11 @@ class Authpost extends Action
      */
     private $authy;
 
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -74,7 +81,8 @@ class Authpost extends Action
         Authy $authy,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
-        TfaInterface $tfa
+        TfaInterface $tfa,
+        DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
@@ -84,6 +92,7 @@ class Authpost extends Action
         $this->trustedManager = $trustedManager;
         $this->event = $context->getEventManager();
         $this->authy = $authy;
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -100,7 +109,9 @@ class Authpost extends Action
         $user = $this->getUser();
 
         try {
-            $this->authy->verify($user, $this->getRequest());
+            $this->authy->verify($user, $this->dataObjectFactory->create([
+                'data' => $this->getRequest()->getParams(),
+            ]));
             $this->trustedManager->handleTrustDeviceRequest(Authy::CODE, $this->getRequest());
             $this->tfaSession->grantAccess();
         } catch (\Exception $e) {

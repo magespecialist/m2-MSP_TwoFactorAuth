@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -61,12 +62,18 @@ class Authpost extends Action
      */
     private $event;
 
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         PageFactory $pageFactory,
         DuoSecurity $duoSecurity,
         TfaSessionInterface $tfaSession,
+        DataObjectFactory $dataObjectFactory,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -76,6 +83,7 @@ class Authpost extends Action
         $this->tfaSession = $tfaSession;
         $this->duoSecurity = $duoSecurity;
         $this->event = $context->getEventManager();
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -91,7 +99,9 @@ class Authpost extends Action
     {
         $user = $this->getUser();
 
-        if ($this->duoSecurity->verify($user, $this->getRequest())) {
+        if ($this->duoSecurity->verify($user, $this->dataObjectFactory->create([
+            'data' => $this->getRequest()->getParams(),
+        ]))) {
             $this->tfa->getProvider(DuoSecurity::CODE)->activate($this->getUser());
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');

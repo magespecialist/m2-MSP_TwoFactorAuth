@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -60,13 +61,19 @@ class Configurepost extends Action
      */
     private $event;
 
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         PageFactory $pageFactory,
         Google $google,
         TfaSessionInterface $tfaSession,
-        TfaInterface $tfa
+        TfaInterface $tfa,
+        DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
@@ -75,6 +82,7 @@ class Configurepost extends Action
         $this->google = $google;
         $this->tfaSession = $tfaSession;
         $this->event = $context->getEventManager();
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -90,7 +98,9 @@ class Configurepost extends Action
     {
         $user = $this->getUser();
 
-        if ($this->google->verify($user, $this->getRequest())) {
+        if ($this->google->verify($user, $this->dataObjectFactory->create([
+            'data' => $this->getRequest()->getParams(),
+        ]))) {
             $this->tfa->getProvider(Google::CODE)->activate($user);
             $this->tfaSession->grantAccess();
 

@@ -22,6 +22,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\DataObjectFactory;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
@@ -66,6 +67,11 @@ class Authpost extends Action
      */
     private $event;
 
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
     public function __construct(
         Tfa $tfa,
         Session $session,
@@ -73,6 +79,7 @@ class Authpost extends Action
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         U2fKey $u2fKey,
+        DataObjectFactory $dataObjectFactory,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -84,6 +91,7 @@ class Authpost extends Action
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
         $this->event = $context->getEventManager();
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -97,7 +105,9 @@ class Authpost extends Action
         $result = $this->jsonFactory->create();
 
         try {
-            $this->u2fKey->verify($this->getUser(), $this->getRequest());
+            $this->u2fKey->verify($this->getUser(), $this->dataObjectFactory->create([
+                'data' => $this->getRequest()->getParams(),
+            ]));
             $this->tfaSession->grantAccess();
             $this->trustedManager->handleTrustDeviceRequest(U2fKey::CODE, $this->getRequest());
 

@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\DataObject;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
@@ -185,14 +186,14 @@ class DuoSecurity implements EngineInterface
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return bool
      */
-    public function verify(UserInterface $user, RequestInterface $request)
+    public function verify(UserInterface $user, DataObject $request)
     {
         $time = time();
 
-        list($authSig, $appSig) = explode(':', $request->getParam('sig_response'));
+        list($authSig, $appSig) = explode(':', $request->getData('sig_response'));
 
         $authUser = $this->parseValues($this->getSecretKey(), $authSig, static::AUTH_PREFIX, $time);
         $appUser = $this->parseValues($this->getApplicationKey(), $appSig, static::APP_PREFIX, $time);

@@ -21,7 +21,7 @@
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\DataObject;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
@@ -122,12 +122,12 @@ class Google implements EngineInterface
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return bool
      */
-    public function verify(UserInterface $user, RequestInterface $request)
+    public function verify(UserInterface $user, DataObject $request)
     {
-        $token = $request->getParam('tfa_code');
+        $token = $request->getData('tfa_code');
 
         $totp = $this->getTotp($user);
         $totp->now();

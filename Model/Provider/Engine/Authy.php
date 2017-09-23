@@ -21,7 +21,7 @@
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Json\DecoderInterface;
@@ -396,13 +396,13 @@ class Authy implements EngineInterface
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return bool
      * @throws LocalizedException
      */
-    public function verify(UserInterface $user, RequestInterface $request)
+    public function verify(UserInterface $user, DataObject $request)
     {
-        $code = $request->getParam('tfa_code');
+        $code = $request->getData('tfa_code');
         if (!preg_match('/^\w+$/', $code)) {
             throw new LocalizedException(__('Invalid code format'));
         }

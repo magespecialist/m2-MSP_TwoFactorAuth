@@ -21,7 +21,7 @@
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -81,11 +81,11 @@ class U2fKey implements EngineInterface
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return true
      * @throws LocalizedException
      */
-    public function verify(UserInterface $user, RequestInterface $request)
+    public function verify(UserInterface $user, DataObject $request)
     {
         $u2f = $this->getU2f();
 
@@ -94,9 +94,9 @@ class U2fKey implements EngineInterface
             throw new LocalizedException(__('Missing registration data'));
         }
 
-        $requests = [$this->hashToObject($request->getParam('request')[0])];
+        $requests = [$this->hashToObject($request->getData('request')[0])];
         $registrations = [$this->hashToObject($registration)];
-        $response = $this->hashToObject($request->getParam('response'));
+        $response = $this->hashToObject($request->getData('response'));
 
         // it triggers an error in case of auth failure
         $u2f->doAuthenticate($requests, $registrations, $response);
