@@ -29,16 +29,18 @@
 <!-- /ko -->
 <!-- ko if: !getForcedProviders().length -->
 <input type="hidden" data-bind="attr: { name: inputName + '[]' }" value="" />
-<select
-        multiple
-        class="select multiselect admin__control-multiselect"
-        data-bind="
-            selectedOptions: value,
-            foreach: getEnabledProviders(),
+
+<div data-bind="foreach: getEnabledProviders()">
+    <div class="msp_tfa-provider">
+        <input type="checkbox" data-bind="
             attr: {
-                name: inputName + '[]'
-            }
-        ">
-    <option data-bind="value: $data.value, text: $data.label"></option>
-</select>
+                id: 'reset_' + $data.value,
+                value: $data.value,
+                name: $parent.inputName + '[]',
+            },
+            checked: $parent.isSelected($data.value)
+        " />
+        <label data-bind="attr: {for: 'reset_' + $data.value}, text: $data.label"></label>
+    </div>
+</div>
 <!-- /ko -->

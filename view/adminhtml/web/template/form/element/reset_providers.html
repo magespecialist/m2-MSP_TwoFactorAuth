@@ -20,8 +20,8 @@
 -->
 <!-- ko if: getResetProviders().length -->
 <div class="msp_tfa-reset_providers">
-    <div  data-bind="foreach: getResetProviders()">
-        <button type="button" data-bind="
+    <div data-bind="foreach: getResetProviders()">
+        <button type="button" class="primary action-remove" data-bind="
             text: $data.label,
             click: $parent.resetProvider
         "></button>

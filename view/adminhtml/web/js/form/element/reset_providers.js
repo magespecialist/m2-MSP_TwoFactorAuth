@@ -22,21 +22,17 @@ define([
   'Magento_Ui/js/modal/confirm'
 ], function(Abstract, confirm) {
   return Abstract.extend({
-    defaults: {
-
-    },
-
     getResetProviders: function() {
       return this.source.data['reset_providers'];
     },
 
-    resetProvider: function(evt) {
+    resetProvider: function(item) {
       confirm({
         title: 'Confirm',
-        content: 'Are you sure you want to reset ' + evt.label + ' provider?',
+        content: 'Are you sure you want to reset ' + item.label + ' provider?',
         actions: {
           confirm: function() {
-            self.location.href = evt.url;
+            self.location.href = item.url;
           }
         }
       });

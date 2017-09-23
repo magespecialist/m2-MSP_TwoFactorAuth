@@ -96,4 +96,26 @@
             </argument>
         </field>
     </fieldset>
+    <fieldset name="trusted_fieldset">
+        <argument name="data" xsi:type="array">
+            <item name="config" xsi:type="array">
+                <item name="label" xsi:type="string" translate="true">Trusted devices</item>
+            </item>
+        </argument>
+
+        <field name="msp_tfa_reset_providers">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/form/element/trusted_devices</item>
+                    <item name="template" xsi:type="string">ui/form/field</item>
+                    <item name="elementTmpl" xsi:type="string">MSP_TwoFactorAuth/form/element/trusted_devices</item>
+                    <item name="label" xsi:type="string">Trusted devices</item>
+                    <item name="visible" xsi:type="boolean">true</item>
+                    <item name="dataType" xsi:type="string">text</item>
+                    <item name="formElement" xsi:type="string">input</item>
+                    <item name="source" xsi:type="string">msp_twofactorauth_edit_user_form_data_source</item>
+                </item>
+            </argument>
+        </field>
+    </fieldset>
 </form>

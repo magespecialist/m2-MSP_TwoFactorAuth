@@ -17,25 +17,15 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-define(['Magento_Ui/js/form/element/abstract'], function(Abstract) {
+define([
+  'Magento_Ui/js/form/element/abstract'
+], function(Abstract) {
   return Abstract.extend({
-    getForcedProviders: function() {
-      return this.source.data['forced_providers'];
+    getTrustedDevices: function() {
+      return this.source.data['trusted_devices'];
     },
-
-    getEnabledProviders: function() {
-      return this.source.data['enabled_providers'];
-    },
-
-    isSelected: function(provider) {
-      var providers = this.value();
-      for (var i=0; i<providers.length; i++) {
-        if (providers[i] === provider) {
-          return true;
-        }
-      }
-
-      return false;
+    revokeDevice: function(item) {
+      self.location.href = item.revoke_url;
     }
   });
 });
