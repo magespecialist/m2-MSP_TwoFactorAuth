@@ -139,7 +139,7 @@ class DuoSecurity implements EngineInterface
         $cookieParts = explode('|', base64_decode($uB64));
         // @codingStandardsIgnoreEnd
 
-        if (!empty($cookieParts) !== 3) {
+        if (count($cookieParts) !== 3) {
             return false;
         }
         list($user, $uIkey, $exp) = $cookieParts;
