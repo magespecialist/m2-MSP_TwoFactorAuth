@@ -11,35 +11,46 @@
  * obtain it through the world-wide-web, please send an email
  * to info@magespecialist.it so we can send you a copy immediately.
  *
- * @category   MSP
- * @package    MSP_TwoFactorAuth
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
 'use strict';
 
-define(['Magento_Ui/js/form/element/abstract'], function(Abstract) {
-  return Abstract.extend({
-    getForcedProviders: function() {
-      return this.source.data['forced_providers'];
+define(['Magento_Ui/js/form/element/abstract'], function (Abstract) {
+return Abstract.extend({
+    /**
+     * Get a list of forced providers
+     * @returns {Array}
+     */
+    getForcedProviders: function () {
+        return this.source.data['forced_providers'];
     },
 
-    getEnabledProviders: function() {
-      return this.source.data['enabled_providers'];
+    /**
+     * Get a list of enabled providers
+     * @returns {Array}
+     */
+    getEnabledProviders: function () {
+        return this.source.data['enabled_providers'];
     },
 
-    isSelected: function(provider) {
-      var providers = this.value();
-      var i;
+    /**
+     * Return true if a provider is selected
+     * @param {String} provider
+     * @returns {Boolean}
+     */
+    isSelected: function (provider) {
+        var providers = this.value();
+        var i;
 
-      for (i=0; i<providers.length; i++) {
-        if (providers[i] === provider) {
-          return true;
+        for (i = 0; i < providers.length; i++) {
+            if (providers[i] === provider) {
+                return true;
+            }
         }
-      }
 
-      return false;
+        return false;
     }
-  });
+});
 });
