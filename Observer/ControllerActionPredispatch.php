@@ -107,7 +107,7 @@ class ControllerActionPredispatch implements ObserverInterface
 
         $user = $this->getUser();
         if ($user && !empty($this->tfa->getUserProviders($user))) {
-            $accessGranted = ($this->tfaSession->getIsGranted() || $this->trustedManager->isTrustedDevice()) &&
+            $accessGranted = ($this->tfaSession->isGranted() || $this->trustedManager->isTrustedDevice()) &&
                 empty($this->tfa->getProvidersToActivate($user));
 
             if (!$accessGranted) {

@@ -3,6 +3,8 @@
  * Copyright 2017, Duo Security
  */
 
+/* eslint-disable */
+
 (function (root, factory) {
   /*eslint-disable */
   if (typeof define === 'function' && define.amd) {
@@ -19,6 +21,7 @@
     var Duo = factory();
     // If the Javascript was loaded via a script tag, attempt to autoload
     // the frame.
+
     Duo._onReady(Duo.init);
 
     // Attach Duo to the `window` object
@@ -47,7 +50,7 @@
   function throwError(message, url) {
     throw new Error(
       'Duo Web SDK error: ' + message +
-      (url ? ('\n' + 'See ' + url + ' for more information') : '')
+      (url ? '\n' + 'See ' + url + ' for more information' : '')
     );
   }
 
@@ -59,9 +62,9 @@
   function getDataAttribute(element, name) {
     if ('dataset' in element) {
       return element.dataset[name];
-    } else {
+    } 
       return element.getAttribute('data-' + hyphenize(name));
-    }
+    
   }
 
   // cross-browser event binding/unbinding
@@ -173,7 +176,7 @@
    */
   function isDuoMessage(event) {
     return Boolean(
-      event.origin === ('https://' + host) &&
+      event.origin === 'https://' + host &&
       typeof event.data === 'string' &&
       (
         event.data.match(DUO_MESSAGE_FORMAT) ||
@@ -287,6 +290,7 @@
     if (isDuoMessage(event)) {
       if (event.data.match(DUO_OPEN_WINDOW_FORMAT)) {
         var url = event.data.substring("DUO_OPEN_WINDOW|".length);
+
         if (isValidUrlToOpen(url)) {
           // Open the URL that comes after the DUO_WINDOW_OPEN token.
           window.open(url, "_self");
@@ -314,6 +318,7 @@
     }
 
     var parser = document.createElement('a');
+
     parser.href = url;
 
     if (parser.protocol === "duotrustedendpoints:") {
@@ -390,6 +395,7 @@
   function doPostBack(response) {
     // create a hidden input to contain the response token
     var input = document.createElement('input');
+
     input.type = 'hidden';
     input.name = postArgument;
     input.value = response + ':' + appSig;
@@ -428,3 +434,5 @@
     _doPostBack: doPostBack
   };
 }));
+
+/* eslint-enable */

@@ -17,6 +17,8 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
+'use strict';
+
 define(['Magento_Ui/js/form/element/abstract'], function(Abstract) {
   return Abstract.extend({
     getForcedProviders: function() {
@@ -29,7 +31,9 @@ define(['Magento_Ui/js/form/element/abstract'], function(Abstract) {
 
     isSelected: function(provider) {
       var providers = this.value();
-      for (var i=0; i<providers.length; i++) {
+      var i;
+
+      for (i=0; i<providers.length; i++) {
         if (providers[i] === provider) {
           return true;
         }

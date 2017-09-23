@@ -16,13 +16,14 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+
+'use strict';
+
 define([
   'Magento_Ui/js/form/provider'
 ], function (Provider) {
-  'use strict';
-
   return Provider.extend({
-    save: function (options) {
+    save: function () {
       // Disable independent save (we have a parent form with own validation)
       return this;
     }
