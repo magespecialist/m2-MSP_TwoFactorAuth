@@ -20,8 +20,9 @@
 ?>
 <form>
     <fieldset class="admin__fieldset">
-        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - U2F key registration') ?></span></legend>
-        <br/>
+        <legend class="admin__legend">
+            <span><?php /* @escapeNotVerified */ echo __('2FA - U2F key registration') ?></span>
+        </legend><br/>
         <div id="u2f-touch-key">
             <h3><?php echo __('Plug in your U2F key, then touch button') ?></h3>
             <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/u2f/touch.png') ?>" />
@@ -33,8 +34,6 @@
         </div>
 
     </fieldset>
-    <br />
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
 
 <script>

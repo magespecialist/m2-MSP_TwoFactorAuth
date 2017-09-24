@@ -20,9 +20,13 @@
 
 /** @var $block \MSP\TwoFactorAuth\Block\Provider\Authy\Auth */
 ?>
-<form action="<?php /* @escapeNotVerified */
-echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}'
-      autocomplete="off">
+<form
+        action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>"
+        method="post"
+        id="tfa-form"
+        data-mage-init='{"form": {}, "validation": {}}'
+        autocomplete="off"
+>
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */
     echo $block->getFormKey() ?>"/>
 
@@ -164,7 +168,10 @@ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form
                 if (via !== 'token') {
                     var tfa_trust_device = $('#tfa_trust_device') ? $('#tfa_trust_device')[0].checked : false;
                     var me = this;
-                    $.getJSON('<?php echo $block->getTokenRequestUrl() ?>?via=' + via + '&tfa_trust_device=' + tfa_trust_device)
+                    $.getJSON(
+                        '<?php echo $block->getTokenRequestUrl() ?>?via=' +
+                        via + '&tfa_trust_device=' + tfa_trust_device
+                    )
                         .fail(function (res) {
                             alert('There was an error trying to contact Authy services');
                             me.switchAnotherMethod();
