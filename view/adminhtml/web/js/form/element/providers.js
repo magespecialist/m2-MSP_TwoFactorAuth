@@ -41,8 +41,7 @@ return Abstract.extend({
      * @returns {Boolean}
      */
     isSelected: function (provider) {
-        var providers = this.value();
-        var i;
+        var i, providers = this.value();
 
         for (i = 0; i < providers.length; i++) {
             if (providers[i] === provider) {

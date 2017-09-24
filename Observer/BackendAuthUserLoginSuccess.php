@@ -48,6 +48,7 @@ class BackendAuthUserLoginSuccess implements ObserverInterface
     /**
      * @param Observer $observer
      * @return void
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function execute(Observer $observer)
     {

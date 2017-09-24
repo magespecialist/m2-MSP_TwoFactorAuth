@@ -26,11 +26,11 @@
     <fieldset class="admin__fieldset">
         <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Google Auth') ?></span></legend><br/>
 
-        <img src="<?= $block->getQrCodeUrl()?>" />
+        <img src="<?php echo $block->getQrCodeUrl()?>" />
 
-        <p><?= __('Scan this code with your authenticator app and insert your code to confirm.') ?></p>
+        <p><?php echo __('Scan this code with your authenticator app and insert your code to confirm.') ?></p>
 
-        <?= $block->getBlockHtml('formkey')?>
+        <?php echo $block->getBlockHtml('formkey')?>
 
         <div class="admin__field _required field-tfa_code">
             <label for="tfa_code" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Authenticator code') ?></span></label>
@@ -58,5 +58,5 @@
         </div>
     </fieldset>
 
-    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>

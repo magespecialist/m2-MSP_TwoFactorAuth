@@ -34,6 +34,11 @@ use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Session\SessionManagerInterface;
 use Magento\Framework\Stdlib\Cookie\CookieMetadataFactory;
 
+/**
+ * Class TrustedManager
+ * @package MSP\TwoFactorAuth\Model
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 class TrustedManager implements TrustedManagerInterface
 {
     private $isTrustedDevice = null;
@@ -93,6 +98,21 @@ class TrustedManager implements TrustedManagerInterface
      */
     private $decoder;
 
+    /**
+     * TrustedManager constructor.
+     * @param TfaInterface $tfa
+     * @param DateTime $dateTime
+     * @param Session $session
+     * @param RemoteAddress $remoteAddress
+     * @param Encoder $encoder
+     * @param Decoder $decoder
+     * @param TrustedResourceModel $trustedResourceModel
+     * @param CookieManagerInterface $cookieManager
+     * @param SessionManagerInterface $sessionManager
+     * @param TrustedFactory $trustedFactory
+     * @param CookieMetadataFactory $cookieMdFactory
+     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
+     */
     public function __construct(
         TfaInterface $tfa,
         DateTime $dateTime,

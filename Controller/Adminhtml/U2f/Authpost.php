@@ -30,6 +30,11 @@ use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 
+/**
+ * Class Authpost
+ * @package MSP\TwoFactorAuth\Controller\Adminhtml\U2f
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 class Authpost extends Action
 {
     /**

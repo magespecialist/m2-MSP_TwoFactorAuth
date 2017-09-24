@@ -20,16 +20,26 @@
 
 /** @var $block \MSP\TwoFactorAuth\Block\Provider\Google\Auth */
 ?>
-<form action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}' autocomplete="off">
+<form
+        action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>"
+        method="post"
+        id="tfa-form"
+        data-mage-init='{"form": {}, "validation": {}}'
+        autocomplete="off"
+>
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
 
     <fieldset class="admin__fieldset">
-        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Google Auth') ?></span></legend><br/>
+        <legend class="admin__legend">
+            <span><?php /* @escapeNotVerified */ echo __('2FA - Google Auth') ?></span>
+        </legend><br/>
 
-        <?= $block->getBlockHtml('formkey')?>
+        <?php echo $block->getBlockHtml('formkey')?>
 
         <div class="admin__field _required field-tfa_code">
-            <label for="tfa_code" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Authenticator code') ?></span></label>
+            <label for="tfa_code" class="admin__field-label">
+                <span><?php /* @escapeNotVerified */ echo __('Authenticator code') ?></span>
+            </label>
             <div class="admin__field-control">
                 <input
                     id="tfa_code"
@@ -42,7 +52,7 @@
                     placeholder="<?php /* @escapeNotVerified */ echo __('Your code') ?>"/>
             </div>
         </div>
-        <?= $block->getChildHtml('trust-device') ?>
+        <?php echo $block->getChildHtml('trust-device') ?>
 
         <div class="form-actions">
             <div class="actions">
@@ -55,7 +65,5 @@
         </div>
     </fieldset>
 
-    <?= $block->getChildHtml('change-provider') ?>
-
-    <p><?= __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
+    <?php echo $block->getChildHtml('change-provider') ?>
 </form>

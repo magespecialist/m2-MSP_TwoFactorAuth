@@ -23,21 +23,21 @@ $providers = $block->getProvidersList();
 ?>
 <?php if (!empty($providers) && $block->isCurrentProviderActive()) : ?>
     <a id="tfa_msp_change_provider_trigger" href="#" onclick="openTfaMethodSelector()">
-        <img src="<?= $block->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png') ?>" />
+        <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png') ?>" />
         <span>
-            <?= __('Select a different 2FA provider') ?>
+            <?php echo __('Select a different 2FA provider') ?>
         </span>
     </a>
 
     <div id="tfa_msp_change_provider">
-        <h3><?= __('Select a different 2FA provider:') ?></h3>
+        <h3><?php echo __('Select a different 2FA provider:') ?></h3>
 
         <div class="tfa_msp_provider_list">
             <?php foreach ($providers as $provider) : ?>
-                <a class="tfa_msp_provider" href="<?= $block->getUrl($provider->getAuthAction()) ?>">
-                    <img src="<?= $block->getViewFileUrl($provider->getIcon()) ?>" />
+                <a class="tfa_msp_provider" href="<?php echo $block->getUrl($provider->getAuthAction()) ?>">
+                    <img src="<?php echo $block->getViewFileUrl($provider->getIcon()) ?>" />
                     <span>
-                        <?= $provider->getName() ?>
+                        <?php echo $provider->getName() ?>
                     </span>
                 </a>
             <?php endforeach; ?>

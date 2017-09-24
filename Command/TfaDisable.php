@@ -56,6 +56,9 @@ class TfaDisable extends Command
         parent::configure();
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->config->saveConfig(

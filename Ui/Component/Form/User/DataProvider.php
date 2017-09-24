@@ -53,6 +53,20 @@ class DataProvider extends AbstractDataProvider
      */
     private $url;
 
+    /**
+     * DataProvider constructor.
+     * @param CollectionFactory $collectionFactory
+     * @param EnabledProvider $enabledProvider
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param UrlInterface $url
+     * @param TfaInterface $tfa
+     * @param $name
+     * @param $primaryFieldName
+     * @param $requestFieldName
+     * @param array $meta
+     * @param array $data
+     * @SuppressWarnings("PHPMD.ExcessiveParameterList")
+     */
     public function __construct(
         CollectionFactory $collectionFactory,
         EnabledProvider $enabledProvider,
