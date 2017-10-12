@@ -28,21 +28,14 @@ use MSP\TwoFactorAuth\Api\TfaInterface;
 class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 {
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @var TfaInterface
      */
     private $tfa;
 
     public function __construct(
-        Session $session,
         TfaInterface $tfa
     ) {
         $this->tfa = $tfa;
-        $this->session = $session;
     }
 
     /**
