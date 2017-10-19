@@ -26,11 +26,11 @@ use MSP\TwoFactorAuth\Model\Tfa;
 
 class Configure extends Action
 {
-
     /**
      * @var Tfa
      */
     private $tfa;
+
     /**
      * @var Session
      */
@@ -40,8 +40,8 @@ class Configure extends Action
         Tfa $tfa,
         Session $session,
         Action\Context $context
-    )
-    {
+    ) {
+    
         $this->tfa = $tfa;
         $this->session = $session;
         parent::__construct($context);
@@ -64,7 +64,7 @@ class Configure extends Action
     /**
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -80,6 +80,6 @@ class Configure extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            !$this->tfa->getProvider(U2fKey::CODE)->getIsActive($user);
+            !$this->tfa->getProvider(U2fKey::CODE)->isActive($user);
     }
 }

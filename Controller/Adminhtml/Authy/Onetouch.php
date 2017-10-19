@@ -66,7 +66,7 @@ class Onetouch extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -96,6 +96,6 @@ class Onetouch extends Action
     {
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            $this->tfa->getProvider(Authy::CODE)->getIsActive($this->getUser());
+            $this->tfa->getProvider(Authy::CODE)->isActive($this->getUser());
     }
 }

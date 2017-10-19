@@ -66,7 +66,7 @@ class UpgradeData implements UpgradeDataInterface
         $this->decoder = $decoder;
     }
 
-    protected function upgradeTo010200(ModuleDataSetupInterface $setup)
+    private function upgradeTo010200(ModuleDataSetupInterface $setup)
     {
         $this->configMigration->doConfigMigration(
             $setup,
@@ -91,7 +91,7 @@ class UpgradeData implements UpgradeDataInterface
         $this->config->saveConfig(DuoSecurity::XML_PATH_APPLICATION_KEY, $randomString, 'default', 0);
     }
 
-    protected function upgradeTo020000(ModuleDataSetupInterface $setup)
+    private function upgradeTo020000(ModuleDataSetupInterface $setup)
     {
         $this->configMigration->doConfigMigration(
             $setup,
@@ -100,7 +100,7 @@ class UpgradeData implements UpgradeDataInterface
         );
     }
 
-    protected function upgradeTo020001(ModuleDataSetupInterface $setup)
+    private function upgradeTo020001(ModuleDataSetupInterface $setup)
     {
         $connection = $setup->getConnection();
         $tableName = $setup->getTable('msp_tfa_country_codes');
@@ -112,9 +112,12 @@ __EOT__;
         // @codingStandardsIgnoreEnd
 
         $countries = $this->decoder->decode(trim($countriesJson));
+
+        // @codingStandardsIgnoreStart
         foreach ($countries as $country) {
             $connection->insert($tableName, $country);
         }
+        // @codingStandardsIgnoreEnd
     }
 
     /**

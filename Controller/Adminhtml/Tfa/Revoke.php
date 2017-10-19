@@ -52,6 +52,6 @@ class Revoke extends Action
         $this->trustedManager->revokeTrustedDevice($tokenId);
 
         $this->messageManager->addSuccessMessage(__('Device authorization revoked'));
-        $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
+        return $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
     }
 }

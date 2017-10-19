@@ -21,7 +21,6 @@
 namespace MSP\TwoFactorAuth\Observer;
 
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Registry;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -29,28 +28,14 @@ use MSP\TwoFactorAuth\Api\TfaInterface;
 class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 {
     /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
      * @var TfaInterface
      */
     private $tfa;
 
     public function __construct(
-        Session $session,
-        TfaInterface $tfa,
-        Registry $registry
+        TfaInterface $tfa
     ) {
         $this->tfa = $tfa;
-        $this->session = $session;
-        $this->registry = $registry;
     }
 
     /**
@@ -59,7 +44,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!count($this->tfa->getAllEnabledProviders())) {
+        if (empty($this->tfa->getAllEnabledProviders())) {
             return;
         }
 
@@ -68,10 +53,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
 
         $nameInLayout = $block->getNameInLayout();
         if ($nameInLayout == 'adminhtml.user.edit.tabs') {
-            $tfaForm = $block->getLayout()->createBlock(
-                'MSP\TwoFactorAuth\Block\User\Edit\Tab\Tfa',
-                'msp.user.tfa.edit'
-            )->toHtml();
+            $tfaForm = $block->getLayout()->renderElement('msp_twofactorauth_edit_user_form');
 
             $block->addTabAfter(
                 'msp_twofactorauth',

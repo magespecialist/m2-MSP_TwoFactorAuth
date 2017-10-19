@@ -22,17 +22,11 @@ namespace MSP\TwoFactorAuth\Block;
 
 use Magento\Backend\Block\Template;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\Registry;
-use Magento\User\Model\User;
+use Magento\Framework\Exception\LocalizedException;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class TrustDevice extends Template
 {
-    /**
-     * @var Registry
-     */
-    private $registry;
-
     /**
      * @var TfaInterface
      */
@@ -43,35 +37,34 @@ class TrustDevice extends Template
      */
     private $session;
 
+    private $providerCode = null;
+
     public function __construct(
         Template\Context $context,
-        Registry $registry,
         Session $session,
         TfaInterface $tfa,
         array $data = []
     ) {
         parent::__construct($context, $data);
-        $this->registry = $registry;
         $this->tfa = $tfa;
         $this->session = $session;
     }
 
     /**
-     * Get user
-     * @return User|null
-     */
-    protected function getUser()
-    {
-        return $this->session->getUser();
-    }
-
-    /**
      * Get current 2FA provider if defined
-     * @return string|null
+     * @return null|string
+     * @throws LocalizedException
      */
     public function getCurrentProviderCode()
     {
-        return $this->registry->registry('msp_tfa_current_provider');
+        if ($this->providerCode === null) {
+            $this->providerCode = $this->getData('provider');
+            if (!$this->providerCode) {
+                throw new LocalizedException(__('A provider must be defined for this block'));
+            }
+        }
+
+        return $this->providerCode;
     }
 
     /**
@@ -81,6 +74,6 @@ class TrustDevice extends Template
     public function canShowTrustDevice()
     {
         $provider = $this->tfa->getProvider($this->getCurrentProviderCode());
-        return $provider->getAllowTrustedDevices();
+        return $provider->isTrustedDevicesAllowed();
     }
 }

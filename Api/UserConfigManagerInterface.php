@@ -89,7 +89,7 @@ interface UserConfigManagerInterface
      * @param $providerCode
      * @return boolean
      */
-    public function getProviderConfigurationIsActive(UserInterface $user, $providerCode);
+    public function isProviderConfigurationActive(UserInterface $user, $providerCode);
 
     /**
      * Set default provider

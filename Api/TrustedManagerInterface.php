@@ -47,7 +47,7 @@ interface TrustedManagerInterface
 
     /**
      * Trust a device
-     * @param $providerCode
+     * @param string $providerCode
      * @param RequestInterface $request
      */
     public function handleTrustDeviceRequest($providerCode, RequestInterface $request);

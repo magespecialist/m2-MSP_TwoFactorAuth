@@ -21,7 +21,7 @@
 /** @var $block \MSP\TwoFactorAuth\Block\ChangeProvider */
 $providers = $block->getProvidersList();
 ?>
-<?php if (count($providers) && $block->getCurrentProviderIsActive()) : ?>
+<?php if (!empty($providers) && $block->isCurrentProviderActive()) : ?>
     <a id="tfa_msp_change_provider_trigger" href="#" onclick="openTfaMethodSelector()">
         <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png') ?>" />
         <span>

@@ -35,6 +35,7 @@ class InstallData implements InstallDataInterface
      * @param ModuleDataSetupInterface $setup
      * @param ModuleContextInterface $context
      * @return void
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function install(ModuleDataSetupInterface $setup, ModuleContextInterface $context)
     {

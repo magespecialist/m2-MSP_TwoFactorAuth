@@ -39,7 +39,7 @@ class TfaSession extends SessionManager implements TfaSessionInterface
      * Return true if 2FA session has been passed
      * @return boolean
      */
-    public function getIsGranted()
+    public function isGranted()
     {
         return !!$this->storage->getData(TfaSessionInterface::KEY_PASSED);
     }

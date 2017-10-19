@@ -49,7 +49,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $this->decoder = $decoder;
     }
 
-    protected function upgradeTo010100(SchemaSetupInterface $setup)
+    private function upgradeTo010100(SchemaSetupInterface $setup)
     {
         $tableName = $setup->getTable('msp_tfa_trusted');
         $table = $setup->getConnection()
@@ -113,7 +113,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $setup->getConnection()->createTable($table);
     }
 
-    protected function upgradeTo010200(SchemaSetupInterface $setup)
+    private function upgradeTo010200(SchemaSetupInterface $setup)
     {
         $connection = $setup->getConnection();
         $adminUserTable = $setup->getTable('admin_user');
@@ -139,6 +139,7 @@ class UpgradeSchema implements UpgradeSchemaInterface
             'msp_tfa_provider' => 'google'
         ], 'msp_tfa_provider=1');
 
+        // @codingStandardsIgnoreStart
         $users = $connection->fetchAll($connection->select()->from($adminUserTable));
         foreach ($users as $user) {
             $tfaSecret = $user['msp_tfa_config'];
@@ -147,12 +148,13 @@ class UpgradeSchema implements UpgradeSchemaInterface
                     'google' => [
                         'secret' => $tfaSecret,
                     ]
-                ])], 'user_id='.intval($user['user_id']));
+                ])], 'user_id=' . ((int) $user['user_id']));
             }
         }
+        // @codingStandardsIgnoreEnd
     }
 
-    protected function upgradeTo020000(SchemaSetupInterface $setup)
+    private function upgradeTo020000(SchemaSetupInterface $setup)
     {
         $connection = $setup->getConnection();
         $tfaAdminUserTable = $setup->getTable('msp_tfa_user_config');
@@ -212,6 +214,8 @@ class UpgradeSchema implements UpgradeSchemaInterface
         $connection->createTable($table);
 
         // Migrate data from old configuration
+
+        // @codingStandardsIgnoreStart
         $users = $connection->fetchAll($connection->select()->from($adminUserTable));
         foreach ($users as $user) {
             try {
@@ -234,13 +238,14 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'encoded_providers' => $this->encoder->encode([$providerCode]),
             ]);
         }
+        // @codingStandardsIgnoreEnd
 
         $connection->dropColumn($adminUserTable, 'msp_tfa_provider');
         $connection->dropColumn($adminUserTable, 'msp_tfa_config');
         $connection->dropColumn($adminUserTable, 'msp_tfa_activated');
     }
 
-    protected function upgradeTo020001(SchemaSetupInterface $setup)
+    private function upgradeTo020001(SchemaSetupInterface $setup)
     {
         $connection = $setup->getConnection();
         $tableName = $setup->getTable('msp_tfa_country_codes');

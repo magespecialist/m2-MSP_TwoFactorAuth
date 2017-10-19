@@ -22,6 +22,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use Magento\Framework\DataObjectFactory;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
@@ -29,12 +30,18 @@ use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 
+/**
+ * Class Authpost
+ * @package MSP\TwoFactorAuth\Controller\Adminhtml\U2f
+ * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ */
 class Authpost extends Action
 {
     /**
      * @var Tfa
      */
     private $tfa;
+
     /**
      * @var Session
      */
@@ -59,10 +66,16 @@ class Authpost extends Action
      * @var TrustedManagerInterface
      */
     private $trustedManager;
+
     /**
      * @var EventInterface
      */
     private $event;
+
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
 
     public function __construct(
         Tfa $tfa,
@@ -71,6 +84,7 @@ class Authpost extends Action
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         U2fKey $u2fKey,
+        DataObjectFactory $dataObjectFactory,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -82,6 +96,7 @@ class Authpost extends Action
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
         $this->event = $context->getEventManager();
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
@@ -95,7 +110,9 @@ class Authpost extends Action
         $result = $this->jsonFactory->create();
 
         try {
-            $this->u2fKey->verify($this->getUser(), $this->getRequest());
+            $this->u2fKey->verify($this->getUser(), $this->dataObjectFactory->create([
+                'data' => $this->getRequest()->getParams(),
+            ]));
             $this->tfaSession->grantAccess();
             $this->trustedManager->handleTrustDeviceRequest(U2fKey::CODE, $this->getRequest());
 
@@ -118,7 +135,7 @@ class Authpost extends Action
     /**
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -134,6 +151,6 @@ class Authpost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->getIsActive($user);
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($user);
     }
 }

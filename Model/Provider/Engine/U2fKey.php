@@ -21,7 +21,7 @@
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
@@ -66,11 +66,12 @@ class U2fKey implements EngineInterface
      * @param array $hash
      * @return \stdClass
      */
-    protected function hashToObject(array $hash)
+    private function hashToObject(array $hash)
     {
+        // @codingStandardsIgnoreStart
         $object = new \stdClass();
-        foreach ($hash as $key => $value)
-        {
+        // @codingStandardsIgnoreEnd
+        foreach ($hash as $key => $value) {
             $object->$key = $value;
         }
 
@@ -80,22 +81,22 @@ class U2fKey implements EngineInterface
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return true
      * @throws LocalizedException
      */
-    public function verify(UserInterface $user, RequestInterface $request)
+    public function verify(UserInterface $user, DataObject $request)
     {
         $u2f = $this->getU2f();
 
         $registration = $this->getRegistration($user);
-        if (is_null($registration)) {
+        if ($registration === null) {
             throw new LocalizedException(__('Missing registration data'));
         }
 
-        $requests = [$this->hashToObject($request->getParam('request')[0])];
+        $requests = [$this->hashToObject($request->getData('request')[0])];
         $registrations = [$this->hashToObject($registration)];
-        $response = $this->hashToObject($request->getParam('response'));
+        $response = $this->hashToObject($request->getData('response'));
 
         // it triggers an error in case of auth failure
         $u2f->doAuthenticate($requests, $registrations, $response);
@@ -123,7 +124,7 @@ class U2fKey implements EngineInterface
         $u2f = $this->getU2f();
 
         $registration = $this->getRegistration($user);
-        if (is_null($registration)) {
+        if ($registration === null) {
             throw new LocalizedException(__('Missing registration data'));
         }
 
@@ -135,7 +136,7 @@ class U2fKey implements EngineInterface
      * @param UserInterface $user
      * @return array
      */
-    protected function getRegistration(UserInterface $user)
+    private function getRegistration(UserInterface $user)
     {
         $providerConfig = $this->userConfigManager->getProviderConfig($user, static::CODE);
 
@@ -179,7 +180,7 @@ class U2fKey implements EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED);
     }
@@ -188,12 +189,12 @@ class U2fKey implements EngineInterface
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices()
+    public function isTrustedDevicesAllowed()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }
 
-    protected function getU2f()
+    private function getU2f()
     {
         /** @var Store $store */
         $store = $this->storeManager->getStore(Store::ADMIN_CODE);
@@ -206,6 +207,8 @@ class U2fKey implements EngineInterface
         }
 
         /** @var U2F $u2f */
+        // @codingStandardsIgnoreStart
         return new U2F($domain);
+        // @codingStandardsIgnoreEnd
     }
 }

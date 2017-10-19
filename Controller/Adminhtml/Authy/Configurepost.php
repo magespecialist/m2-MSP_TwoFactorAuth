@@ -50,7 +50,6 @@ class Configurepost extends Action
      */
     private $authy;
 
-
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -69,7 +68,7 @@ class Configurepost extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -97,7 +96,6 @@ class Configurepost extends Action
                 'message' => 'New authy verification request via ' . $request->getParam('tfa_method'),
                 'username' => $this->getUser()->getUserName(),
             ]);
-
         } catch (\Exception $e) {
             $this->_eventManager->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
                 'module' => 'MSP_TwoFactorAuth',
@@ -124,6 +122,6 @@ class Configurepost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            !$this->tfa->getProvider(Authy::CODE)->getIsActive($user);
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
     }
 }

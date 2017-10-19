@@ -27,6 +27,11 @@ use Magento\Framework\DB\Ddl\Table;
 
 class InstallSchema implements InstallSchemaInterface
 {
+    /**
+     * @param SchemaSetupInterface $setup
+     * @param ModuleContextInterface $context
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
     public function install(
         SchemaSetupInterface $setup,
         ModuleContextInterface $context

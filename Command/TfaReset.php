@@ -39,7 +39,7 @@ class TfaReset extends Command
     /**
      * @var User
      */
-    private $user;
+    private $userResource;
 
     /**
      * @var UserFactory
@@ -49,11 +49,11 @@ class TfaReset extends Command
     public function __construct(
         UserConfigManagerInterface $userConfigManager,
         UserFactory $userFactory,
-        User $user
+        User $userResource
     ) {
         parent::__construct();
         $this->userConfigManager = $userConfigManager;
-        $this->user = $user;
+        $this->userResource = $userResource;
         $this->userFactory = $userFactory;
     }
 
@@ -68,6 +68,9 @@ class TfaReset extends Command
         parent::configure();
     }
 
+    /**
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $userName = $input->getArgument('user');
@@ -75,7 +78,7 @@ class TfaReset extends Command
 
         $user = $this->userFactory->create();
 
-        $this->user->load($user, $userName, 'username');
+        $this->userResource->load($user, $userName, 'username');
         if (!$user->getId()) {
             throw new LocalizedException(__('Unknown user %1', $userName));
         }

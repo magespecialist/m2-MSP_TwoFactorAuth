@@ -22,7 +22,6 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
-use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
@@ -46,11 +45,6 @@ class Auth extends Action
     private $pageFactory;
 
     /**
-     * @var Registry
-     */
-    private $registry;
-
-    /**
      * @var UserConfigManagerInterface
      */
     private $userConfigManager;
@@ -58,7 +52,6 @@ class Auth extends Action
     public function __construct(
         Action\Context $context,
         Session $session,
-        Registry $registry,
         PageFactory $pageFactory,
         UserConfigManagerInterface $userConfigManager,
         TfaInterface $tfa
@@ -67,7 +60,6 @@ class Auth extends Action
         $this->tfa = $tfa;
         $this->session = $session;
         $this->pageFactory = $pageFactory;
-        $this->registry = $registry;
         $this->userConfigManager = $userConfigManager;
     }
 
@@ -75,7 +67,7 @@ class Auth extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -83,7 +75,6 @@ class Auth extends Action
     public function execute()
     {
         $this->userConfigManager->setDefaultProvider($this->getUser(), Google::CODE);
-        $this->registry->register('msp_tfa_current_provider', Google::CODE);
         return $this->pageFactory->create();
     }
 
@@ -98,6 +89,6 @@ class Auth extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            $this->tfa->getProvider(Google::CODE)->getIsActive($user);
+            $this->tfa->getProvider(Google::CODE)->isActive($user);
     }
 }

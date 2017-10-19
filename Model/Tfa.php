@@ -28,8 +28,9 @@ use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
 
 class Tfa implements TfaInterface
 {
-    protected $forcedProviders = null;
-    protected $allowedUrls = null;
+    private $forcedProviders = null;
+    private $allowedUrls = null;
+    private $enabledProviders = null;
 
     /**
      * @var ProviderInterface[]
@@ -78,20 +79,20 @@ class Tfa implements TfaInterface
      */
     public function getAllEnabledProviders()
     {
-        if (!$this->getIsEnabled()) {
-            return [];
-        }
+        if ($this->enabledProviders === null) {
+            $this->enabledProviders = [];
 
-        $res = [];
-
-        $providers = $this->getAllProviders();
-        foreach ($providers as $provider) {
-            if ($provider->getIsEnabled()) {
-                $res[] = $provider;
+            if ($this->isEnabled()) {
+                $providers = $this->getAllProviders();
+                foreach ($providers as $provider) {
+                    if ($provider->isEnabled()) {
+                        $this->enabledProviders[] = $provider;
+                    }
+                }
             }
         }
 
-        return $res;
+        return $this->enabledProviders;
     }
 
     /**
@@ -106,7 +107,7 @@ class Tfa implements TfaInterface
             return null;
         }
 
-        if ($onlyEnabled && !$this->providers[$providerCode]->getIsEnabled()) {
+        if ($onlyEnabled && !$this->providers[$providerCode]->isEnabled()) {
             return null;
         }
 
@@ -119,7 +120,7 @@ class Tfa implements TfaInterface
      */
     public function getForcedProviders()
     {
-        if (is_null($this->forcedProviders)) {
+        if ($this->forcedProviders === null) {
             $forcedProvidersCodes =
                 preg_split('/\s*,\s*/', $this->scopeConfig->getValue(TfaInterface::XML_PATH_FORCED_PROVIDERS));
 
@@ -145,7 +146,7 @@ class Tfa implements TfaInterface
     {
         $forcedProviders = $this->getForcedProviders();
 
-        if (count($forcedProviders)) {
+        if (!empty($forcedProviders)) {
             return $forcedProviders;
         }
 
@@ -182,7 +183,7 @@ class Tfa implements TfaInterface
      */
     public function getAllowedUrls()
     {
-        if (is_null($this->allowedUrls)) {
+        if ($this->allowedUrls === null) {
             $this->allowedUrls = [
                 'adminhtml_auth_login',
                 'adminhtml_auth_logout',
@@ -214,7 +215,7 @@ class Tfa implements TfaInterface
 
         $res = [];
         foreach ($providers as $provider) {
-            if (!$provider->getIsActive($user)) {
+            if (!$provider->isActive($user)) {
                 $res[] = $provider;
             }
         }
@@ -244,7 +245,7 @@ class Tfa implements TfaInterface
      * Return true if 2FA is enabled
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
         return !!$this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED);
     }

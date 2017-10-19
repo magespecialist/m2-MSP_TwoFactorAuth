@@ -20,8 +20,8 @@
 
 namespace MSP\TwoFactorAuth\Model\Provider;
 
+use Magento\Framework\DataObject;
 use Magento\User\Api\Data\UserInterface;
-use Magento\Framework\App\RequestInterface;
 
 interface EngineInterface
 {
@@ -29,19 +29,19 @@ interface EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled();
+    public function isEnabled();
 
     /**
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices();
+    public function isTrustedDevicesAllowed();
 
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return bool
      */
-    public function verify(UserInterface $user, RequestInterface $request);
+    public function verify(UserInterface $user, DataObject $request);
 }

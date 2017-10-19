@@ -21,16 +21,26 @@
 /** @var $block \MSP\TwoFactorAuth\Block\Provider\Authy\Configure */
 $countries = $block->getCountriesList();
 ?>
-<form action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}' autocomplete="off">
+<form
+        action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>"
+        method="post"
+        id="tfa-form"
+        data-mage-init='{"form": {}, "validation": {}}'
+        autocomplete="off"
+>
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
 
     <fieldset class="admin__fieldset">
-        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span></legend><br/>
+        <legend class="admin__legend">
+            <span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span>
+        </legend><br/>
 
         <h3><?php echo __('Please register yourself to Authy') ?></h3>
 
         <div class="admin__field _required field-tfa_phone_prefix">
-            <label for="tfa_phone_prefix" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Country') ?></span></label>
+            <label for="tfa_country" class="admin__field-label">
+                <span><?php /* @escapeNotVerified */ echo __('Country') ?></span>
+            </label>
             <div class="admin__field-control">
                 <select
                     id="tfa_country"
@@ -47,7 +57,9 @@ $countries = $block->getCountriesList();
         </div>
 
         <div class="admin__field _required field-tfa_phone">
-            <label for="tfa_phone" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Phone number') ?></span></label>
+            <label for="tfa_phone" class="admin__field-label">
+                <span><?php /* @escapeNotVerified */ echo __('Phone number') ?></span>
+            </label>
             <div class="admin__field-control">
                 <input
                         id="tfa_phone"
@@ -62,7 +74,9 @@ $countries = $block->getCountriesList();
         </div>
 
         <div class="admin__field _required field-tfa_method">
-            <label for="tfa_method" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Verification method') ?></span></label>
+            <label for="tfa_phone_action" class="admin__field-label">
+                <span><?php /* @escapeNotVerified */ echo __('Verification method') ?></span>
+            </label>
             <div class="admin__field-control">
                 <select
                         id="tfa_phone_action"
@@ -87,6 +101,4 @@ $countries = $block->getCountriesList();
             </div>
         </div>
     </fieldset>
-
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>

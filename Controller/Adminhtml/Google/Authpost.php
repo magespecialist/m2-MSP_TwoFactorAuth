@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -66,6 +67,11 @@ class Authpost extends Action
      */
     private $event;
 
+    /**
+     * @var DataObjectFactory
+     */
+    private $dataObjectFactory;
+
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -73,7 +79,8 @@ class Authpost extends Action
         Google $google,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
-        TfaInterface $tfa
+        TfaInterface $tfa,
+        DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
         $this->tfa = $tfa;
@@ -83,13 +90,14 @@ class Authpost extends Action
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
         $this->event = $context->getEventManager();
+        $this->dataObjectFactory = $dataObjectFactory;
     }
 
     /**
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -98,7 +106,9 @@ class Authpost extends Action
     {
         $user = $this->getUser();
 
-        if ($this->google->verify($user, $this->getRequest())) {
+        if ($this->google->verify($user, $this->dataObjectFactory->create([
+            'data' => $this->getRequest()->getParams(),
+        ]))) {
             $this->trustedManager->handleTrustDeviceRequest(Google::CODE, $this->getRequest());
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
@@ -125,6 +135,6 @@ class Authpost extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            $this->tfa->getProvider(Google::CODE)->getIsActive($user);
+            $this->tfa->getProvider(Google::CODE)->isActive($user);
     }
 }

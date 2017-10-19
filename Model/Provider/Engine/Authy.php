@@ -21,7 +21,7 @@
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
+use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Json\DecoderInterface;
@@ -91,7 +91,7 @@ class Authy implements EngineInterface
      * Get API key
      * @return string
      */
-    protected function getApiKey()
+    private function getApiKey()
     {
         return $this->scopeConfig->getValue(static::XML_PATH_API_KEY);
     }
@@ -101,7 +101,7 @@ class Authy implements EngineInterface
      * @param string $path
      * @return string
      */
-    protected function getProtectedApiEndpoint($path)
+    private function getProtectedApiEndpoint($path)
     {
         return static::AUTHY_BASE_ENDPOINT . 'protected/json/' . $path;
     }
@@ -111,7 +111,7 @@ class Authy implements EngineInterface
      * @param string $path
      * @return string
      */
-    protected function getOneTouchApiEndpoint($path)
+    private function getOneTouchApiEndpoint($path)
     {
         return static::AUTHY_BASE_ENDPOINT . 'onetouch/json/' . $path;
     }
@@ -121,7 +121,7 @@ class Authy implements EngineInterface
      * @param array $response
      * @return string
      */
-    protected function getErrorFromResponse($response)
+    private function getErrorFromResponse($response)
     {
         if ($response === false) {
             return 'Invalid authy webservice response';
@@ -301,7 +301,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Missing user information'));
         }
 
-        $url = $this->getOneTouchApiEndpoint( 'users/' . $providerInfo['user'] . '/approval_requests');
+        $url = $this->getOneTouchApiEndpoint('users/' . $providerInfo['user'] . '/approval_requests');
 
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->getApiKey());
@@ -349,7 +349,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Invalid approval code'));
         }
 
-        $url = $this->getOneTouchApiEndpoint( 'approval_requests/' . $approvalCode);
+        $url = $this->getOneTouchApiEndpoint('approval_requests/' . $approvalCode);
 
         $times = 10;
 
@@ -386,7 +386,7 @@ class Authy implements EngineInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled()
+    public function isEnabled()
     {
         return
             !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED) &&
@@ -396,13 +396,13 @@ class Authy implements EngineInterface
     /**
      * Return true on token validation
      * @param UserInterface $user
-     * @param RequestInterface $request
+     * @param DataObject $request
      * @return bool
      * @throws LocalizedException
      */
-    public function verify(UserInterface $user, RequestInterface $request)
+    public function verify(UserInterface $user, DataObject $request)
     {
-        $code = $request->getParam('tfa_code');
+        $code = $request->getData('tfa_code');
         if (!preg_match('/^\w+$/', $code)) {
             throw new LocalizedException(__('Invalid code format'));
         }
@@ -431,7 +431,7 @@ class Authy implements EngineInterface
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices()
+    public function isTrustedDevicesAllowed()
     {
         return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }

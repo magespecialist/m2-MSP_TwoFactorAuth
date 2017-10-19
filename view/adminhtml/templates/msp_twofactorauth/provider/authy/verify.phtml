@@ -21,19 +21,30 @@
 /** @var $block \MSP\TwoFactorAuth\Block\Provider\Authy\Verify */
 $verifyInfo = $block->getVerifyInfo();
 ?>
-<form action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>" method="post" id="tfa-form" data-mage-init='{"form": {}, "validation": {}}' autocomplete="off">
+<form
+        action="<?php /* @escapeNotVerified */ echo $block->getPostUrl() ?>"
+        method="post"
+        id="tfa-form"
+        data-mage-init='{"form": {}, "validation": {}}'
+        autocomplete="off"
+>
     <input name="form_key" type="hidden" value="<?php /* @escapeNotVerified */ echo $block->getFormKey() ?>" />
 
     <fieldset class="admin__fieldset">
-        <legend class="admin__legend"><span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span></legend><br/>
-
+        <legend class="admin__legend">
+            <span><?php /* @escapeNotVerified */ echo __('2FA - Authy') ?></span>
+        </legend><br/>
         <p>
             <strong><?php echo $verifyInfo['message'] ?></strong><br />
-            <a href="<?php echo $block->getConfigUrl() ?>"><?php echo __('Click here to change your phone number') ?></a>
+            <a href="<?php echo $block->getConfigUrl() ?>">
+                <?php echo __('Click here to change your phone number') ?>
+            </a>
         </p><br />
 
         <div class="admin__field _required field-tfa_verify">
-            <label for="tfa_verify" class="admin__field-label"><span><?php /* @escapeNotVerified */ echo __('Verification code') ?></span></label>
+            <label for="tfa_verify" class="admin__field-label">
+                <span><?php /* @escapeNotVerified */ echo __('Verification code') ?></span>
+            </label>
             <div class="admin__field-control">
                 <input
                         id="tfa_verify"
@@ -57,8 +68,6 @@ $verifyInfo = $block->getVerifyInfo();
             </div>
         </div>
     </fieldset>
-
-    <p><?php echo __('by <a href="http://www.magespecialist.it" target="_blank">MageSpecialist</a> Security Suite') ?></p>
 </form>
 
 <script type="text/javascript">

@@ -60,7 +60,7 @@ class Configure extends Action
      * Get current user
      * @return \Magento\User\Model\User|null
      */
-    protected function getUser()
+    private function getUser()
     {
         return $this->session->getUser();
     }
@@ -87,6 +87,6 @@ class Configure extends Action
 
         return
             $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            !$this->tfa->getProvider(Authy::CODE)->getIsActive($user);
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
     }
 }

@@ -29,7 +29,7 @@ interface ProviderInterface
      * Return true if this provider has been enabled by admin
      * @return boolean
      */
-    public function getIsEnabled();
+    public function isEnabled();
 
     /**
      * Get provider engine
@@ -59,13 +59,13 @@ interface ProviderInterface
      * Return true if this provider configuration can be reset
      * @return boolean
      */
-    public function getCanReset();
+    public function isResetAllowed();
 
     /**
      * Return true if this provider allows trusted devices
      * @return boolean
      */
-    public function getAllowTrustedDevices();
+    public function isTrustedDevicesAllowed();
 
     /**
      * Reset provider configuration
@@ -79,14 +79,14 @@ interface ProviderInterface
      * @param UserInterface $user
      * @return bool
      */
-    public function getIsConfigured(UserInterface $user);
+    public function isConfigured(UserInterface $user);
 
     /**
      * Return true if current provider has been activated
      * @param UserInterface $user
      * @return bool
      */
-    public function getIsActive(UserInterface $user);
+    public function isActive(UserInterface $user);
 
     /**
      * Activate provider

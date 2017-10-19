@@ -46,7 +46,7 @@ class EnabledProvider implements ArrayInterface
         $providers = $this->tfa->getAllProviders();
         $res = [];
         foreach ($providers as $provider) {
-            if ($provider->getIsEnabled()) {
+            if ($provider->isEnabled()) {
                 $res[] = [
                     'value' => $provider->getCode(),
                     'label' => $provider->getName(),

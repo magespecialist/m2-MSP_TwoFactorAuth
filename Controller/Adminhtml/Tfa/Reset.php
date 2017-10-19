@@ -76,7 +76,7 @@ class Reset extends Action
         $provider->resetConfiguration($user);
 
         $this->messageManager->addSuccessMessage(__('Configuration has been reset for this user'));
-        $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
+        return $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
     }
 
     /**
