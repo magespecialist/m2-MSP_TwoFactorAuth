@@ -101,7 +101,7 @@ class Configurepost extends Action
         if ($this->google->verify($user, $this->dataObjectFactory->create([
             'data' => $this->getRequest()->getParams(),
         ]))) {
-            $this->tfa->getProvider(Google::CODE)->activate($user);
+            $this->tfa->getProvider(Google::CODE)->activate($user->getId());
             $this->tfaSession->grantAccess();
 
             $this->event->dispatch(SecuritySuiteInterface::EVENT, [
@@ -128,7 +128,7 @@ class Configurepost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            !$this->tfa->getProvider(Google::CODE)->isActive($user);
+            $this->tfa->getProviderIsAllowed($user->getId(), Google::CODE) &&
+            !$this->tfa->getProvider(Google::CODE)->isActive($user->getId());
     }
 }

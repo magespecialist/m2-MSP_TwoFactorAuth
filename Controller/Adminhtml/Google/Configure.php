@@ -79,7 +79,7 @@ class Configure extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            !$this->tfa->getProvider(Google::CODE)->isActive($user);
+            $this->tfa->getProviderIsAllowed($user->getId(), Google::CODE) &&
+            !$this->tfa->getProvider(Google::CODE)->isActive($user->getId());
     }
 }

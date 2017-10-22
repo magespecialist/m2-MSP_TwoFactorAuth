@@ -138,7 +138,7 @@ class U2fKey implements EngineInterface
      */
     private function getRegistration(UserInterface $user)
     {
-        $providerConfig = $this->userConfigManager->getProviderConfig($user, static::CODE);
+        $providerConfig = $this->userConfigManager->getProviderConfig($user->getId(), static::CODE);
 
         if (!isset($providerConfig['registration'])) {
             return null;

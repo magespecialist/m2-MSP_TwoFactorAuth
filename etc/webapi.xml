@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+ -->
+<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Webapi:etc/webapi.xsd">
+
+    <route url="/V1/msp-2fa/installed-providers" method="GET">
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getAllProviders"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::providers" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/forced-providers" method="GET">
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getForcedProviders"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::providers" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/user-providers/:userId" method="GET">
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getUserProviders"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::users" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/providers-to-activate/:userId" method="GET">
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getProvidersToActivate"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::users" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/trusted-devices/:userId" method="GET">
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getTrustedDevices"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::trusted_devices" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/trusted-devices/:tokenId" method="DELETE">
+        <service class="\MSP\TwoFactorAuth\Api\TrustedManagerInterface" method="revokeTrustedDevice"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::trusted_devices" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/default-provider-code/:userId" method="GET">
+        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="getDefaultProvider"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::users" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/default-provider-code/:userId" method="PUT">
+        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="setDefaultProvider"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::users_config" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/set-providers-codes/:userId" method="PUT">
+        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="setProvidersCodes"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::users_config" />
+        </resources>
+    </route>
+
+    <route url="/V1/msp-2fa/reset-provider/:userId/:providerCode" method="POST">
+        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="resetProviderConfig"/>
+        <resources>
+            <resource ref="MSP_TwoFactorAuth::users_config" />
+        </resources>
+    </route>
+</routes>

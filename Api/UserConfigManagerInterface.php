@@ -20,89 +20,95 @@
 
 namespace MSP\TwoFactorAuth\Api;
 
-use Magento\User\Api\Data\UserInterface;
-
 interface UserConfigManagerInterface
 {
     const ACTIVE_CONFIG_KEY = 'active';
 
     /**
      * Get a provider configuration for a given user
-     * @param UserInterface $user
-     * @param string $providerCode
+     * @param int $userId
+     * @param int $providerCode
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function getProviderConfig(UserInterface $user, $providerCode);
+    public function getProviderConfig($userId, $providerCode);
 
     /**
      * Set provider configuration
-     * @param UserInterface $user
+     * @param int $userId
      * @param string $providerCode
      * @param array|null $config
-     * @return $this
+     * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function setProviderConfig(UserInterface $user, $providerCode, $config);
+    public function setProviderConfig($userId, $providerCode, $config);
 
     /**
      * Set provider configuration
-     * @param UserInterface $user
+     * @param int $userId
      * @param string $providerCode
      * @param array|null $config
-     * @return $this
+     * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function addProviderConfig(UserInterface $user, $providerCode, $config);
+    public function addProviderConfig($userId, $providerCode, $config);
 
     /**
      * Reset provider configuration
-     * @param UserInterface $user
-     * @param $providerCode
-     * @return $this
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function resetProviderConfig(UserInterface $user, $providerCode);
+    public function resetProviderConfig($userId, $providerCode);
 
     /**
      * Set providers list for a given user
-     * @param UserInterface $user
-     * @param array $providers
-     * @return $this
+     * @param int $userId
+     * @param string $providersCodes
+     * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function setProvidersCodes(UserInterface $user, array $providers);
+    public function setProvidersCodes($userId, $providersCodes);
 
     /**
      * Set providers list for a given user
-     * @param UserInterface $user
-     * @return array
+     * @param int $userId
+     * @return string[]
      */
-    public function getProvidersCodes(UserInterface $user);
+    public function getProvidersCodes($userId);
 
     /**
      * Activate a provider configuration
-     * @param UserInterface $user
-     * @param $providerCode
-     * @return $this
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function activateProviderConfiguration(UserInterface $user, $providerCode);
+    public function activateProviderConfiguration($userId, $providerCode);
 
     /**
      * Return true if a provider configuration has been activated
-     * @param UserInterface $user
-     * @param $providerCode
+     * @param int $userId
+     * @param string $providerCode
      * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function isProviderConfigurationActive(UserInterface $user, $providerCode);
+    public function isProviderConfigurationActive($userId, $providerCode);
 
     /**
      * Set default provider
-     * @param UserInterface $user
+     * @param int $userId
      * @param string $providerCode
-     * @return $this
+     * @return boolean
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
-    public function setDefaultProvider(UserInterface $user, $providerCode);
+    public function setDefaultProvider($userId, $providerCode);
 
     /**
      * get default provider
-     * @param UserInterface $user
+     * @param int $userId
      * @return string
      */
-    public function getDefaultProvider(UserInterface $user);
+    public function getDefaultProvider($userId);
 }

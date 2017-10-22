@@ -157,54 +157,44 @@ class Provider implements ProviderInterface
     }
 
     /**
-     * Reset provider configuration
-     * @param UserInterface $user
-     * @return $this
+     * @inheritdoc
      */
-    public function resetConfiguration(UserInterface $user)
+    public function resetConfiguration($userId)
     {
-        $this->userConfigManager->setProviderConfig($user, $this->getCode(), null);
+        $this->userConfigManager->setProviderConfig($userId, $this->getCode(), null);
         return $this;
     }
 
     /**
-     * Return true if this provider has been configured
-     * @param UserInterface $user
-     * @return bool
+     * @inheritdoc
      */
-    public function isConfigured(UserInterface $user)
+    public function isConfigured($userId)
     {
-        return $this->getConfiguration($user) !== null;
+        return $this->getConfiguration($userId) !== null;
     }
 
     /**
-     * Get user configuration
-     * @param UserInterface $user
-     * @return array|null
+     * @inheritdoc
      */
-    public function getConfiguration(UserInterface $user)
+    public function getConfiguration($userId)
     {
-        return $this->userConfigManager->getProviderConfig($user, $this->getCode());
+        return $this->userConfigManager->getProviderConfig($userId, $this->getCode());
     }
 
     /**
-     * Return true if current provider has been activated
-     * @param UserInterface $user
-     * @return bool
+     * @inheritdoc
      */
-    public function isActive(UserInterface $user)
+    public function isActive($userId)
     {
-        return $this->userConfigManager->isProviderConfigurationActive($user, $this->getCode());
+        return $this->userConfigManager->isProviderConfigurationActive($userId, $this->getCode());
     }
 
     /**
-     * Activate provider
-     * @param UserInterface $user
-     * @return $this
+     * @inheritdoc
      */
-    public function activate(UserInterface $user)
+    public function activate($userId)
     {
-        $this->userConfigManager->activateProviderConfiguration($user, $this->getCode());
+        $this->userConfigManager->activateProviderConfiguration($userId, $this->getCode());
         return $this;
     }
 

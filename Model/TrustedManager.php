@@ -22,6 +22,7 @@ namespace MSP\TwoFactorAuth\Model;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\RequestInterface;
+use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Framework\Json\Decoder;
 use Magento\Framework\Json\Encoder;
@@ -29,6 +30,7 @@ use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\User\Model\User;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
+use MSP\TwoFactorAuth\Api\TrustedRepositoryInterface;
 use MSP\TwoFactorAuth\Model\ResourceModel\Trusted as TrustedResourceModel;
 use Magento\Framework\Stdlib\CookieManagerInterface;
 use Magento\Framework\Session\SessionManagerInterface;
@@ -97,6 +99,10 @@ class TrustedManager implements TrustedManagerInterface
      * @var Decoder
      */
     private $decoder;
+    /**
+     * @var TrustedRepositoryInterface
+     */
+    private $trustedRepository;
 
     /**
      * TrustedManager constructor.
@@ -109,6 +115,7 @@ class TrustedManager implements TrustedManagerInterface
      * @param TrustedResourceModel $trustedResourceModel
      * @param CookieManagerInterface $cookieManager
      * @param SessionManagerInterface $sessionManager
+     * @param TrustedRepositoryInterface $trustedRepository
      * @param TrustedFactory $trustedFactory
      * @param CookieMetadataFactory $cookieMdFactory
      * @SuppressWarnings("PHPMD.ExcessiveParameterList")
@@ -123,6 +130,7 @@ class TrustedManager implements TrustedManagerInterface
         TrustedResourceModel $trustedResourceModel,
         CookieManagerInterface $cookieManager,
         SessionManagerInterface $sessionManager,
+        TrustedRepositoryInterface $trustedRepository,
         TrustedFactory $trustedFactory,
         CookieMetadataFactory $cookieMdFactory
     ) {
@@ -137,6 +145,7 @@ class TrustedManager implements TrustedManagerInterface
         $this->cookieMetadataFactory = $cookieMdFactory;
         $this->encoder = $encoder;
         $this->decoder = $decoder;
+        $this->trustedRepository = $trustedRepository;
     }
 
     /**
@@ -253,19 +262,22 @@ class TrustedManager implements TrustedManagerInterface
     /**
      * Revoke trusted device
      * @param int $tokenId
-     * @return void
+     * @return bool
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function revokeTrustedDevice($tokenId)
     {
-        $trustEntry = $this->trustedFactory->create();
-        $this->trustedResourceModel->load($trustEntry, $tokenId);
-        $this->trustedResourceModel->delete($trustEntry);
+        $token = $this->trustedRepository->getById($tokenId);
+        $this->trustedRepository->delete($token);
+
+        return true;
     }
 
     /**
      * Trust a device
      * @param $providerCode
      * @param RequestInterface $request
+     * @return boolean
      */
     public function handleTrustDeviceRequest($providerCode, RequestInterface $request)
     {
@@ -289,7 +301,10 @@ class TrustedManager implements TrustedManagerInterface
                 $this->trustedResourceModel->save($trustEntry);
 
                 $this->sendTokenCookie($token);
+                return true;
             }
         }
+
+        return false;
     }
 }

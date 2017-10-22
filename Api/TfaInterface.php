@@ -47,16 +47,23 @@ interface TfaInterface
 
     /**
      * Get a user provider
-     * @param \Magento\User\Api\Data\UserInterface $user
+     * @param int $userId
      * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
-    public function getUserProviders(\Magento\User\Api\Data\UserInterface $user);
+    public function getUserProviders($userId);
 
     /**
      * Get a list of providers
      * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getAllProviders();
+
+    /**
+     * Get a list of providers
+     * @param string $code
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
+     */
+    public function getProviderByCode($code);
 
     /**
      * Get a list of providers
@@ -67,7 +74,7 @@ interface TfaInterface
     /**
      * Return a list of trusted devices for given user id
      * @param int $userId
-     * @return array
+     * @return \MSP\TwoFactorAuth\Api\Data\TrustedInterface[]
      */
     public function getTrustedDevices($userId);
 
@@ -79,16 +86,16 @@ interface TfaInterface
 
     /**
      * Returns a list of providers to configure/enroll
-     * @param \Magento\User\Api\Data\UserInterface $user
+     * @param int $userId
      * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
-    public function getProvidersToActivate(\Magento\User\Api\Data\UserInterface $user);
+    public function getProvidersToActivate($userId);
 
     /**
      * Return true if a provider is allowed for a given user
-     * @param \Magento\User\Api\Data\UserInterface $user
+     * @param int $userId
      * @param string $providerCode
      * @return boolean
      */
-    public function getProviderIsAllowed(\Magento\User\Api\Data\UserInterface $user, $providerCode);
+    public function getProviderIsAllowed($userId, $providerCode);
 }

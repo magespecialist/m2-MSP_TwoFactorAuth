@@ -83,6 +83,6 @@ class TfaReset extends Command
             throw new LocalizedException(__('Unknown user %1', $userName));
         }
 
-        $this->userConfigManager->resetProviderConfig($user, $provider);
+        $this->userConfigManager->resetProviderConfig($user->getId(), $provider);
     }
 }

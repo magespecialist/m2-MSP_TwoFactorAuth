@@ -74,7 +74,7 @@ class Auth extends Action
 
     public function execute()
     {
-        $this->userConfigManager->setDefaultProvider($this->getUser(), DuoSecurity::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), DuoSecurity::CODE);
         return $this->pageFactory->create();
     }
 
@@ -87,6 +87,6 @@ class Auth extends Action
     {
         // Do not check for activation
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE);
+            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), DuoSecurity::CODE);
     }
 }

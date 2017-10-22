@@ -102,7 +102,7 @@ class Authpost extends Action
         if ($this->duoSecurity->verify($user, $this->dataObjectFactory->create([
             'data' => $this->getRequest()->getParams(),
         ]))) {
-            $this->tfa->getProvider(DuoSecurity::CODE)->activate($this->getUser());
+            $this->tfa->getProvider(DuoSecurity::CODE)->activate($user->getId());
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {
@@ -126,6 +126,6 @@ class Authpost extends Action
     {
         // Do not check for activation
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE);
+            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), DuoSecurity::CODE);
     }
 }

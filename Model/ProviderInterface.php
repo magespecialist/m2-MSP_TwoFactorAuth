@@ -20,9 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Model;
 
-use Magento\User\Api\Data\UserInterface;
-use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
-
 interface ProviderInterface
 {
     /**
@@ -33,7 +30,7 @@ interface ProviderInterface
 
     /**
      * Get provider engine
-     * @return EngineInterface
+     * @return \MSP\TwoFactorAuth\Model\Provider\EngineInterface
      */
     public function getEngine();
 
@@ -69,31 +66,31 @@ interface ProviderInterface
 
     /**
      * Reset provider configuration
-     * @param UserInterface $user
-     * @return $this
+     * @param int $userId
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
      */
-    public function resetConfiguration(UserInterface $user);
+    public function resetConfiguration($userId);
 
     /**
      * Return true if this provider has been configured
-     * @param UserInterface $user
+     * @param int $userId
      * @return bool
      */
-    public function isConfigured(UserInterface $user);
+    public function isConfigured($userId);
 
     /**
      * Return true if current provider has been activated
-     * @param UserInterface $user
+     * @param int $userId
      * @return bool
      */
-    public function isActive(UserInterface $user);
+    public function isActive($userId);
 
     /**
      * Activate provider
-     * @param UserInterface $user
-     * @return $this
+     * @param int $userId
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
      */
-    public function activate(UserInterface $user);
+    public function activate($userId);
 
     /**
      * Get configure action

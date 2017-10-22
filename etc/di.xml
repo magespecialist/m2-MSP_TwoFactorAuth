@@ -22,6 +22,22 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
 
+    <preference for="\MSP\TwoFactorAuth\Api\ProviderPoolInterface" type="\MSP\TwoFactorAuth\Model\ProviderPool"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\TrustedInterface" type="\MSP\TwoFactorAuth\Model\Data\Trusted"/>
+    <preference for="\MSP\TwoFactorAuth\Api\TrustedRepositoryInterface"
+                type="\MSP\TwoFactorAuth\Model\ResourceModel\TrustedRepository"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\TrustedSearchResultsInterface"
+                type="\Magento\Framework\Api\SearchResults"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\CountryInterface" type="\MSP\TwoFactorAuth\Model\Data\Country"/>
+    <preference for="\MSP\TwoFactorAuth\Api\CountryRepositoryInterface"
+                type="\MSP\TwoFactorAuth\Model\ResourceModel\CountryRepository"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\CountrySearchResultsInterface"
+                type="\Magento\Framework\Api\SearchResults"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\UserConfigInterface" type="\MSP\TwoFactorAuth\Model\Data\UserConfig"/>
+    <preference for="\MSP\TwoFactorAuth\Api\UserConfigRepositoryInterface"
+                type="\MSP\TwoFactorAuth\Model\ResourceModel\UserConfigRepository"/>
+    <preference for="\MSP\TwoFactorAuth\Api\Data\UserConfigSearchResultsInterface"
+                type="\Magento\Framework\Api\SearchResults"/>
     <preference for="MSP\TwoFactorAuth\Api\TfaInterface" type="MSP\TwoFactorAuth\Model\Tfa"/>
     <preference for="MSP\TwoFactorAuth\Api\UserConfigManagerInterface"
                 type="MSP\TwoFactorAuth\Model\UserConfigManager"/>
@@ -37,7 +53,8 @@
         </arguments>
     </type>
 
-    <type name="MSP\TwoFactorAuth\Api\TfaInterface">
+    <!-- System 2FA providers list -->
+    <type name="MSP\TwoFactorAuth\Api\ProviderPoolInterface">
         <arguments>
             <argument name="providers" xsi:type="array">
                 <!-- Parameter "name" must be the same as defined in virtualType "code" parameter -->
@@ -45,6 +62,22 @@
                 <item name="duo_security" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\DuoSecurity</item>
                 <item name="authy" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Authy</item>
                 <item name="u2fkey" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\U2fKey</item>
+            </argument>
+        </arguments>
+    </type>
+
+    <!--
+        Allowed providers. Must be repeated because UserConfigManagerInterface should be aware of active providers
+        And it cannot recall ProviderPoolInterface to avoid circular dependencies
+    -->
+    <type name="MSP\TwoFactorAuth\Api\UserConfigManagerInterface">
+        <arguments>
+            <argument name="providers" xsi:type="array">
+                <!-- Parameter "name" must be the same as defined in virtualType "code" parameter -->
+                <item name="google" xsi:type="string">google</item>
+                <item name="duo_security" xsi:type="string">duo_security</item>
+                <item name="authy" xsi:type="string">authy</item>
+                <item name="u2fkey" xsi:type="string">u2fkey</item>
             </argument>
         </arguments>
     </type>
@@ -65,7 +98,6 @@
             <argument name="canReset" xsi:type="boolean">true</argument>
         </arguments>
     </virtualType>
-
     <virtualType name="MSP\TwoFactorAuth\Model\Provider\DuoSecurity" type="MSP\TwoFactorAuth\Model\Provider">
         <arguments>
             <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity</argument>
@@ -80,7 +112,6 @@
             <argument name="canReset" xsi:type="boolean">false</argument>
         </arguments>
     </virtualType>
-
     <virtualType name="MSP\TwoFactorAuth\Model\Provider\Authy" type="MSP\TwoFactorAuth\Model\Provider">
         <arguments>
             <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\Authy</argument>
@@ -101,7 +132,6 @@
             <argument name="canReset" xsi:type="boolean">true</argument>
         </arguments>
     </virtualType>
-
     <virtualType name="MSP\TwoFactorAuth\Model\Provider\U2fKey" type="MSP\TwoFactorAuth\Model\Provider">
         <arguments>
             <argument name="engine" xsi:type="object">MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey</argument>

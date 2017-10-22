@@ -74,7 +74,7 @@ class Auth extends Action
 
     public function execute()
     {
-        $this->userConfigManager->setDefaultProvider($this->getUser(), U2fKey::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), U2fKey::CODE);
         return $this->pageFactory->create();
     }
 
@@ -86,7 +86,7 @@ class Auth extends Action
     protected function _isAllowed()
     {
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->isActive($this->getUser());
+            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), U2fKey::CODE) &&
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($this->getUser()->getId());
     }
 }

@@ -74,7 +74,7 @@ class Auth extends Action
 
     public function execute()
     {
-        $this->userConfigManager->setDefaultProvider($this->getUser(), Authy::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), Authy::CODE);
         return $this->pageFactory->create();
     }
 
@@ -86,7 +86,7 @@ class Auth extends Action
     protected function _isAllowed()
     {
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            $this->tfa->getProvider(Authy::CODE)->isActive($this->getUser());
+            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), Authy::CODE) &&
+            $this->tfa->getProvider(Authy::CODE)->isActive($this->getUser()->getId());
     }
 }

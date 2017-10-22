@@ -151,7 +151,7 @@ class Authpost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->isActive($user);
+            $this->tfa->getProviderIsAllowed($user->getId(), U2fKey::CODE) &&
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($user->getId());
     }
 }
