@@ -23,7 +23,6 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DataObjectFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
@@ -118,7 +117,8 @@ class Authpost extends Action
 
             $res = ['success' => true];
         } catch (\Exception $e) {
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+            $this->event->dispatch('msp_securitysuite_event', [
+                'level' => 'error',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'U2F error',
                 'username' => $this->getUser()->getUserName(),

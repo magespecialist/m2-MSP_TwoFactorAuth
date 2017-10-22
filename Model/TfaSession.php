@@ -13,7 +13,7 @@
  * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
- * @package    MSP_SecuritySuiteCommon
+ * @package    MSP_TwoFactorAuth
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */

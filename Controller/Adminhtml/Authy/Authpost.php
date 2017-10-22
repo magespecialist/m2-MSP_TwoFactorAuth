@@ -23,9 +23,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
@@ -117,7 +115,7 @@ class Authpost extends Action
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
 
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
+            $this->event->dispatch('msp_securitysuite_event', [
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Authy error',
                 'username' => $this->getUser()->getUserName(),
