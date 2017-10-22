@@ -24,6 +24,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
@@ -105,7 +106,7 @@ class Authpost extends Action
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {
-            $this->event->dispatch('msp_securitysuite_event', [
+            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'warning',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'DuoSecurity invalid auth',

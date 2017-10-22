@@ -23,6 +23,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\JsonFactory;
+use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
@@ -108,7 +109,7 @@ class Verifyonetouch extends Action
                 $res = ['success' => false, 'status' => $res];
 
                 if ($res == 'denied') {
-                    $this->event->dispatch('msp_securitysuite_event', [
+                    $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                         'level' => 'warning',
                         'module' => 'MSP_TwoFactorAuth',
                         'message' => 'Authy onetouch auth denied',
@@ -120,7 +121,7 @@ class Verifyonetouch extends Action
             $result->setHttpResponseCode(500);
             $res = ['success' => false, 'message' => $e->getMessage()];
 
-            $this->event->dispatch('msp_securitysuite_event', [
+            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'error',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Authy onetouch error',

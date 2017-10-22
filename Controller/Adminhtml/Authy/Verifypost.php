@@ -25,6 +25,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
@@ -102,14 +103,14 @@ class Verifypost extends Action
             $this->authy->enroll($this->getUser());
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch('msp_securitysuite_event', [
+            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'info',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Authy identity verified',
                 'username' => $this->getUser()->getUserName(),
             ]);
         } catch (\Exception $e) {
-            $this->event->dispatch('msp_securitysuite_event', [
+            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'error',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Authy identity verification failure',

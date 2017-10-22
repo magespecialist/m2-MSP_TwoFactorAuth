@@ -22,6 +22,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
+use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
@@ -94,7 +95,7 @@ class Configurepost extends Action
             $this->u2fKey->registerDevice($this->getUser(), $request, $response);
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch('msp_securitysuite_event', [
+            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'info',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'U2F New device registered',
@@ -103,7 +104,7 @@ class Configurepost extends Action
 
             $res = ['success' => true];
         } catch (\Exception $e) {
-            $this->event->dispatch('msp_securitysuite_event', [
+            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'error',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'U2F error while adding device',

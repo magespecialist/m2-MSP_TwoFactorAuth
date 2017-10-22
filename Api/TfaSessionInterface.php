@@ -26,7 +26,7 @@ interface TfaSessionInterface
 
     /**
      * Set 2FA session as passed
-     * @return $this
+     * @return \MSP\TwoFactorAuth\Api\TfaSessionInterface
      */
     public function grantAccess();
 

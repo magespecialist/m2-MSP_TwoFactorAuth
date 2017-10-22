@@ -24,6 +24,7 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\PageFactory;
+use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
@@ -90,14 +91,14 @@ class Configurepost extends Action
                 $request->getParam('tfa_method')
             );
 
-            $this->_eventManager->dispatch('msp_securitysuite_event', [
+            $this->_eventManager->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'info',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'New authy verification request via ' . $request->getParam('tfa_method'),
                 'username' => $this->getUser()->getUserName(),
             ]);
         } catch (\Exception $e) {
-            $this->_eventManager->dispatch('msp_securitysuite_event', [
+            $this->_eventManager->dispatch(SecuritySuiteInterface::EVENT, [
                 'level' => 'error',
                 'module' => 'MSP_TwoFactorAuth',
                 'message' => 'Authy verification request failure via ' . $request->getParam('tfa_method'),

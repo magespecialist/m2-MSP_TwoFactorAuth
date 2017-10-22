@@ -20,10 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Api;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\User\Api\Data\UserInterface;
-use MSP\TwoFactorAuth\Model\ProviderInterface;
-
 interface TfaInterface
 {
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/general/enabled';
@@ -39,32 +35,32 @@ interface TfaInterface
      * Get provider by code
      * @param string $providerCode
      * @param bool $onlyEnabled = true
-     * @return ProviderInterface|null
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface|null
      */
     public function getProvider($providerCode, $onlyEnabled = true);
 
     /**
      * Retrieve forced providers list
-     * @return ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getForcedProviders();
 
     /**
      * Get a user provider
-     * @param UserInterface $user
-     * @return ProviderInterface[]
+     * @param \Magento\User\Api\Data\UserInterface $user
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
-    public function getUserProviders(UserInterface $user);
+    public function getUserProviders(\Magento\User\Api\Data\UserInterface $user);
 
     /**
      * Get a list of providers
-     * @return ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getAllProviders();
 
     /**
      * Get a list of providers
-     * @return ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getAllEnabledProviders();
 
@@ -83,16 +79,16 @@ interface TfaInterface
 
     /**
      * Returns a list of providers to configure/enroll
-     * @param UserInterface $user
-     * @return ProviderInterface[]
+     * @param \Magento\User\Api\Data\UserInterface $user
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
-    public function getProvidersToActivate(UserInterface $user);
+    public function getProvidersToActivate(\Magento\User\Api\Data\UserInterface $user);
 
     /**
      * Return true if a provider is allowed for a given user
-     * @param UserInterface $user
+     * @param \Magento\User\Api\Data\UserInterface $user
      * @param string $providerCode
-     * @return mixed
+     * @return boolean
      */
-    public function getProviderIsAllowed(UserInterface $user, $providerCode);
+    public function getProviderIsAllowed(\Magento\User\Api\Data\UserInterface $user, $providerCode);
 }
