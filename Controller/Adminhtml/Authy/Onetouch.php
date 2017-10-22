@@ -66,6 +66,15 @@ class Onetouch extends AbstractAction
         $this->tfa = $tfa;
     }
 
+    /**
+     * Get current user
+     * @return \Magento\User\Model\User|null
+     */
+    private function getUser()
+    {
+        return $this->session->getUser();
+    }
+
     public function execute()
     {
         $result = $this->jsonFactory->create();

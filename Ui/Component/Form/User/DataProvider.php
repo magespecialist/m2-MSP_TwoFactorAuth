@@ -166,9 +166,9 @@ class DataProvider extends AbstractDataProvider
             $forcedProviders = $this->getForcedProviders();
             $enabledProviders = $this->enabledProvider->toOptionArray();
 
-            /** @var User $feed */
+            /** @var User $user */
             foreach ($items as $user) {
-                $providerCodes = $this->userConfigManager->getProvidersCodes($user);
+                $providerCodes = $this->userConfigManager->getProvidersCodes($user->getId());
                 $resetProviders = $this->getResetProviderUrls($user);
                 $trustedDevices = $this->getTrustedDevices($user);
 

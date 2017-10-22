@@ -119,7 +119,7 @@ class UserConfigManager implements UserConfigManagerInterface
 
     /**
      * Get user TFA config
-     * @param $userId
+     * @param int $userId
      * @return UserConfig
      */
     private function getUserConfiguration($userId)
