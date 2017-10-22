@@ -89,7 +89,10 @@ class Auth extends AbstractAction
      */
     protected function _isAllowed()
     {
+        $user = $this->getUser();
+
         return
+            $user &&
             $this->tfa->getProviderIsAllowed($this->getUser()->getId(), U2fKey::CODE) &&
             $this->tfa->getProvider(U2fKey::CODE)->isActive($this->getUser()->getId());
     }

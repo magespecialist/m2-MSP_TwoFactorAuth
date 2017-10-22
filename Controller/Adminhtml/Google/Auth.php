@@ -92,6 +92,7 @@ class Auth extends AbstractAction
         $user = $this->getUser();
 
         return
+            $user &&
             $this->tfa->getProviderIsAllowed($user->getId(), Google::CODE) &&
             $this->tfa->getProvider(Google::CODE)->isActive($user->getId());
     }

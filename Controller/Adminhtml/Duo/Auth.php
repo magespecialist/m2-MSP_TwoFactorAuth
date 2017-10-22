@@ -90,7 +90,10 @@ class Auth extends AbstractAction
     protected function _isAllowed()
     {
         // Do not check for activation
+        $user = $this->getUser();
+
         return
-            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), DuoSecurity::CODE);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), DuoSecurity::CODE);
     }
 }

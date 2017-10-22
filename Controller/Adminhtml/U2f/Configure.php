@@ -83,6 +83,7 @@ class Configure extends AbstractAction
         $user = $this->getUser();
 
         return
+            $user &&
             $this->tfa->getProviderIsAllowed($user->getId(), U2fKey::CODE) &&
             !$this->tfa->getProvider(U2fKey::CODE)->isActive($user->getId());
     }

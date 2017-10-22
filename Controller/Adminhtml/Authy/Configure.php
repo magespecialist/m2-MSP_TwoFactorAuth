@@ -90,6 +90,7 @@ class Configure extends AbstractAction
         $user = $this->getUser();
 
         return
+            $user &&
             $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
             !$this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
     }

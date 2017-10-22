@@ -66,15 +66,6 @@ class Onetouch extends AbstractAction
         $this->tfa = $tfa;
     }
 
-    /**
-     * Get current user
-     * @return \Magento\User\Model\User|null
-     */
-    private function getUser()
-    {
-        return $this->session->getUser();
-    }
-
     public function execute()
     {
         $result = $this->jsonFactory->create();
@@ -98,8 +89,11 @@ class Onetouch extends AbstractAction
      */
     protected function _isAllowed()
     {
+        $user = $this->getUser();
+
         return
-            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), Authy::CODE) &&
-            $this->tfa->getProvider(Authy::CODE)->isActive($this->getUser()->getId());
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
+            $this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
     }
 }

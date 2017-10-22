@@ -123,6 +123,7 @@ class Verify extends AbstractAction
         $user = $this->getUser();
 
         return
+            $user &&
             $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
             $this->getVerifyInformation() &&
             !$this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
