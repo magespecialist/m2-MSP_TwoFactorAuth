@@ -115,7 +115,7 @@ class DataProvider extends AbstractDataProvider
 
         $resetProviders = [];
         foreach ($providers as $provider) {
-            if ($provider->isConfigured($user) && $provider->isResetAllowed()) {
+            if ($provider->isConfigured($user->getId()) && $provider->isResetAllowed()) {
                 $resetProviders[] = [
                     'value' => $provider->getCode(),
                     'label' => __('Reset %1', $provider->getName()),

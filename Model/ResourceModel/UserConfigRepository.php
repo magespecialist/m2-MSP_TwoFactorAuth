@@ -182,8 +182,9 @@ class UserConfigRepository implements \MSP\TwoFactorAuth\Api\UserConfigRepositor
         }
     }
 
-    private function convertCollectionToDataItemsArray(\MSP\TwoFactorAuth\Model\ResourceModel\UserConfig\Collection $collection)
-    {
+    private function convertCollectionToDataItemsArray(
+        \MSP\TwoFactorAuth\Model\ResourceModel\UserConfig\Collection $collection
+    ) {
         $vendors = array_map(function (\MSP\TwoFactorAuth\Model\UserConfig $item) {
             return $item->getDataModel();
         }, $collection->getItems());

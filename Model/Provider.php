@@ -20,7 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Model;
 
-use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 

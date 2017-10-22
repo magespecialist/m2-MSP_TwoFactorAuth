@@ -27,10 +27,14 @@ use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 
-class Authpost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Authpost extends AbstractAction
 {
     /**
      * @var TfaInterface

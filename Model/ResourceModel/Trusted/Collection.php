@@ -8,6 +8,10 @@ namespace MSP\TwoFactorAuth\Model\ResourceModel\Trusted;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ * @SuppressWarnings(PHPMD.CamelCasePropertyName)
+ */
 class Collection extends AbstractCollection
 {
     protected $_idFieldName = 'msp_tfa_trusted_id';

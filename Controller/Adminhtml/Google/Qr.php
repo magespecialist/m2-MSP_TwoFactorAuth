@@ -25,9 +25,13 @@ use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\Raw;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
-class Qr extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Qr extends AbstractAction
 {
     /**
      * @var TfaInterface

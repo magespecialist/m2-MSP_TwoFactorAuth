@@ -24,11 +24,15 @@ use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 
-class Configurepost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Configurepost extends AbstractAction
 {
     /**
      * @var Tfa

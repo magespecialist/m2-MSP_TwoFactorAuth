@@ -27,7 +27,6 @@ use Magento\Framework\Setup\ModuleContextInterface;
 use Magento\Framework\Setup\SchemaSetupInterface;
 use Magento\Framework\DB\Ddl\Table;
 use Magento\Framework\Setup\UpgradeSchemaInterface;
-use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class UpgradeSchema implements UpgradeSchemaInterface
 {
@@ -106,7 +105,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'user_id',
                 $setup->getTable('admin_user'),
                 'user_id',
-                Table::ACTION_CASCADE,
                 Table::ACTION_CASCADE
             );
 
@@ -207,7 +205,6 @@ class UpgradeSchema implements UpgradeSchemaInterface
                 'user_id',
                 $setup->getTable('admin_user'),
                 'user_id',
-                Table::ACTION_CASCADE,
                 Table::ACTION_CASCADE
             );
 

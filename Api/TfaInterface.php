@@ -98,4 +98,35 @@ interface TfaInterface
      * @return boolean
      */
     public function getProviderIsAllowed($userId, $providerCode);
+
+    /**
+     * Get default provider code
+     * @param int $userId
+     * @return string
+     */
+    public function getDefaultProviderCode($userId);
+
+    /**
+     * Set default provider code
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     */
+    public function setDefaultProviderCode($userId, $providerCode);
+
+    /**
+     * Set providers
+     * @param int $userId
+     * @param string $providersCodes
+     * @return boolean
+     */
+    public function setProvidersCodes($userId, $providersCodes);
+
+    /**
+     * Reset default provider code
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     */
+    public function resetProviderConfig($userId, $providerCode);
 }

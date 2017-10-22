@@ -27,9 +27,13 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Verify extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Verify extends AbstractAction
 {
     /**
      * @var PageFactory

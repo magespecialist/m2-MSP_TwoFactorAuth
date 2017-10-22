@@ -182,8 +182,9 @@ class TrustedRepository implements \MSP\TwoFactorAuth\Api\TrustedRepositoryInter
         }
     }
 
-    private function convertCollectionToDataItemsArray(\MSP\TwoFactorAuth\Model\ResourceModel\Trusted\Collection $collection)
-    {
+    private function convertCollectionToDataItemsArray(
+        \MSP\TwoFactorAuth\Model\ResourceModel\Trusted\Collection $collection
+    ) {
         $vendors = array_map(function (\MSP\TwoFactorAuth\Model\Trusted $item) {
             return $item->getDataModel();
         }, $collection->getItems());

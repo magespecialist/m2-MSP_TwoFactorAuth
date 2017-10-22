@@ -24,9 +24,13 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\Controller\Result\JsonFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Onetouch extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Onetouch extends AbstractAction
 {
     /**
      * @var Authy

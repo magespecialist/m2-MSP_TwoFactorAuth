@@ -116,7 +116,7 @@ class Google implements EngineInterface
         $totp = $this->getTotp($user);
         $totp->setIssuer($issuer);
 
-        return $totp->getProvisioningUri(true);
+        return $totp->getProvisioningUri();
     }
 
     /**

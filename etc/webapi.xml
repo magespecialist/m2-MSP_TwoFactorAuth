@@ -72,21 +72,21 @@
     </route>
 
     <route url="/V1/msp-2fa/default-provider-code/:userId" method="PUT">
-        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="setDefaultProvider"/>
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="setDefaultProvider"/>
         <resources>
             <resource ref="MSP_TwoFactorAuth::users_config" />
         </resources>
     </route>
 
-    <route url="/V1/msp-2fa/set-providers-codes/:userId" method="PUT">
-        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="setProvidersCodes"/>
+    <route url="/V1/msp-2fa/user-providers/:userId" method="PUT">
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="setProvidersCodes"/>
         <resources>
             <resource ref="MSP_TwoFactorAuth::users_config" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/reset-provider/:userId/:providerCode" method="POST">
-        <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="resetProviderConfig"/>
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="resetProviderConfig"/>
         <resources>
             <resource ref="MSP_TwoFactorAuth::users_config" />
         </resources>

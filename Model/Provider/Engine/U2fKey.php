@@ -163,7 +163,7 @@ class U2fKey implements EngineInterface
         $u2f = $this->getU2f();
         $res = $u2f->doRegister($request, $response);
 
-        $this->userConfigManager->addProviderConfig($user, static::CODE, [
+        $this->userConfigManager->addProviderConfig($user->getId(), static::CODE, [
             'registration' => [
                 'certificate' => $res->certificate,
                 'keyHandle' => $res->keyHandle,
@@ -171,7 +171,7 @@ class U2fKey implements EngineInterface
                 'counter' => $res->counter,
             ]
         ]);
-        $this->userConfigManager->activateProviderConfiguration($user, static::CODE);
+        $this->userConfigManager->activateProviderConfiguration($user->getId(), static::CODE);
 
         return $res;
     }

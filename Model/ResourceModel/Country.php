@@ -8,6 +8,9 @@ namespace MSP\TwoFactorAuth\Model\ResourceModel;
 
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
 class Country extends AbstractDb
 {
     protected function _construct()

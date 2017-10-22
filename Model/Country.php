@@ -15,6 +15,7 @@ use Magento\Framework\Registry;
 
 /**
  * @SuppressWarnings(PHPMD.LongVariable)
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
  */
 class Country extends AbstractModel
 {

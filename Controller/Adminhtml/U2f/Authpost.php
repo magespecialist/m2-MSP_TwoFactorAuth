@@ -26,16 +26,16 @@ use Magento\Framework\DataObjectFactory;
 use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
- * Class Authpost
- * @package MSP\TwoFactorAuth\Controller\Adminhtml\U2f
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
  */
-class Authpost extends Action
+class Authpost extends AbstractAction
 {
     /**
      * @var Tfa

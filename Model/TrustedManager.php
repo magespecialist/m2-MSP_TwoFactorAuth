@@ -22,7 +22,6 @@ namespace MSP\TwoFactorAuth\Model;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\RequestInterface;
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\PhpEnvironment\RemoteAddress;
 use Magento\Framework\Json\Decoder;
 use Magento\Framework\Json\Encoder;

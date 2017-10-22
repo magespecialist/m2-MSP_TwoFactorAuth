@@ -261,4 +261,73 @@ class Tfa implements TfaInterface
     {
         return !!$this->scopeConfig->getValue(TfaInterface::XML_PATH_ENABLED);
     }
+
+    /**
+     * Return true if a provider code is allowed
+     * @param int $userId
+     * @param string $providerCode
+     * @return bool
+     * @throws NoSuchEntityException
+     */
+    private function checkAllowedProvider($userId, $providerCode)
+    {
+        if (!$this->getProviderIsAllowed($userId, $providerCode)) {
+            throw new NoSuchEntityException(__('Unknown or not enabled provider %1 for this user', $providerCode));
+        }
+
+        return true;
+    }
+
+    /**
+     * Get default provider code
+     * @param int $userId
+     * @return string
+     */
+    public function getDefaultProviderCode($userId)
+    {
+        return $this->userConfigManager->getDefaultProvider($userId);
+    }
+
+    /**
+     * Set default provider code
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     */
+    public function setDefaultProviderCode($userId, $providerCode)
+    {
+        $this->checkAllowedProvider($userId, $providerCode);
+        return $this->userConfigManager->setDefaultProvider($userId, $providerCode);
+    }
+
+    /**
+     * Reset default provider code
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     */
+    public function resetProviderConfig($userId, $providerCode)
+    {
+        $this->checkAllowedProvider($userId, $providerCode);
+        return $this->userConfigManager->resetProviderConfig($userId, $providerCode);
+    }
+
+    /**
+     * Set providers
+     * @param int $userId
+     * @param string $providersCodes
+     * @return boolean
+     */
+    public function setProvidersCodes($userId, $providersCodes)
+    {
+        if (is_string($providersCodes)) {
+            $providersCodes = preg_split('/\s*,\s*/', $providersCodes);
+        }
+
+        foreach ($providersCodes as $providerCode) {
+            $this->checkAllowedProvider($userId, $providerCode);
+        }
+
+        return $this->userConfigManager->setProvidersCodes($userId, $providersCodes);
+    }
 }

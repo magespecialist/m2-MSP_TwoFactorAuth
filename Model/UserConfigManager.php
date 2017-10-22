@@ -44,36 +44,14 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     private $userConfigFactory;
 
-    /**
-     * @var array
-     */
-    private $allowedProviders;
-
     public function __construct(
         EncoderInterface $encoder,
         DecoderInterface $decoder,
-        UserConfigFactory $userConfigFactory,
-        $providers = []
+        UserConfigFactory $userConfigFactory
     ) {
         $this->encoder = $encoder;
         $this->decoder = $decoder;
         $this->userConfigFactory = $userConfigFactory;
-        $this->allowedProviders = $providers;
-    }
-
-    /**
-     * Return true if a provider code is allowed
-     * @param string $providerCode
-     * @return bool
-     * @throws NoSuchEntityException
-     */
-    private function checkAllowedProvider($providerCode)
-    {
-        if (!in_array($providerCode, $this->allowedProviders)) {
-            throw new NoSuchEntityException(__('Unknown provider %1', $providerCode));
-        }
-
-        return true;
     }
 
     /**
@@ -84,8 +62,6 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     public function getProviderConfig($userId, $providerCode)
     {
-        $this->checkAllowedProvider($providerCode);
-
         $userConfig = $this->getUserConfiguration($userId);
         $providersConfig = $userConfig->getData('config');
 
@@ -101,8 +77,6 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     public function setProviderConfig($userId, $providerCode, $config)
     {
-        $this->checkAllowedProvider($providerCode);
-
         $userConfig = $this->getUserConfiguration($userId);
         $providersConfig = $userConfig->getData('config');
 
@@ -124,8 +98,6 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     public function addProviderConfig($userId, $providerCode, $config)
     {
-        $this->checkAllowedProvider($providerCode);
-
         $userConfig = $this->getProviderConfig($userId, $providerCode);
         if ($userConfig === null) {
             $newConfig = $config;
@@ -141,8 +113,6 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     public function resetProviderConfig($userId, $providerCode)
     {
-        $this->checkAllowedProvider($providerCode);
-
         $this->setProviderConfig($userId, $providerCode, null);
         return true;
     }
@@ -173,10 +143,6 @@ class UserConfigManager implements UserConfigManagerInterface
     {
         if (is_string($providersCodes)) {
             $providersCodes = preg_split('/\s*,\s*/', $providersCodes);
-        }
-
-        foreach ($providersCodes as $providerCode) {
-            $this->checkAllowedProvider($providerCode);
         }
 
         $userConfig = $this->getUserConfiguration($userId);
@@ -221,8 +187,6 @@ class UserConfigManager implements UserConfigManagerInterface
      */
     public function setDefaultProvider($userId, $providerCode)
     {
-        $this->checkAllowedProvider($providerCode);
-
         $userConfig = $this->getUserConfiguration($userId);
         $userConfig->setData('default_provider', $providerCode);
         $userConfig->getResource()->save($userConfig);

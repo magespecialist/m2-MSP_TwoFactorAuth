@@ -25,8 +25,9 @@ use Magento\Backend\App\Action;
 use Magento\Framework\Exception\LocalizedException;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 
-class Index extends Action
+class Index extends AbstractAction
 {
     /**
      * @var TfaInterface

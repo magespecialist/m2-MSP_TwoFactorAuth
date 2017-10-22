@@ -182,8 +182,9 @@ class CountryRepository implements \MSP\TwoFactorAuth\Api\CountryRepositoryInter
         }
     }
 
-    private function convertCollectionToDataItemsArray(\MSP\TwoFactorAuth\Model\ResourceModel\Country\Collection $collection)
-    {
+    private function convertCollectionToDataItemsArray(
+        \MSP\TwoFactorAuth\Model\ResourceModel\Country\Collection $collection
+    ) {
         $vendors = array_map(function (\MSP\TwoFactorAuth\Model\Country $item) {
             return $item->getDataModel();
         }, $collection->getItems());

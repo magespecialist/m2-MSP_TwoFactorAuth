@@ -24,9 +24,13 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
-class Configure extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Configure extends AbstractAction
 {
     /**
      * @var TfaInterface

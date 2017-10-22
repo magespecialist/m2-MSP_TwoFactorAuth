@@ -27,10 +27,14 @@ use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 use Magento\Framework\Event\ManagerInterface as EventInterface;
 
-class Verifyonetouch extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Verifyonetouch extends AbstractAction
 {
     /**
      * @var Authy
