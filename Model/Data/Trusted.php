@@ -142,7 +142,7 @@ class Trusted extends AbstractExtensibleObject implements
      * {@inheritdoc}
      */
     public function setExtensionAttributes(
-        \MSP\TwoFactorAuth\Api\Data\TrustedInterfaceExtensionInterface $extensionAttributes
+        \MSP\TwoFactorAuth\Api\Data\TrustedExtensionInterface $extensionAttributes
     ) {
         return $this->setData(self::EXTENSION_ATTRIBUTES_KEY, $extensionAttributes);
     }

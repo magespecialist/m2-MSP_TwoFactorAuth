@@ -69,16 +69,16 @@ interface CountryInterface extends ExtensibleDataInterface
 
     /**
      * Retrieve existing extension attributes object or create a new one
-     * @return \MSP\TwoFactorAuth\Api\Data\CountryInterfaceExtensionInterface|null
+     * @return \MSP\TwoFactorAuth\Api\Data\CountryExtensionInterface|null
      */
     public function getExtensionAttributes();
 
     /**
      * Set an extension attributes object
-     * @param \MSP\TwoFactorAuth\Api\Data\CountryInterfaceExtensionInterface $extensionAttributes
+     * @param \MSP\TwoFactorAuth\Api\Data\CountryExtensionInterface $extensionAttributes
      * @return $this
      */
     public function setExtensionAttributes(
-        \MSP\TwoFactorAuth\Api\Data\CountryInterfaceExtensionInterface $extensionAttributes
+        \MSP\TwoFactorAuth\Api\Data\CountryExtensionInterface $extensionAttributes
     );
 }

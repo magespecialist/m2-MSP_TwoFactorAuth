@@ -70,16 +70,16 @@ interface UserConfigInterface extends ExtensibleDataInterface
 
     /**
      * Retrieve existing extension attributes object or create a new one
-     * @return \MSP\TwoFactorAuth\Api\Data\UserConfigInterfaceExtensionInterface|null
+     * @return \MSP\TwoFactorAuth\Api\Data\UserConfigExtensionInterface|null
      */
     public function getExtensionAttributes();
 
     /**
      * Set an extension attributes object
-     * @param \MSP\TwoFactorAuth\Api\Data\UserConfigInterfaceExtensionInterface $extensionAttributes
+     * @param \MSP\TwoFactorAuth\Api\Data\UserConfigExtensionInterface $extensionAttributes
      * @return $this
      */
     public function setExtensionAttributes(
-        \MSP\TwoFactorAuth\Api\Data\UserConfigInterfaceExtensionInterface $extensionAttributes
+        \MSP\TwoFactorAuth\Api\Data\UserConfigExtensionInterface $extensionAttributes
     );
 }

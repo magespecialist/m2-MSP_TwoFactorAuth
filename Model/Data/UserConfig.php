@@ -108,7 +108,7 @@ class UserConfig extends AbstractExtensibleObject implements
      * {@inheritdoc}
      */
     public function setExtensionAttributes(
-        \MSP\TwoFactorAuth\Api\Data\UserConfigInterfaceExtensionInterface $extensionAttributes
+        \MSP\TwoFactorAuth\Api\Data\UserConfigExtensionInterface $extensionAttributes
     ) {
         return $this->setData(self::EXTENSION_ATTRIBUTES_KEY, $extensionAttributes);
     }

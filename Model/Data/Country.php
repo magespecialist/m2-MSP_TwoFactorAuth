@@ -91,7 +91,7 @@ class Country extends AbstractExtensibleObject implements
      * {@inheritdoc}
      */
     public function setExtensionAttributes(
-        \MSP\TwoFactorAuth\Api\Data\CountryInterfaceExtensionInterface $extensionAttributes
+        \MSP\TwoFactorAuth\Api\Data\CountryExtensionInterface $extensionAttributes
     ) {
         return $this->setData(self::EXTENSION_ATTRIBUTES_KEY, $extensionAttributes);
     }
