@@ -60,9 +60,9 @@ class DataProvider extends AbstractDataProvider
      * @param UserConfigManagerInterface $userConfigManager
      * @param UrlInterface $url
      * @param TfaInterface $tfa
-     * @param $name
-     * @param $primaryFieldName
-     * @param $requestFieldName
+     * @param string $name
+     * @param string $primaryFieldName
+     * @param string $requestFieldName
      * @param array $meta
      * @param array $data
      * @SuppressWarnings("PHPMD.ExcessiveParameterList")
