@@ -20,7 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
 
-use Magento\Backend\App\Action;
 use Magento\Backend\App\Action\Context;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\User\Model\UserFactory;

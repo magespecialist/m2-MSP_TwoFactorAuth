@@ -24,13 +24,12 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CamelCaseMethodName)
@@ -63,11 +62,6 @@ class Authpost extends AbstractAction
     private $trustedManager;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var Authy
      */
     private $authy;
@@ -77,6 +71,11 @@ class Authpost extends AbstractAction
      */
     private $dataObjectFactory;
 
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
+
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -85,6 +84,7 @@ class Authpost extends AbstractAction
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         TfaInterface $tfa,
+        AlertInterface $alert,
         DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
@@ -93,9 +93,9 @@ class Authpost extends AbstractAction
         $this->pageFactory = $pageFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $context->getEventManager();
         $this->authy = $authy;
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -120,12 +120,14 @@ class Authpost extends AbstractAction
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
 
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy error',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy error',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             return $this->_redirect('*/*/auth');
         }

@@ -20,7 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Model;
 
-use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\Json\DecoderInterface;
 use Magento\Framework\Json\EncoderInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;

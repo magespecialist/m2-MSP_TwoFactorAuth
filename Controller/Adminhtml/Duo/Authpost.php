@@ -24,12 +24,11 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CamelCaseMethodName)
@@ -62,14 +61,14 @@ class Authpost extends AbstractAction
     private $duoSecurity;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var DataObjectFactory
      */
     private $dataObjectFactory;
+
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
 
     public function __construct(
         Action\Context $context,
@@ -78,6 +77,7 @@ class Authpost extends AbstractAction
         DuoSecurity $duoSecurity,
         TfaSessionInterface $tfaSession,
         DataObjectFactory $dataObjectFactory,
+        AlertInterface $alert,
         TfaInterface $tfa
     ) {
         parent::__construct($context);
@@ -86,8 +86,8 @@ class Authpost extends AbstractAction
         $this->pageFactory = $pageFactory;
         $this->tfaSession = $tfaSession;
         $this->duoSecurity = $duoSecurity;
-        $this->event = $context->getEventManager();
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -110,12 +110,12 @@ class Authpost extends AbstractAction
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'warning',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'DuoSecurity invalid auth',
-                'username' => $user->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'DuoSecurity invalid auth',
+                AlertInterface::LEVEL_WARNING,
+                $user->getUserName()
+            );
 
             return $this->_redirect('*/*/auth');
         }

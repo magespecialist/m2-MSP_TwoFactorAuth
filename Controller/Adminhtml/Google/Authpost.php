@@ -24,13 +24,12 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CamelCaseMethodName)
@@ -67,14 +66,14 @@ class Authpost extends AbstractAction
     private $trustedManager;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var DataObjectFactory
      */
     private $dataObjectFactory;
+
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
 
     public function __construct(
         Action\Context $context,
@@ -84,6 +83,7 @@ class Authpost extends AbstractAction
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         TfaInterface $tfa,
+        AlertInterface $alert,
         DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
@@ -93,8 +93,8 @@ class Authpost extends AbstractAction
         $this->google = $google;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $context->getEventManager();
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -117,12 +117,12 @@ class Authpost extends AbstractAction
             $this->tfaSession->grantAccess();
             return $this->_redirect('/');
         } else {
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'warning',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Google auth invalid token',
-                'username' => $user->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Google auth invalid token',
+                AlertInterface::LEVEL_WARNING,
+                $user->getUserName()
+            );
 
             $this->messageManager->addErrorMessage('Invalid code');
             return $this->_redirect('*/*/auth');

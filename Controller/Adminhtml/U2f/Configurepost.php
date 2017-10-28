@@ -22,12 +22,11 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CamelCaseMethodName)
@@ -60,9 +59,9 @@ class Configurepost extends AbstractAction
     private $tfaSession;
 
     /**
-     * @var EventInterface
+     * @var AlertInterface
      */
-    private $event;
+    private $alert;
 
     public function __construct(
         Tfa $tfa,
@@ -70,6 +69,7 @@ class Configurepost extends AbstractAction
         JsonFactory $jsonFactory,
         TfaSessionInterface $tfaSession,
         U2fKey $u2fKey,
+        AlertInterface $alert,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -79,7 +79,7 @@ class Configurepost extends AbstractAction
         $this->u2fKey = $u2fKey;
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
-        $this->event = $context->getEventManager();
+        $this->alert = $alert;
     }
 
     /**
@@ -99,22 +99,23 @@ class Configurepost extends AbstractAction
             $this->u2fKey->registerDevice($this->getUser(), $request, $response);
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'info',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'U2F New device registered',
-                'username' => $this->getUser()->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'U2F New device registered',
+                AlertInterface::LEVEL_INFO,
+                $this->getUser()->getUserName()
+            );
 
             $res = ['success' => true];
         } catch (\Exception $e) {
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'error',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'U2F error while adding device',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'U2F error while adding device',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $res = ['success' => false, 'message' => $e->getMessage()];
         }

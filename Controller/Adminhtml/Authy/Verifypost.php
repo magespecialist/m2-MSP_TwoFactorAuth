@@ -23,9 +23,8 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
@@ -62,15 +61,16 @@ class Verifypost extends AbstractAction
     private $tfaSession;
 
     /**
-     * @var EventInterface
+     * @var AlertInterface
      */
-    private $event;
+    private $alert;
 
     public function __construct(
         Action\Context $context,
         Session $session,
         TfaInterface $tfa,
         TfaSessionInterface $tfaSession,
+        AlertInterface $alert,
         Authy $authy,
         PageFactory $pageFactory
     ) {
@@ -80,7 +80,7 @@ class Verifypost extends AbstractAction
         $this->tfa = $tfa;
         $this->authy = $authy;
         $this->tfaSession = $tfaSession;
-        $this->event = $context->getEventManager();
+        $this->alert = $alert;
     }
 
     /**
@@ -107,20 +107,21 @@ class Verifypost extends AbstractAction
             $this->authy->enroll($this->getUser());
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'info',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy identity verified',
-                'username' => $this->getUser()->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy identity verified',
+                AlertInterface::LEVEL_INFO,
+                $this->getUser()->getUserName()
+            );
         } catch (\Exception $e) {
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'error',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy identity verification failure',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy identity verification failure',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $this->messageManager->addErrorMessage($e->getMessage());
             return $this->_redirect('*/*/verify');

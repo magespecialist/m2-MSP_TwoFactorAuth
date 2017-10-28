@@ -23,13 +23,12 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DataObjectFactory;
-use MSP\SecuritySuiteCommon\Api\SecuritySuiteInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
@@ -68,14 +67,14 @@ class Authpost extends AbstractAction
     private $trustedManager;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var DataObjectFactory
      */
     private $dataObjectFactory;
+
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
 
     public function __construct(
         Tfa $tfa,
@@ -85,6 +84,7 @@ class Authpost extends AbstractAction
         TrustedManagerInterface $trustedManager,
         U2fKey $u2fKey,
         DataObjectFactory $dataObjectFactory,
+        AlertInterface $alert,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -95,8 +95,8 @@ class Authpost extends AbstractAction
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $context->getEventManager();
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -118,13 +118,14 @@ class Authpost extends AbstractAction
 
             $res = ['success' => true];
         } catch (\Exception $e) {
-            $this->event->dispatch(SecuritySuiteInterface::EVENT, [
-                'level' => 'error',
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'U2F error',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'U2F error',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $res = ['success' => false, 'message' => $e->getMessage()];
         }
