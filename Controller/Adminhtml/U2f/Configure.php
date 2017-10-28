@@ -21,10 +21,14 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\U2f;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
 
-class Configure extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Configure extends AbstractAction
 {
     /**
      * @var Tfa
@@ -79,7 +83,8 @@ class Configure extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            !$this->tfa->getProvider(U2fKey::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), U2fKey::CODE) &&
+            !$this->tfa->getProvider(U2fKey::CODE)->isActive($user->getId());
     }
 }

@@ -23,8 +23,9 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Duo;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 
-class Configure extends Action
+class Configure extends AbstractAction
 {
     /**
      * @var TfaInterface

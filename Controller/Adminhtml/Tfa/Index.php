@@ -25,8 +25,9 @@ use Magento\Backend\App\Action;
 use Magento\Framework\Exception\LocalizedException;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 
-class Index extends Action
+class Index extends AbstractAction
 {
     /**
      * @var TfaInterface
@@ -68,20 +69,20 @@ class Index extends Action
     {
         $user = $this->getUser();
 
-        $providersToConfigure = $this->tfa->getProvidersToActivate($user);
+        $providersToConfigure = $this->tfa->getProvidersToActivate($user->getId());
         if (!empty($providersToConfigure)) {
             return $this->_redirect($providersToConfigure[0]->getConfigureAction());
         }
 
         $providerCode = '';
 
-        $defaultProviderCode = $this->userConfigManager->getDefaultProvider($user);
-        if ($this->tfa->getProviderIsAllowed($user, $defaultProviderCode)) {
+        $defaultProviderCode = $this->userConfigManager->getDefaultProvider($user->getId());
+        if ($this->tfa->getProviderIsAllowed($user->getId(), $defaultProviderCode)) {
             $providerCode = $defaultProviderCode;
         }
 
         if (!$providerCode) {
-            $providers = $this->tfa->getUserProviders($user);
+            $providers = $this->tfa->getUserProviders($user->getId());
             if (!empty($providers)) {
                 $providerCode = $providers[0]->getCode();
             }

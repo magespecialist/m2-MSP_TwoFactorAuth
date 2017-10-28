@@ -23,14 +23,17 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Verifypost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Verifypost extends AbstractAction
 {
     /**
      * @var PageFactory
@@ -58,15 +61,16 @@ class Verifypost extends Action
     private $tfaSession;
 
     /**
-     * @var EventInterface
+     * @var AlertInterface
      */
-    private $event;
+    private $alert;
 
     public function __construct(
         Action\Context $context,
         Session $session,
         TfaInterface $tfa,
         TfaSessionInterface $tfaSession,
+        AlertInterface $alert,
         Authy $authy,
         PageFactory $pageFactory
     ) {
@@ -76,7 +80,7 @@ class Verifypost extends Action
         $this->tfa = $tfa;
         $this->authy = $authy;
         $this->tfaSession = $tfaSession;
-        $this->event = $context->getEventManager();
+        $this->alert = $alert;
     }
 
     /**
@@ -103,18 +107,21 @@ class Verifypost extends Action
             $this->authy->enroll($this->getUser());
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy identity verified',
-                'username' => $this->getUser()->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy identity verified',
+                AlertInterface::LEVEL_INFO,
+                $this->getUser()->getUserName()
+            );
         } catch (\Exception $e) {
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy identity verification failure',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy identity verification failure',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $this->messageManager->addErrorMessage($e->getMessage());
             return $this->_redirect('*/*/verify');
@@ -133,7 +140,8 @@ class Verifypost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
     }
 }

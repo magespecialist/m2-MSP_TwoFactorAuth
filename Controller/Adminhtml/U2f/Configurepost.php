@@ -22,13 +22,16 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
-class Configurepost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Configurepost extends AbstractAction
 {
     /**
      * @var Tfa
@@ -56,9 +59,9 @@ class Configurepost extends Action
     private $tfaSession;
 
     /**
-     * @var EventInterface
+     * @var AlertInterface
      */
-    private $event;
+    private $alert;
 
     public function __construct(
         Tfa $tfa,
@@ -66,6 +69,7 @@ class Configurepost extends Action
         JsonFactory $jsonFactory,
         TfaSessionInterface $tfaSession,
         U2fKey $u2fKey,
+        AlertInterface $alert,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -75,7 +79,7 @@ class Configurepost extends Action
         $this->u2fKey = $u2fKey;
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
-        $this->event = $context->getEventManager();
+        $this->alert = $alert;
     }
 
     /**
@@ -95,20 +99,23 @@ class Configurepost extends Action
             $this->u2fKey->registerDevice($this->getUser(), $request, $response);
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'U2F New device registered',
-                'username' => $this->getUser()->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'U2F New device registered',
+                AlertInterface::LEVEL_INFO,
+                $this->getUser()->getUserName()
+            );
 
             $res = ['success' => true];
         } catch (\Exception $e) {
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'U2F error while adding device',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'U2F error while adding device',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $res = ['success' => false, 'message' => $e->getMessage()];
         }
@@ -135,7 +142,8 @@ class Configurepost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            !$this->tfa->getProvider(U2fKey::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), U2fKey::CODE) &&
+            !$this->tfa->getProvider(U2fKey::CODE)->isActive($user->getId());
     }
 }

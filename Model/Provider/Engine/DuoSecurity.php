@@ -21,7 +21,6 @@
 namespace MSP\TwoFactorAuth\Model\Provider\Engine;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
-use Magento\Framework\App\RequestInterface;
 use Magento\Framework\DataObject;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;

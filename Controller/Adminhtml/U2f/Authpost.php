@@ -23,19 +23,18 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DataObjectFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 use MSP\TwoFactorAuth\Model\Tfa;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
 /**
- * Class Authpost
- * @package MSP\TwoFactorAuth\Controller\Adminhtml\U2f
- * @SuppressWarnings("PHPMD.CouplingBetweenObjects")
+ * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
  */
-class Authpost extends Action
+class Authpost extends AbstractAction
 {
     /**
      * @var Tfa
@@ -68,14 +67,14 @@ class Authpost extends Action
     private $trustedManager;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var DataObjectFactory
      */
     private $dataObjectFactory;
+
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
 
     public function __construct(
         Tfa $tfa,
@@ -85,6 +84,7 @@ class Authpost extends Action
         TrustedManagerInterface $trustedManager,
         U2fKey $u2fKey,
         DataObjectFactory $dataObjectFactory,
+        AlertInterface $alert,
         Action\Context $context
     ) {
         parent::__construct($context);
@@ -95,8 +95,8 @@ class Authpost extends Action
         $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $context->getEventManager();
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -118,12 +118,14 @@ class Authpost extends Action
 
             $res = ['success' => true];
         } catch (\Exception $e) {
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'U2F error',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'U2F error',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $res = ['success' => false, 'message' => $e->getMessage()];
         }
@@ -150,7 +152,8 @@ class Authpost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), U2fKey::CODE) &&
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($user->getId());
     }
 }

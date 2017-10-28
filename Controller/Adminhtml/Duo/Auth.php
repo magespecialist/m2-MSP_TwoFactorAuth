@@ -25,9 +25,13 @@ use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\DuoSecurity;
 
-class Auth extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Auth extends AbstractAction
 {
     /**
      * @var TfaInterface
@@ -74,7 +78,7 @@ class Auth extends Action
 
     public function execute()
     {
-        $this->userConfigManager->setDefaultProvider($this->getUser(), DuoSecurity::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), DuoSecurity::CODE);
         return $this->pageFactory->create();
     }
 
@@ -86,7 +90,10 @@ class Auth extends Action
     protected function _isAllowed()
     {
         // Do not check for activation
+        $user = $this->getUser();
+
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), DuoSecurity::CODE);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), DuoSecurity::CODE);
     }
 }

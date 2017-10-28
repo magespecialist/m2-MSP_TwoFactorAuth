@@ -23,8 +23,9 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Tfa;
 use Magento\Backend\App\Action;
 use Magento\Framework\App\ResponseInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 
-class Revoke extends Action
+class Revoke extends AbstractAction
 {
     /**
      * @var TrustedManagerInterface

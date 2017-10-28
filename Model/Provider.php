@@ -13,6 +13,24 @@
  * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
  * @package    MSP_NoSpam
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
@@ -20,7 +38,6 @@
 
 namespace MSP\TwoFactorAuth\Model;
 
-use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
 
@@ -157,54 +174,44 @@ class Provider implements ProviderInterface
     }
 
     /**
-     * Reset provider configuration
-     * @param UserInterface $user
-     * @return $this
+     * @inheritdoc
      */
-    public function resetConfiguration(UserInterface $user)
+    public function resetConfiguration($userId)
     {
-        $this->userConfigManager->setProviderConfig($user, $this->getCode(), null);
+        $this->userConfigManager->setProviderConfig($userId, $this->getCode(), null);
         return $this;
     }
 
     /**
-     * Return true if this provider has been configured
-     * @param UserInterface $user
-     * @return bool
+     * @inheritdoc
      */
-    public function isConfigured(UserInterface $user)
+    public function isConfigured($userId)
     {
-        return $this->getConfiguration($user) !== null;
+        return $this->getConfiguration($userId) !== null;
     }
 
     /**
-     * Get user configuration
-     * @param UserInterface $user
-     * @return array|null
+     * @inheritdoc
      */
-    public function getConfiguration(UserInterface $user)
+    public function getConfiguration($userId)
     {
-        return $this->userConfigManager->getProviderConfig($user, $this->getCode());
+        return $this->userConfigManager->getProviderConfig($userId, $this->getCode());
     }
 
     /**
-     * Return true if current provider has been activated
-     * @param UserInterface $user
-     * @return bool
+     * @inheritdoc
      */
-    public function isActive(UserInterface $user)
+    public function isActive($userId)
     {
-        return $this->userConfigManager->isProviderConfigurationActive($user, $this->getCode());
+        return $this->userConfigManager->isProviderConfigurationActive($userId, $this->getCode());
     }
 
     /**
-     * Activate provider
-     * @param UserInterface $user
-     * @return $this
+     * @inheritdoc
      */
-    public function activate(UserInterface $user)
+    public function activate($userId)
     {
-        $this->userConfigManager->activateProviderConfiguration($user, $this->getCode());
+        $this->userConfigManager->activateProviderConfiguration($userId, $this->getCode());
         return $this;
     }
 

@@ -20,35 +20,35 @@
 
 namespace MSP\TwoFactorAuth\Api;
 
-use Magento\Framework\App\RequestInterface;
-
 interface TrustedManagerInterface
 {
     const TRUSTED_DEVICE_COOKIE = 'msp_tfa_trusted';
 
     /**
      * Rotate secret trust token
-     * @return void
+     * @return boolean
      */
     public function rotateTrustedDeviceToken();
 
     /**
      * Return true if device is trusted
-     * @return bool
+     * @return boolean
      */
     public function isTrustedDevice();
 
     /**
      * Revoke trusted device
      * @param int $tokenId
-     * @return void
+     * @return bool
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function revokeTrustedDevice($tokenId);
 
     /**
      * Trust a device
      * @param string $providerCode
-     * @param RequestInterface $request
+     * @param \Magento\Framework\App\RequestInterface $request
+     * @return boolean
      */
-    public function handleTrustDeviceRequest($providerCode, RequestInterface $request);
+    public function handleTrustDeviceRequest($providerCode, \Magento\Framework\App\RequestInterface $request);
 }

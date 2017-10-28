@@ -24,11 +24,15 @@ use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Configurepost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Configurepost extends AbstractAction
 {
     /**
      * @var PageFactory
@@ -50,11 +54,17 @@ class Configurepost extends Action
      */
     private $authy;
 
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
+
     public function __construct(
         Action\Context $context,
         Session $session,
         Authy $authy,
         TfaInterface $tfa,
+        AlertInterface $alert,
         PageFactory $pageFactory
     ) {
         parent::__construct($context);
@@ -62,6 +72,7 @@ class Configurepost extends Action
         $this->session = $session;
         $this->tfa = $tfa;
         $this->authy = $authy;
+        $this->alert = $alert;
     }
 
     /**
@@ -91,18 +102,21 @@ class Configurepost extends Action
                 $request->getParam('tfa_method')
             );
 
-            $this->_eventManager->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'New authy verification request via ' . $request->getParam('tfa_method'),
-                'username' => $this->getUser()->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'New authy verification request via ' . $request->getParam('tfa_method'),
+                AlertInterface::LEVEL_INFO,
+                $this->getUser()->getUserName()
+            );
         } catch (\Exception $e) {
-            $this->_eventManager->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy verification request failure via ' . $request->getParam('tfa_method'),
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy verification request failure via ' . $request->getParam('tfa_method'),
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             $this->messageManager->addErrorMessage($e->getMessage());
             return $this->_redirect('*/*/configure');
@@ -121,7 +135,8 @@ class Configurepost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
     }
 }

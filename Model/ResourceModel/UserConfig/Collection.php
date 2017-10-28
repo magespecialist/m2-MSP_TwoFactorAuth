@@ -17,17 +17,28 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+/**
+ * Automatically created by MageSpecialist CodeMonkey
+ * https://github.com/magespecialist/m2-MSP_CodeMonkey
+ */
 
 namespace MSP\TwoFactorAuth\Model\ResourceModel\UserConfig;
 
 use Magento\Framework\Model\ResourceModel\Db\Collection\AbstractCollection;
 
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ * @SuppressWarnings(PHPMD.CamelCasePropertyName)
+ */
 class Collection extends AbstractCollection
 {
     protected $_idFieldName = 'msp_tfa_user_config_id';
 
     protected function _construct()
     {
-        $this->_init('\MSP\TwoFactorAuth\Model\UserConfig', '\MSP\TwoFactorAuth\Model\ResourceModel\UserConfig');
+        $this->_init(
+            \MSP\TwoFactorAuth\Model\UserConfig::class,
+            \MSP\TwoFactorAuth\Model\ResourceModel\UserConfig::class
+        );
     }
 }

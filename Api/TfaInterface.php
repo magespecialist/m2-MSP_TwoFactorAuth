@@ -20,10 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Api;
 
-use Magento\Framework\Exception\LocalizedException;
-use Magento\User\Api\Data\UserInterface;
-use MSP\TwoFactorAuth\Model\ProviderInterface;
-
 interface TfaInterface
 {
     const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/general/enabled';
@@ -39,39 +35,46 @@ interface TfaInterface
      * Get provider by code
      * @param string $providerCode
      * @param bool $onlyEnabled = true
-     * @return ProviderInterface|null
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface|null
      */
     public function getProvider($providerCode, $onlyEnabled = true);
 
     /**
      * Retrieve forced providers list
-     * @return ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getForcedProviders();
 
     /**
      * Get a user provider
-     * @param UserInterface $user
-     * @return ProviderInterface[]
+     * @param int $userId
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
-    public function getUserProviders(UserInterface $user);
+    public function getUserProviders($userId);
 
     /**
      * Get a list of providers
-     * @return ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getAllProviders();
 
     /**
      * Get a list of providers
-     * @return ProviderInterface[]
+     * @param string $code
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
+     */
+    public function getProviderByCode($code);
+
+    /**
+     * Get a list of providers
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
     public function getAllEnabledProviders();
 
     /**
      * Return a list of trusted devices for given user id
      * @param int $userId
-     * @return array
+     * @return \MSP\TwoFactorAuth\Api\Data\TrustedInterface[]
      */
     public function getTrustedDevices($userId);
 
@@ -83,16 +86,47 @@ interface TfaInterface
 
     /**
      * Returns a list of providers to configure/enroll
-     * @param UserInterface $user
-     * @return ProviderInterface[]
+     * @param int $userId
+     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
      */
-    public function getProvidersToActivate(UserInterface $user);
+    public function getProvidersToActivate($userId);
 
     /**
      * Return true if a provider is allowed for a given user
-     * @param UserInterface $user
+     * @param int $userId
      * @param string $providerCode
-     * @return mixed
+     * @return boolean
      */
-    public function getProviderIsAllowed(UserInterface $user, $providerCode);
+    public function getProviderIsAllowed($userId, $providerCode);
+
+    /**
+     * Get default provider code
+     * @param int $userId
+     * @return string
+     */
+    public function getDefaultProviderCode($userId);
+
+    /**
+     * Set default provider code
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     */
+    public function setDefaultProviderCode($userId, $providerCode);
+
+    /**
+     * Set providers
+     * @param int $userId
+     * @param string $providersCodes
+     * @return boolean
+     */
+    public function setProvidersCodes($userId, $providersCodes);
+
+    /**
+     * Reset default provider code
+     * @param int $userId
+     * @param string $providerCode
+     * @return boolean
+     */
+    public function resetProviderConfig($userId, $providerCode);
 }

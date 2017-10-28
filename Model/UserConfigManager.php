@@ -13,7 +13,7 @@
  * to info@magespecialist.it so we can send you a copy immediately.
  *
  * @category   MSP
- * @package    MSP_NoSpam
+ * @package    MSP_TwoFactorAuth
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
@@ -22,7 +22,6 @@ namespace MSP\TwoFactorAuth\Model;
 
 use Magento\Framework\Json\DecoderInterface;
 use Magento\Framework\Json\EncoderInterface;
-use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 
 class UserConfigManager implements UserConfigManagerInterface
@@ -56,13 +55,13 @@ class UserConfigManager implements UserConfigManagerInterface
 
     /**
      * Get a provider configuration for a given user
-     * @param UserInterface $user
+     * @param int $userId
      * @param string $providerCode
      * @return array
      */
-    public function getProviderConfig(UserInterface $user, $providerCode)
+    public function getProviderConfig($userId, $providerCode)
     {
-        $userConfig = $this->getUserConfiguration($user);
+        $userConfig = $this->getUserConfiguration($userId);
         $providersConfig = $userConfig->getData('config');
 
         if (!isset($providersConfig[$providerCode])) {
@@ -73,15 +72,11 @@ class UserConfigManager implements UserConfigManagerInterface
     }
 
     /**
-     * Set provider configuration
-     * @param UserInterface $user
-     * @param string $providerCode
-     * @param array|null $config
-     * @return $this
+     * @inheritdoc
      */
-    public function setProviderConfig(UserInterface $user, $providerCode, $config)
+    public function setProviderConfig($userId, $providerCode, $config)
     {
-        $userConfig = $this->getUserConfiguration($user);
+        $userConfig = $this->getUserConfiguration($userId);
         $providersConfig = $userConfig->getData('config');
 
         if ($config === null) {
@@ -94,138 +89,115 @@ class UserConfigManager implements UserConfigManagerInterface
 
         $userConfig->setData('config', $providersConfig);
         $userConfig->getResource()->save($userConfig);
-        return $this;
+        return true;
     }
 
     /**
-     * Set provider configuration
-     * @param UserInterface $user
-     * @param string $providerCode
-     * @param array|null $config
-     * @return $this
+     * @inheritdoc
      */
-    public function addProviderConfig(UserInterface $user, $providerCode, $config)
+    public function addProviderConfig($userId, $providerCode, $config)
     {
-        $userConfig = $this->getProviderConfig($user, $providerCode);
+        $userConfig = $this->getProviderConfig($userId, $providerCode);
         if ($userConfig === null) {
             $newConfig = $config;
         } else {
             $newConfig = array_merge($userConfig, $config);
         }
 
-        return $this->setProviderConfig($user, $providerCode, $newConfig);
+        return $this->setProviderConfig($userId, $providerCode, $newConfig);
     }
 
     /**
-     * Reset provider configuration
-     * @param UserInterface $user
-     * @param $providerCode
-     * @return $this
+     * @inheritdoc
      */
-    public function resetProviderConfig(UserInterface $user, $providerCode)
+    public function resetProviderConfig($userId, $providerCode)
     {
-        $this->setProviderConfig($user, $providerCode, null);
-        return $this;
+        $this->setProviderConfig($userId, $providerCode, null);
+        return true;
     }
 
     /**
      * Get user TFA config
-     * @param UserInterface $user
+     * @param int $userId
      * @return UserConfig
      */
-    private function getUserConfiguration(UserInterface $user)
+    private function getUserConfiguration($userId)
     {
-        $key = $user->getId();
-
-        if (!isset($this->configurationRegistry[$key])) {
+        if (!isset($this->configurationRegistry[$userId])) {
             /** @var $userConfig UserConfig */
             $userConfig = $this->userConfigFactory->create();
-            $userConfig->getResource()->load($userConfig, $user->getId(), 'user_id');
-            $userConfig->setData('user_id', $user->getId());
+            $userConfig->getResource()->load($userConfig, $userId, 'user_id');
+            $userConfig->setData('user_id', $userId);
 
-            $this->configurationRegistry[$key] = $userConfig;
+            $this->configurationRegistry[$userId] = $userConfig;
         }
 
-        return $this->configurationRegistry[$key];
+        return $this->configurationRegistry[$userId];
     }
 
     /**
-     * Set providers list for a given user
-     * @param UserInterface $user
-     * @param array $providers
-     * @return $this
+     * @inheritdoc
      */
-    public function setProvidersCodes(UserInterface $user, array $providers)
+    public function setProvidersCodes($userId, $providersCodes)
     {
-        $userConfig = $this->getUserConfiguration($user);
-        $userConfig->setData('providers', $providers);
+        if (is_string($providersCodes)) {
+            $providersCodes = preg_split('/\s*,\s*/', $providersCodes);
+        }
+
+        $userConfig = $this->getUserConfiguration($userId);
+        $userConfig->setData('providers', $providersCodes);
         $userConfig->getResource()->save($userConfig);
 
-        return $this;
+        return true;
     }
 
     /**
-     * Set providers list for a given user
-     * @param UserInterface $user
-     * @return array
+     * @inheritdoc
      */
-    public function getProvidersCodes(UserInterface $user)
+    public function getProvidersCodes($userId)
     {
-        $userConfig = $this->getUserConfiguration($user);
+        $userConfig = $this->getUserConfiguration($userId);
         return $userConfig->getData('providers');
     }
 
     /**
-     * Activate a provider configuration
-     * @param UserInterface $user
-     * @param $providerCode
-     * @return $this
+     * @inheritdoc
      */
-    public function activateProviderConfiguration(UserInterface $user, $providerCode)
+    public function activateProviderConfiguration($userId, $providerCode)
     {
-        $this->addProviderConfig($user, $providerCode, [
+        return $this->addProviderConfig($userId, $providerCode, [
             UserConfigManagerInterface::ACTIVE_CONFIG_KEY => true
         ]);
-        return $this;
     }
 
     /**
-     * Return true if a provider configuration has been activated
-     * @param UserInterface $user
-     * @param $providerCode
-     * @return boolean
+     * @inheritdoc
      */
-    public function isProviderConfigurationActive(UserInterface $user, $providerCode)
+    public function isProviderConfigurationActive($userId, $providerCode)
     {
-        $config = $this->getProviderConfig($user, $providerCode);
+        $config = $this->getProviderConfig($userId, $providerCode);
         return $config &&
             isset($config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY]) &&
             $config[UserConfigManagerInterface::ACTIVE_CONFIG_KEY];
     }
 
     /**
-     * Set default provider
-     * @param UserInterface $user
-     * @param string $providerCode
-     * @return $this
+     * @inheritdoc
      */
-    public function setDefaultProvider(UserInterface $user, $providerCode)
+    public function setDefaultProvider($userId, $providerCode)
     {
-        $userConfig = $this->getUserConfiguration($user);
+        $userConfig = $this->getUserConfiguration($userId);
         $userConfig->setData('default_provider', $providerCode);
         $userConfig->getResource()->save($userConfig);
-
-        return $this;
+        return true;
     }
 
     /**
-     * get default provider
-     * @param UserInterface $user
-     * @return string
+     * @inheritdoc
      */
-    public function getDefaultProvider(UserInterface $user)
+    public function getDefaultProvider($userId)
     {
-        $userConfig = $this->getUserConfiguration($user);
+        $userConfig = $this->getUserConfiguration($userId);
         return $userConfig->getData('default_provider');
     }
 }

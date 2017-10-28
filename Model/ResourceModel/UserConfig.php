@@ -17,6 +17,10 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
+/**
+ * Automatically created by MageSpecialist CodeMonkey
+ * https://github.com/magespecialist/m2-MSP_CodeMonkey
+ */
 
 namespace MSP\TwoFactorAuth\Model\ResourceModel;
 
@@ -24,13 +28,15 @@ use Magento\Framework\Json\DecoderInterface;
 use Magento\Framework\Json\EncoderInterface;
 use Magento\Framework\Model\ResourceModel\Db\AbstractDb;
 
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
 class UserConfig extends AbstractDb
 {
     /**
      * @var DecoderInterface
      */
     private $decoder;
-
     /**
      * @var EncoderInterface
      */

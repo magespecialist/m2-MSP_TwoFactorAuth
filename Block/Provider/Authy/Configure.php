@@ -23,6 +23,9 @@ namespace MSP\TwoFactorAuth\Block\Provider\Authy;
 use Magento\Backend\Block\Template;
 use MSP\TwoFactorAuth\Model\ResourceModel\Country\CollectionFactory as CountryCollectionFactory;
 
+/**
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
 class Configure extends Template
 {
     /**

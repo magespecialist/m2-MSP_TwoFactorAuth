@@ -24,13 +24,16 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
-class Configurepost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Configurepost extends AbstractAction
 {
     /**
      * @var TfaInterface
@@ -57,14 +60,14 @@ class Configurepost extends Action
     private $tfaSession;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var DataObjectFactory
      */
     private $dataObjectFactory;
+
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
 
     public function __construct(
         Action\Context $context,
@@ -73,6 +76,7 @@ class Configurepost extends Action
         Google $google,
         TfaSessionInterface $tfaSession,
         TfaInterface $tfa,
+        AlertInterface $alert,
         DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
@@ -81,8 +85,8 @@ class Configurepost extends Action
         $this->pageFactory = $pageFactory;
         $this->google = $google;
         $this->tfaSession = $tfaSession;
-        $this->event = $context->getEventManager();
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -101,14 +105,15 @@ class Configurepost extends Action
         if ($this->google->verify($user, $this->dataObjectFactory->create([
             'data' => $this->getRequest()->getParams(),
         ]))) {
-            $this->tfa->getProvider(Google::CODE)->activate($user);
+            $this->tfa->getProvider(Google::CODE)->activate($user->getId());
             $this->tfaSession->grantAccess();
 
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'New Google Authenticator code issued',
-                'username' => $user->getUserName(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'New Google Authenticator code issued',
+                AlertInterface::LEVEL_INFO,
+                $user->getUserName()
+            );
 
             return $this->_redirect('/');
         } else {
@@ -127,7 +132,8 @@ class Configurepost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            !$this->tfa->getProvider(Google::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Google::CODE) &&
+            !$this->tfa->getProvider(Google::CODE)->isActive($user->getId());
     }
 }

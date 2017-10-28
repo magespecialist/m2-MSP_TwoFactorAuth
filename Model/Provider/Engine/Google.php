@@ -81,7 +81,7 @@ class Google implements EngineInterface
     private function getTotp(UserInterface $user)
     {
         if ($this->totp === null) {
-            $config = $this->configManager->getProviderConfig($user, static::CODE);
+            $config = $this->configManager->getProviderConfig($user->getId(), static::CODE);
 
             // @codingStandardsIgnoreStart
             $this->totp = new \OTPHP\TOTP(
@@ -101,10 +101,10 @@ class Google implements EngineInterface
      */
     private function getProvisioningUrl(UserInterface $user)
     {
-        $config = $this->configManager->getProviderConfig($user, static::CODE);
+        $config = $this->configManager->getProviderConfig($user->getId(), static::CODE);
         if (!isset($config['secret'])) {
             $config['secret'] = $this->generateSecret();
-            $this->configManager->setProviderConfig($user, static::CODE, $config);
+            $this->configManager->setProviderConfig($user->getId(), static::CODE, $config);
         }
 
         $baseUrl = $this->storeManager->getStore()->getBaseUrl();
@@ -116,7 +116,7 @@ class Google implements EngineInterface
         $totp = $this->getTotp($user);
         $totp->setIssuer($issuer);
 
-        return $totp->getProvisioningUri(true);
+        return $totp->getProvisioningUri();
     }
 
     /**

@@ -23,16 +23,18 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
-use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\View\Result\PageFactory;
-use MSP\SecuritySuiteCommon\Api\LogManagementInterface;
+use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
-use Magento\Framework\Event\ManagerInterface as EventInterface;
 
-class Authpost extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Authpost extends AbstractAction
 {
     /**
      * @var TfaInterface
@@ -60,11 +62,6 @@ class Authpost extends Action
     private $trustedManager;
 
     /**
-     * @var EventInterface
-     */
-    private $event;
-
-    /**
      * @var Authy
      */
     private $authy;
@@ -74,6 +71,11 @@ class Authpost extends Action
      */
     private $dataObjectFactory;
 
+    /**
+     * @var AlertInterface
+     */
+    private $alert;
+
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -82,6 +84,7 @@ class Authpost extends Action
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
         TfaInterface $tfa,
+        AlertInterface $alert,
         DataObjectFactory $dataObjectFactory
     ) {
         parent::__construct($context);
@@ -90,9 +93,9 @@ class Authpost extends Action
         $this->pageFactory = $pageFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
-        $this->event = $context->getEventManager();
         $this->authy = $authy;
         $this->dataObjectFactory = $dataObjectFactory;
+        $this->alert = $alert;
     }
 
     /**
@@ -117,12 +120,14 @@ class Authpost extends Action
         } catch (\Exception $e) {
             $this->messageManager->addErrorMessage($e->getMessage());
 
-            $this->event->dispatch(LogManagementInterface::EVENT_ACTIVITY, [
-                'module' => 'MSP_TwoFactorAuth',
-                'message' => 'Authy error',
-                'username' => $this->getUser()->getUserName(),
-                'additional' => $e->getMessage(),
-            ]);
+            $this->alert->event(
+                'MSP_TwoFactorAuth',
+                'Authy error',
+                AlertInterface::LEVEL_ERROR,
+                $this->getUser()->getUserName(),
+                AlertInterface::ACTION_LOG,
+                $e->getMessage()
+            );
 
             return $this->_redirect('*/*/auth');
         }
@@ -140,7 +145,8 @@ class Authpost extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
-            $this->tfa->getProvider(Authy::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
+            $this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
     }
 }

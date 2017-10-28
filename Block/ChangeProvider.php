@@ -85,7 +85,7 @@ class ChangeProvider extends Template
     public function isCurrentProviderActive()
     {
         $currentProvider = $this->tfa->getProvider($this->getCurrentProviderCode());
-        return $currentProvider->isActive($this->getUser());
+        return $currentProvider->isActive($this->getUser()->getId());
     }
 
     /**
@@ -96,7 +96,7 @@ class ChangeProvider extends Template
     {
         $res = [];
 
-        $providers = $this->tfa->getUserProviders($this->getUser());
+        $providers = $this->tfa->getUserProviders($this->getUser()->getId());
         foreach ($providers as $provider) {
             if ($provider->getCode() != $this->getCurrentProviderCode()) {
                 $res[] = $provider;

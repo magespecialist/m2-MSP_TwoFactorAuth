@@ -115,7 +115,7 @@ class DataProvider extends AbstractDataProvider
 
         $resetProviders = [];
         foreach ($providers as $provider) {
-            if ($provider->isConfigured($user) && $provider->isResetAllowed()) {
+            if ($provider->isConfigured($user->getId()) && $provider->isResetAllowed()) {
                 $resetProviders[] = [
                     'value' => $provider->getCode(),
                     'label' => __('Reset %1', $provider->getName()),
@@ -166,9 +166,9 @@ class DataProvider extends AbstractDataProvider
             $forcedProviders = $this->getForcedProviders();
             $enabledProviders = $this->enabledProvider->toOptionArray();
 
-            /** @var User $feed */
+            /** @var User $user */
             foreach ($items as $user) {
-                $providerCodes = $this->userConfigManager->getProvidersCodes($user);
+                $providerCodes = $this->userConfigManager->getProvidersCodes($user->getId());
                 $resetProviders = $this->getResetProviderUrls($user);
                 $trustedDevices = $this->getTrustedDevices($user);
 

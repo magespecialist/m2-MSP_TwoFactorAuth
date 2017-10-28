@@ -25,9 +25,13 @@ use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Google;
 
-class Auth extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Auth extends AbstractAction
 {
     /**
      * @var TfaInterface
@@ -74,7 +78,7 @@ class Auth extends Action
 
     public function execute()
     {
-        $this->userConfigManager->setDefaultProvider($this->getUser(), Google::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), Google::CODE);
         return $this->pageFactory->create();
     }
 
@@ -88,7 +92,8 @@ class Auth extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Google::CODE) &&
-            $this->tfa->getProvider(Google::CODE)->isActive($user);
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Google::CODE) &&
+            $this->tfa->getProvider(Google::CODE)->isActive($user->getId());
     }
 }

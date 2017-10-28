@@ -25,9 +25,13 @@ use Magento\Backend\App\Action;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 
-class Auth extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Auth extends AbstractAction
 {
     /**
      * @var TfaInterface
@@ -74,7 +78,7 @@ class Auth extends Action
 
     public function execute()
     {
-        $this->userConfigManager->setDefaultProvider($this->getUser(), U2fKey::CODE);
+        $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), U2fKey::CODE);
         return $this->pageFactory->create();
     }
 
@@ -85,8 +89,11 @@ class Auth extends Action
      */
     protected function _isAllowed()
     {
+        $user = $this->getUser();
+
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), U2fKey::CODE) &&
-            $this->tfa->getProvider(U2fKey::CODE)->isActive($this->getUser());
+            $user &&
+            $this->tfa->getProviderIsAllowed($this->getUser()->getId(), U2fKey::CODE) &&
+            $this->tfa->getProvider(U2fKey::CODE)->isActive($this->getUser()->getId());
     }
 }

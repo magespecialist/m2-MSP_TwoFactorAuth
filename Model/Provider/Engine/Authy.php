@@ -142,7 +142,7 @@ class Authy implements EngineInterface
      */
     public function enroll(UserInterface $user)
     {
-        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
         if (!isset($providerInfo['country_code'])) {
             throw new LocalizedException(__('Missing phone information'));
         }
@@ -163,11 +163,11 @@ class Authy implements EngineInterface
             throw new LocalizedException(__($errorMessage));
         }
 
-        $this->userConfigManager->addProviderConfig($user, Authy::CODE, [
+        $this->userConfigManager->addProviderConfig($user->getId(), Authy::CODE, [
             'user' => $response['user']['id'],
         ]);
 
-        $this->userConfigManager->activateProviderConfiguration($user, Authy::CODE);
+        $this->userConfigManager->activateProviderConfiguration($user->getId(), Authy::CODE);
 
         return true;
     }
@@ -199,7 +199,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__($errorMessage));
         }
 
-        $this->userConfigManager->addProviderConfig($user, Authy::CODE, [
+        $this->userConfigManager->addProviderConfig($user->getId(), Authy::CODE, [
             'country_code' => $country,
             'phone_number' => $phoneNumber,
             'carrier' => $response['carrier'],
@@ -226,7 +226,7 @@ class Authy implements EngineInterface
      */
     public function verifyPhoneNumber(UserInterface $user, $verificationCode)
     {
-        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
         if (!isset($providerInfo['country_code'])) {
             throw new LocalizedException(__('Missing verify request information'));
         }
@@ -247,10 +247,10 @@ class Authy implements EngineInterface
             throw new LocalizedException(__($errorMessage));
         }
 
-        $this->userConfigManager->addProviderConfig($user, Authy::CODE, [
+        $this->userConfigManager->addProviderConfig($user->getId(), Authy::CODE, [
             'phone_confirmed' => true,
         ]);
-        $this->userConfigManager->activateProviderConfiguration($user, Authy::CODE);
+        $this->userConfigManager->activateProviderConfiguration($user->getId(), Authy::CODE);
 
         return true;
     }
@@ -268,7 +268,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Unsupported via method'));
         }
 
-        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
         if (!isset($providerInfo['user'])) {
             throw new LocalizedException(__('Missing user information'));
         }
@@ -296,7 +296,7 @@ class Authy implements EngineInterface
      */
     public function requestOneTouch(UserInterface $user)
     {
-        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
         if (!isset($providerInfo['user'])) {
             throw new LocalizedException(__('Missing user information'));
         }
@@ -319,7 +319,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__($errorMessage));
         }
 
-        $this->userConfigManager->addProviderConfig($user, Authy::CODE, [
+        $this->userConfigManager->addProviderConfig($user->getId(), Authy::CODE, [
             'pending_approval' => $response['approval_request']['uuid'],
         ]);
 
@@ -334,7 +334,7 @@ class Authy implements EngineInterface
      */
     public function verifyOneTouch(UserInterface $user)
     {
-        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
         if (!isset($providerInfo['user'])) {
             throw new LocalizedException(__('Missing user information'));
         }
@@ -407,7 +407,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__('Invalid code format'));
         }
 
-        $providerInfo = $this->userConfigManager->getProviderConfig($user, Authy::CODE);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
         if (!isset($providerInfo['user'])) {
             throw new LocalizedException(__('Missing user information'));
         }

@@ -20,7 +20,6 @@
 
 namespace MSP\TwoFactorAuth\Observer;
 
-use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;

@@ -27,9 +27,13 @@ use Magento\Framework\Registry;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
+use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Verify extends Action
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
+class Verify extends AbstractAction
 {
     /**
      * @var PageFactory
@@ -87,7 +91,7 @@ class Verify extends Action
      */
     private function getVerifyInformation()
     {
-        $providerConfig = $this->userConfigManager->getProviderConfig($this->getUser(), Authy::CODE);
+        $providerConfig = $this->userConfigManager->getProviderConfig($this->getUser()->getId(), Authy::CODE);
         if (!isset($providerConfig['verify'])) {
             return null;
         }
@@ -119,8 +123,9 @@ class Verify extends Action
         $user = $this->getUser();
 
         return
-            $this->tfa->getProviderIsAllowed($this->getUser(), Authy::CODE) &&
+            $user &&
+            $this->tfa->getProviderIsAllowed($user->getId(), Authy::CODE) &&
             $this->getVerifyInformation() &&
-            !$this->tfa->getProvider(Authy::CODE)->isActive($user);
+            !$this->tfa->getProvider(Authy::CODE)->isActive($user->getId());
     }
 }
