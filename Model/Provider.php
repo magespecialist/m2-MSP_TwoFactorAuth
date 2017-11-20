@@ -38,8 +38,9 @@
 
 namespace MSP\TwoFactorAuth\Model;
 
+use MSP\TwoFactorAuth\Api\ProviderInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
-use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
+use MSP\TwoFactorAuth\Api\EngineInterface;
 
 class Provider implements ProviderInterface
 {

@@ -26,7 +26,7 @@ use MSP\TwoFactorAuth\Api\ProviderPoolInterface;
 class ProviderPool implements ProviderPoolInterface
 {
     /**
-     * @var \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @var \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     private $providers = [];
 
@@ -38,7 +38,7 @@ class ProviderPool implements ProviderPoolInterface
 
     /**
      * Get a list of providers
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     public function getProviders()
     {
@@ -48,7 +48,7 @@ class ProviderPool implements ProviderPoolInterface
     /**
      * Get provider by code
      * @param string $code
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface
      * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getProviderByCode($code)

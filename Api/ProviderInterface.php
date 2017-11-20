@@ -18,7 +18,7 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model;
+namespace MSP\TwoFactorAuth\Api;
 
 interface ProviderInterface
 {
@@ -30,7 +30,7 @@ interface ProviderInterface
 
     /**
      * Get provider engine
-     * @return \MSP\TwoFactorAuth\Model\Provider\EngineInterface
+     * @return \MSP\TwoFactorAuth\Api\EngineInterface
      */
     public function getEngine();
 
@@ -67,7 +67,7 @@ interface ProviderInterface
     /**
      * Reset provider configuration
      * @param int $userId
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface
      */
     public function resetConfiguration($userId);
 
@@ -88,7 +88,7 @@ interface ProviderInterface
     /**
      * Activate provider
      * @param int $userId
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface
      */
     public function activate($userId);
 

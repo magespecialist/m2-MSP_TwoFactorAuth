@@ -25,7 +25,7 @@ use Magento\Framework\DataObject;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
-use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
+use MSP\TwoFactorAuth\Api\EngineInterface;
 use Base32\Base32;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;

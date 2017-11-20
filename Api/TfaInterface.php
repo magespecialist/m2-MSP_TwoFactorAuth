@@ -35,39 +35,39 @@ interface TfaInterface
      * Get provider by code
      * @param string $providerCode
      * @param bool $onlyEnabled = true
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface|null
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface|null
      */
     public function getProvider($providerCode, $onlyEnabled = true);
 
     /**
      * Retrieve forced providers list
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     public function getForcedProviders();
 
     /**
      * Get a user provider
      * @param int $userId
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     public function getUserProviders($userId);
 
     /**
      * Get a list of providers
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     public function getAllProviders();
 
     /**
      * Get a list of providers
      * @param string $code
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface
      */
     public function getProviderByCode($code);
 
     /**
      * Get a list of providers
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     public function getAllEnabledProviders();
 
@@ -87,7 +87,7 @@ interface TfaInterface
     /**
      * Returns a list of providers to configure/enroll
      * @param int $userId
-     * @return \MSP\TwoFactorAuth\Model\ProviderInterface[]
+     * @return \MSP\TwoFactorAuth\Api\ProviderInterface[]
      */
     public function getProvidersToActivate($userId);
 

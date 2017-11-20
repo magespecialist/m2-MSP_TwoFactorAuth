@@ -27,7 +27,7 @@ use Magento\Store\Model\Store;
 use Magento\Store\Model\StoreManagerInterface;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
-use MSP\TwoFactorAuth\Model\Provider\EngineInterface;
+use MSP\TwoFactorAuth\Api\EngineInterface;
 use u2flib_server\U2F;
 
 class U2fKey implements EngineInterface

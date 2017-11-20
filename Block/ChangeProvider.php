@@ -25,7 +25,7 @@ use Magento\Backend\Model\Auth\Session;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\User\Model\User;
 use MSP\TwoFactorAuth\Api\TfaInterface;
-use MSP\TwoFactorAuth\Model\ProviderInterface;
+use MSP\TwoFactorAuth\Api\ProviderInterface;
 
 class ChangeProvider extends Template
 {
