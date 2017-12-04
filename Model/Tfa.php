@@ -293,6 +293,7 @@ class Tfa implements TfaInterface
      * @param int $userId
      * @param string $providerCode
      * @return boolean
+     * @throws NoSuchEntityException
      */
     public function setDefaultProviderCode($userId, $providerCode)
     {
@@ -305,6 +306,7 @@ class Tfa implements TfaInterface
      * @param int $userId
      * @param string $providerCode
      * @return boolean
+     * @throws NoSuchEntityException
      */
     public function resetProviderConfig($userId, $providerCode)
     {
@@ -317,6 +319,7 @@ class Tfa implements TfaInterface
      * @param int $userId
      * @param string $providersCodes
      * @return boolean
+     * @throws NoSuchEntityException
      */
     public function setProvidersCodes($userId, $providersCodes)
     {

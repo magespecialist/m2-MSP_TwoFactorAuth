@@ -58,6 +58,7 @@ class Auth extends Template
     /**
      * Get register data JSON payload
      * @return string
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function getAuthenticateData()
     {

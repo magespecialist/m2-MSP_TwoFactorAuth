@@ -41,6 +41,7 @@ class DuoSecurity implements EngineInterface
     const XML_PATH_SECRET_KEY = 'msp_securitysuite_twofactorauth/duo/secret_key';
     const XML_PATH_API_HOSTNAME = 'msp_securitysuite_twofactorauth/duo/api_hostname';
     const XML_PATH_APPLICATION_KEY = 'msp_securitysuite_twofactorauth/duo/application_key';
+
     /**
      * @var ScopeConfigInterface
      */

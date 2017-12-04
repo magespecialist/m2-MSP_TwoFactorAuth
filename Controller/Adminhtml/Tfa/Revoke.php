@@ -44,7 +44,7 @@ class Revoke extends AbstractAction
      * Dispatch request
      *
      * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NotFoundException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {

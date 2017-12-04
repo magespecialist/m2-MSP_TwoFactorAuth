@@ -77,6 +77,7 @@ class Google implements EngineInterface
      * Get TOTP object
      * @param UserInterface $user
      * @return \OTPHP\TOTP
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getTotp(UserInterface $user)
     {
@@ -98,6 +99,7 @@ class Google implements EngineInterface
      * Get TFA provisioning URL
      * @param UserInterface $user
      * @return string
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getProvisioningUrl(UserInterface $user)
     {
@@ -124,6 +126,7 @@ class Google implements EngineInterface
      * @param UserInterface $user
      * @param DataObject $request
      * @return bool
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function verify(UserInterface $user, DataObject $request)
     {
@@ -139,6 +142,8 @@ class Google implements EngineInterface
      * Render TFA QrCode
      * @param UserInterface $user
      * @return string
+     * @throws \Endroid\QrCode\Exception\ValidationException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function getQrCodeAsPng(UserInterface $user)
     {

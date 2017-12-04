@@ -88,6 +88,7 @@ class Verify extends AbstractAction
     /**
      * Get verify information
      * @return verify payload
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getVerifyInformation()
     {
@@ -103,7 +104,7 @@ class Verify extends AbstractAction
      * Dispatch request
      *
      * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NotFoundException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute()
     {
@@ -117,6 +118,7 @@ class Verify extends AbstractAction
      * Check if admin has permissions to visit related pages
      *
      * @return bool
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     protected function _isAllowed()
     {

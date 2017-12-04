@@ -70,6 +70,7 @@ class TrustDevice extends Template
     /**
      * Return true if "trust device" flag should be shown
      * @return boolean
+     * @throws LocalizedException
      */
     public function canShowTrustDevice()
     {

@@ -40,6 +40,7 @@ class AdminUserSaveAfter implements ObserverInterface
     /**
      * @param Observer $observer
      * @return void
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function execute(Observer $observer)
     {

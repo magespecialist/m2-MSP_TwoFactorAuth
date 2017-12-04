@@ -40,6 +40,7 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
     /**
      * @param Observer $observer
      * @return void
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(Observer $observer)
     {

@@ -84,6 +84,7 @@ class U2fKey implements EngineInterface
      * @param DataObject $request
      * @return true
      * @throws LocalizedException
+     * @throws \u2flib_server\Error
      */
     public function verify(UserInterface $user, DataObject $request)
     {
@@ -106,6 +107,8 @@ class U2fKey implements EngineInterface
     /**
      * Create the registration challenge
      * @return array
+     * @throws LocalizedException
+     * @throws \u2flib_server\Error
      */
     public function getRegisterData()
     {
@@ -118,6 +121,7 @@ class U2fKey implements EngineInterface
      * @param UserInterface $user
      * @return array
      * @throws LocalizedException
+     * @throws \u2flib_server\Error
      */
     public function getAuthenticateData(UserInterface $user)
     {
@@ -135,6 +139,7 @@ class U2fKey implements EngineInterface
      * Get registration information
      * @param UserInterface $user
      * @return array
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     private function getRegistration(UserInterface $user)
     {
@@ -150,9 +155,12 @@ class U2fKey implements EngineInterface
     /**
      * Register a new key
      * @param UserInterface $user
-     * @param $request
-     * @param $response
+     * @param array $request
+     * @param array $response
      * @return \u2flib_server\Registration
+     * @throws LocalizedException
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @throws \u2flib_server\Error
      */
     public function registerDevice(UserInterface $user, array $request, array $response)
     {

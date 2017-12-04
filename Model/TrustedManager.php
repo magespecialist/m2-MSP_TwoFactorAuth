@@ -184,6 +184,9 @@ class TrustedManager implements TrustedManagerInterface
     /**
      * Send token as cookie
      * @param string $token
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Stdlib\Cookie\CookieSizeLimitReachedException
+     * @throws \Magento\Framework\Stdlib\Cookie\FailureToSendException
      */
     private function sendTokenCookie($token)
     {
@@ -209,6 +212,10 @@ class TrustedManager implements TrustedManagerInterface
     /**
      * Rotate secret trust token
      * @return void
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Stdlib\Cookie\CookieSizeLimitReachedException
+     * @throws \Magento\Framework\Stdlib\Cookie\FailureToSendException
      */
     public function rotateTrustedDeviceToken()
     {
@@ -262,7 +269,6 @@ class TrustedManager implements TrustedManagerInterface
      * Revoke trusted device
      * @param int $tokenId
      * @return bool
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
      */
     public function revokeTrustedDevice($tokenId)
     {
@@ -277,6 +283,10 @@ class TrustedManager implements TrustedManagerInterface
      * @param $providerCode
      * @param RequestInterface $request
      * @return boolean
+     * @throws \Exception
+     * @throws \Magento\Framework\Exception\InputException
+     * @throws \Magento\Framework\Stdlib\Cookie\CookieSizeLimitReachedException
+     * @throws \Magento\Framework\Stdlib\Cookie\FailureToSendException
      */
     public function handleTrustDeviceRequest($providerCode, RequestInterface $request)
     {

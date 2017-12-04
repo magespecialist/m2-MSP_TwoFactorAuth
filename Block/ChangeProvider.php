@@ -81,6 +81,7 @@ class ChangeProvider extends Template
     /**
      * Return true if current provider is active
      * @return bool
+     * @throws LocalizedException
      */
     public function isCurrentProviderActive()
     {
@@ -91,6 +92,7 @@ class ChangeProvider extends Template
     /**
      * Get a list of available providers
      * @return ProviderInterface[]
+     * @throws LocalizedException
      */
     public function getProvidersList()
     {

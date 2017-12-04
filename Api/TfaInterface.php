@@ -63,6 +63,7 @@ interface TfaInterface
      * @param string $code
      * @return \MSP\TwoFactorAuth\Api\ProviderInterface
      */
+
     public function getProviderByCode($code);
 
     /**
