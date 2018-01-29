@@ -41,7 +41,7 @@
         <argument name="dataProvider" xsi:type="configurableObject">
             <argument name="class" xsi:type="string">MSP\TwoFactorAuth\Ui\Component\Form\User\DataProvider</argument>
             <argument name="name" xsi:type="string">msp_twofactorauth_edit_user_form_data_source</argument>
-            <argument name="primaryFieldName" xsi:type="string">user_id</argument>
+            <argument name="primaryFieldName" xsi:type="string">main_table.user_id</argument>
             <argument name="requestFieldName" xsi:type="string">user_id</argument>
         </argument>
         <argument name="data" xsi:type="array">
