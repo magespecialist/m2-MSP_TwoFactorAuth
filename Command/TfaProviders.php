@@ -30,72 +30,37 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Magento\User\Model\UserFactory;
 use Magento\User\Model\ResourceModel\User;
 
-class TfaReset extends Command
+class TfaProviders extends Command
 {
-    /**
-     * @var UserConfigManagerInterface
-     */
-    private $userConfigManager;
-
-    /**
-     * @var User
-     */
-    private $userResource;
-
-    /**
-     * @var UserFactory
-     */
-    private $userFactory;
-
     /**
      * @var ProviderPoolInterface
      */
     private $providerPool;
 
     public function __construct(
-        UserConfigManagerInterface $userConfigManager,
-        ProviderPoolInterface $providerPool,
-        UserFactory $userFactory,
-        User $userResource
+        ProviderPoolInterface $providerPool
     ) {
         parent::__construct();
-        $this->userConfigManager = $userConfigManager;
-        $this->userResource = $userResource;
-        $this->userFactory = $userFactory;
         $this->providerPool = $providerPool;
     }
 
     protected function configure()
     {
-        $this->setName('msp:security:tfa:reset');
-        $this->setDescription('Reset configuration for one user');
-
-        $this->addArgument('user', InputArgument::REQUIRED, __('Username'));
-        $this->addArgument('provider', InputArgument::REQUIRED, __('Provider code'));
+        $this->setName('msp:security:tfa:providers');
+        $this->setDescription('List all available providers');
 
         parent::configure();
     }
 
     /**
      * @SuppressWarnings("PHPMD.UnusedFormalParameter")
-     * @throws LocalizedException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $userName = $input->getArgument('user');
-        $providerCode = $input->getArgument('provider');
+        $providers = $this->providerPool->getProviders();
 
-        $user = $this->userFactory->create();
-
-        $this->userResource->load($user, $userName, 'username');
-        if (!$user->getId()) {
-            throw new LocalizedException(__('Unknown user %1', $userName));
+        foreach ($providers as $provider) {
+            $output->writeln(sprintf("%16s: %s", $provider->getCode(), $provider->getName()));
         }
-
-        $provider = $this->providerPool->getProviderByCode($providerCode);
-
-        $this->userConfigManager->resetProviderConfig($user->getId(), $providerCode);
-
-        $output->writeln('' . __('Provider %1 has ben reset for user %2', $provider->getName(), $userName));
     }
 }

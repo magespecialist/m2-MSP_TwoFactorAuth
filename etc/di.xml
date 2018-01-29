@@ -49,6 +49,7 @@
             <argument name="commands" xsi:type="array">
                 <item name="msp_twofactorauth_disable" xsi:type="object">MSP\TwoFactorAuth\Command\TfaDisable</item>
                 <item name="msp_twofactorauth_reset" xsi:type="object">MSP\TwoFactorAuth\Command\TfaReset</item>
+                <item name="msp_twofactorauth_providers" xsi:type="object">MSP\TwoFactorAuth\Command\TfaProviders</item>
             </argument>
         </arguments>
     </type>
