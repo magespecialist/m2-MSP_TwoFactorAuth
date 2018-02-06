@@ -18,19 +18,21 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Observer;
+namespace MSP\TwoFactorAuth\Plugin\Block\User\Edit;
 
-use Magento\Framework\Event\Observer;
-use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
-class ViewBlockAbstractToHtmlBefore implements ObserverInterface
+class TabsPlugin
 {
     /**
      * @var TfaInterface
      */
     private $tfa;
 
+    /**
+     * TabsPlugin constructor.
+     * @param TfaInterface $tfa
+     */
     public function __construct(
         TfaInterface $tfa
     ) {
@@ -38,33 +40,26 @@ class ViewBlockAbstractToHtmlBefore implements ObserverInterface
     }
 
     /**
-     * @param Observer $observer
-     * @return void
+     * @param \Magento\User\Block\User\Edit\Tabs $subject
      * @throws \Magento\Framework\Exception\LocalizedException
      */
-    public function execute(Observer $observer)
+    public function beforeToHtml(\Magento\User\Block\User\Edit\Tabs $subject)
     {
         if (empty($this->tfa->getAllEnabledProviders())) {
             return;
         }
 
-        /** @var $block \Magento\User\Block\User\Edit\Tabs */
-        $block = $observer->getBlock();
+        $tfaForm = $subject->getLayout()->renderElement('msp_twofactorauth_edit_user_form');
 
-        $nameInLayout = $block->getNameInLayout();
-        if ($nameInLayout == 'adminhtml.user.edit.tabs') {
-            $tfaForm = $block->getLayout()->renderElement('msp_twofactorauth_edit_user_form');
-
-            $block->addTabAfter(
-                'msp_twofactorauth',
-                [
-                    'label' => __('2FA'),
-                    'title' => __('2FA'),
-                    'content' => $tfaForm,
-                    'active' => true
-                ],
-                'roles_section'
-            );
-        }
+        $subject->addTabAfter(
+            'msp_twofactorauth',
+            [
+                'label' => __('2FA'),
+                'title' => __('2FA'),
+                'content' => $tfaForm,
+                'active' => true
+            ],
+            'roles_section'
+        );
     }
 }

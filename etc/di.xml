@@ -132,8 +132,4 @@
             <argument name="canReset" xsi:type="boolean">true</argument>
         </arguments>
     </virtualType>
-    <type name="Magento\User\Observer\Backend\ForceAdminPasswordChangeObserver">
-        <plugin sortOrder="1" name="mSPTwoFactorAuthForceAdminPasswordChangeObserver"
-                type="MSP\TwoFactorAuth\Plugin\Observer\Backend\ForceAdminPasswordChangeObserverPlugin"/>
-    </type>
 </config>

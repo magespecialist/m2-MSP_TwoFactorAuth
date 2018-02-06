@@ -22,16 +22,12 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:noNamespaceSchemaLocation="urn:magento:framework:Event/etc/events.xsd">
 
-    <event name="controller_action_predispatch">
-        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\ControllerActionPredispatch"/>
-    </event>
-    <event name="admin_user_save_after">
-        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\AdminUserSaveAfter"/>
-    </event>
-    <event name="admin_user_load_after">
-        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\AdminUserLoadAfter"/>
-    </event>
-    <event name="backend_auth_user_login_success">
-        <observer name="msp_twofactorauth" instance="MSP\TwoFactorAuth\Observer\BackendAuthUserLoginSuccess"/>
-    </event>
+    <type name="Magento\User\Block\User\Edit\Tabs">
+        <plugin sortOrder="1" name="mSPTwoFactorAuthTabs" type="MSP\TwoFactorAuth\Plugin\Block\User\Edit\TabsPlugin"/>
+    </type>
+
+    <type name="Magento\User\Observer\Backend\ForceAdminPasswordChangeObserver">
+        <plugin sortOrder="1" name="mSPTwoFactorAuthForceAdminPasswordChangeObserver"
+                type="MSP\TwoFactorAuth\Plugin\Observer\Backend\ForceAdminPasswordChangeObserverPlugin"/>
+    </type>
 </config>
