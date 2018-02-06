@@ -205,6 +205,7 @@ class Tfa implements TfaInterface
             $this->allowedUrls = [
                 'adminhtml_auth_login',
                 'adminhtml_auth_logout',
+                'adminhtml_auth_forgotpassword',
                 'msp_twofactorauth_tfa_index'
             ];
 

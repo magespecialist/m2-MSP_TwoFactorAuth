@@ -76,6 +76,18 @@ class Authpost extends AbstractAction
      */
     private $alert;
 
+    /**
+     * Authpost constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param PageFactory $pageFactory
+     * @param Authy $authy
+     * @param TfaSessionInterface $tfaSession
+     * @param TrustedManagerInterface $trustedManager
+     * @param TfaInterface $tfa
+     * @param AlertInterface $alert
+     * @param DataObjectFactory $dataObjectFactory
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -107,6 +119,9 @@ class Authpost extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $user = $this->getUser();
@@ -136,9 +151,7 @@ class Authpost extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

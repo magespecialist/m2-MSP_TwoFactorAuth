@@ -36,11 +36,6 @@ use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 class Verifyonetouch extends AbstractAction
 {
     /**
-     * @var Authy
-     */
-    private $authy;
-
-    /**
      * @var Session
      */
     private $session;
@@ -70,6 +65,22 @@ class Verifyonetouch extends AbstractAction
      */
     private $alert;
 
+    /**
+     * @var Authy\OneTouch
+     */
+    private $oneTouch;
+
+    /**
+     * Verifyonetouch constructor.
+     * @param Action\Context $context
+     * @param JsonFactory $jsonFactory
+     * @param TrustedManagerInterface $trustedManager
+     * @param TfaSessionInterface $tfaSession
+     * @param TfaInterface $tfa
+     * @param AlertInterface $alert
+     * @param Authy\OneTouch $oneTouch
+     * @param Session $session
+     */
     public function __construct(
         Action\Context $context,
         JsonFactory $jsonFactory,
@@ -77,17 +88,17 @@ class Verifyonetouch extends AbstractAction
         TfaSessionInterface $tfaSession,
         TfaInterface $tfa,
         AlertInterface $alert,
-        Authy $authy,
+        Authy\OneTouch $oneTouch,
         Session $session
     ) {
         parent::__construct($context);
-        $this->authy = $authy;
         $this->session = $session;
         $this->jsonFactory = $jsonFactory;
         $this->tfa = $tfa;
         $this->trustedManager = $trustedManager;
         $this->tfaSession = $tfaSession;
         $this->alert = $alert;
+        $this->oneTouch = $oneTouch;
     }
 
     /**
@@ -99,12 +110,15 @@ class Verifyonetouch extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $result = $this->jsonFactory->create();
 
         try {
-            $res = $this->authy->verifyOneTouch($this->getUser());
+            $res = $this->oneTouch->verify($this->getUser());
             if ($res == 'approved') {
                 $this->trustedManager->handleTrustDeviceRequest(Authy::CODE, $this->getRequest());
                 $this->tfaSession->grantAccess();
@@ -140,9 +154,7 @@ class Verifyonetouch extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

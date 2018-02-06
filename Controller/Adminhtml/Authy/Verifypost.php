@@ -22,7 +22,6 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\App\ResponseInterface;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
@@ -65,6 +64,22 @@ class Verifypost extends AbstractAction
      */
     private $alert;
 
+    /**
+     * @var Authy\Verification
+     */
+    private $verification;
+
+    /**
+     * Verifypost constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param TfaInterface $tfa
+     * @param TfaSessionInterface $tfaSession
+     * @param AlertInterface $alert
+     * @param Authy $authy
+     * @param Authy\Verification $verification
+     * @param PageFactory $pageFactory
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -72,15 +87,17 @@ class Verifypost extends AbstractAction
         TfaSessionInterface $tfaSession,
         AlertInterface $alert,
         Authy $authy,
+        Authy\Verification $verification,
         PageFactory $pageFactory
     ) {
         parent::__construct($context);
         $this->pageFactory = $pageFactory;
         $this->session = $session;
         $this->tfa = $tfa;
-        $this->authy = $authy;
         $this->tfaSession = $tfaSession;
         $this->alert = $alert;
+        $this->verification = $verification;
+        $this->authy = $authy;
     }
 
     /**
@@ -93,16 +110,14 @@ class Verifypost extends AbstractAction
     }
 
     /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @inheritdoc
      */
     public function execute()
     {
         $verificationCode = $this->getRequest()->getParam('tfa_verify');
 
         try {
-            $this->authy->verifyPhoneNumber($this->getUser(), $verificationCode);
+            $this->verification->verify($this->getUser(), $verificationCode);
             $this->authy->enroll($this->getUser());
             $this->tfaSession->grantAccess();
 
@@ -130,9 +145,7 @@ class Verifypost extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

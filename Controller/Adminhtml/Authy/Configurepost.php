@@ -50,19 +50,28 @@ class Configurepost extends AbstractAction
     private $tfa;
 
     /**
-     * @var Authy
-     */
-    private $authy;
-
-    /**
      * @var AlertInterface
      */
     private $alert;
 
+    /**
+     * @var Authy\Verification
+     */
+    private $verification;
+
+    /**
+     * Configurepost constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param Authy\Verification $verification
+     * @param TfaInterface $tfa
+     * @param AlertInterface $alert
+     * @param PageFactory $pageFactory
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
-        Authy $authy,
+        Authy\Verification $verification,
         TfaInterface $tfa,
         AlertInterface $alert,
         PageFactory $pageFactory
@@ -71,8 +80,8 @@ class Configurepost extends AbstractAction
         $this->pageFactory = $pageFactory;
         $this->session = $session;
         $this->tfa = $tfa;
-        $this->authy = $authy;
         $this->alert = $alert;
+        $this->verification = $verification;
     }
 
     /**
@@ -85,16 +94,14 @@ class Configurepost extends AbstractAction
     }
 
     /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @inheritdoc
      */
     public function execute()
     {
         $request = $this->getRequest();
 
         try {
-            $this->authy->requestPhoneNumberVerification(
+            $this->verification->request(
                 $this->getUser(),
                 $request->getParam('tfa_country'),
                 $request->getParam('tfa_phone'),
@@ -125,9 +132,7 @@ class Configurepost extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

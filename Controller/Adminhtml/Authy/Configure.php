@@ -48,6 +48,13 @@ class Configure extends AbstractAction
      */
     private $tfa;
 
+    /**
+     * Configure constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param TfaInterface $tfa
+     * @param PageFactory $pageFactory
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -70,9 +77,7 @@ class Configure extends AbstractAction
     }
 
     /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
+     * @inheritdoc
      */
     public function execute()
     {
@@ -80,9 +85,7 @@ class Configure extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

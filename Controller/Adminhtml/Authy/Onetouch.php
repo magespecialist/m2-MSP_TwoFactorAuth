@@ -33,11 +33,6 @@ use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 class Onetouch extends AbstractAction
 {
     /**
-     * @var Authy
-     */
-    private $authy;
-
-    /**
      * @var Session
      */
     private $session;
@@ -52,18 +47,31 @@ class Onetouch extends AbstractAction
      */
     private $tfa;
 
+    /**
+     * @var Authy\OneTouch
+     */
+    private $oneTouch;
+
+    /**
+     * Onetouch constructor.
+     * @param Action\Context $context
+     * @param JsonFactory $jsonFactory
+     * @param TfaInterface $tfa
+     * @param Authy\OneTouch $oneTouch
+     * @param Session $session
+     */
     public function __construct(
         Action\Context $context,
         JsonFactory $jsonFactory,
         TfaInterface $tfa,
-        Authy $authy,
+        Authy\OneTouch $oneTouch,
         Session $session
     ) {
         parent::__construct($context);
-        $this->authy = $authy;
         $this->session = $session;
         $this->jsonFactory = $jsonFactory;
         $this->tfa = $tfa;
+        $this->oneTouch = $oneTouch;
     }
 
     /**
@@ -75,12 +83,15 @@ class Onetouch extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $result = $this->jsonFactory->create();
 
         try {
-            $approvalCode = $this->authy->requestOneTouch($this->getUser());
+            $approvalCode = $this->oneTouch->request($this->getUser());
             $res = ['success' => true, 'code' => $approvalCode];
         } catch (\Exception $e) {
             $result->setHttpResponseCode(500);
@@ -92,9 +103,7 @@ class Onetouch extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

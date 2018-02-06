@@ -18,25 +18,18 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-namespace MSP\TwoFactorAuth\Model\Provider\Engine;
+namespace MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\DataObject;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Json\DecoderInterface;
 use Magento\User\Api\Data\UserInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
-use MSP\TwoFactorAuth\Api\EngineInterface;
-use MSP\TwoFactorAuth\Model\Provider\Engine\Authy\Service;
-use MSP\TwoFactorAuth\Model\Provider\Engine\Authy\Token;
+use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
-class Authy implements EngineInterface
+class Token
 {
-    const CODE = 'authy'; // Must be the same as defined in di.xml
-    const XML_PATH_ENABLED = 'msp_securitysuite_twofactorauth/authy/enabled';
-    const XML_PATH_ALLOW_TRUSTED_DEVICES = 'msp_securitysuite_twofactorauth/authy/allow_trusted_devices';
-
     /**
      * @var UserConfigManagerInterface
      */
@@ -57,54 +50,41 @@ class Authy implements EngineInterface
      */
     private $decoder;
 
-    /**
-     * @var ScopeConfigInterface
-     */
-    private $scopeConfig;
-
-    /**
-     * @var Token
-     */
-    private $token;
-
     public function __construct(
         UserConfigManagerInterface $userConfigManager,
-        DecoderInterface $decoder,
-        ScopeConfigInterface $scopeConfig,
-        Token $token,
         Service $service,
+        DecoderInterface $decoder,
         CurlFactory $curlFactory
     ) {
         $this->userConfigManager = $userConfigManager;
         $this->curlFactory = $curlFactory;
         $this->service = $service;
         $this->decoder = $decoder;
-        $this->scopeConfig = $scopeConfig;
-        $this->token = $token;
     }
 
     /**
-     * Enroll in Authy
+     * Request a token
      * @param UserInterface $user
-     * @return bool
+     * @param string $via
+     * @return true
      * @throws LocalizedException
      */
-    public function enroll(UserInterface $user)
+    public function request(UserInterface $user, $via)
     {
-        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
-        if (!isset($providerInfo['country_code'])) {
-            throw new LocalizedException(__('Missing phone information'));
+        if (!in_array($via, ['call', 'sms'])) {
+            throw new LocalizedException(__('Unsupported via method'));
         }
 
-        $url = $this->service->getProtectedApiEndpoint('users/new');
-        $curl = $this->curlFactory->create();
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
+        if (!isset($providerInfo['user'])) {
+            throw new LocalizedException(__('Missing user information'));
+        }
 
+        $url = $this->service->getProtectedApiEndpoint('' . $via . '/' . $providerInfo['user']) . '?force=true';
+
+        $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->service->getApiKey());
-        $curl->post($url, [
-            'user[email]' => $user->getEmail(),
-            'user[cellphone]' => $providerInfo['phone_number'],
-            'user[country_code]' => $providerInfo['country_code'],
-        ]);
+        $curl->get($url);
 
         $response = $this->decoder->decode($curl->getBody());
 
@@ -112,24 +92,7 @@ class Authy implements EngineInterface
             throw new LocalizedException(__($errorMessage));
         }
 
-        $this->userConfigManager->addProviderConfig($user->getId(), Authy::CODE, [
-            'user' => $response['user']['id'],
-        ]);
-
-        $this->userConfigManager->activateProviderConfiguration($user->getId(), Authy::CODE);
-
         return true;
-    }
-
-    /**
-     * Return true if this provider has been enabled by admin
-     * @return boolean
-     */
-    public function isEnabled()
-    {
-        return
-            !!$this->scopeConfig->getValue(static::XML_PATH_ENABLED) &&
-            !!$this->service->getApiKey();
     }
 
     /**
@@ -141,15 +104,28 @@ class Authy implements EngineInterface
      */
     public function verify(UserInterface $user, DataObject $request)
     {
-        return $this->token->verify($user, $request);
-    }
+        $code = $request->getData('tfa_code');
+        if (!preg_match('/^\w+$/', $code)) {
+            throw new LocalizedException(__('Invalid code format'));
+        }
 
-    /**
-     * Return true if this provider allows trusted devices
-     * @return boolean
-     */
-    public function isTrustedDevicesAllowed()
-    {
-        return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
+        $providerInfo = $this->userConfigManager->getProviderConfig($user->getId(), Authy::CODE);
+        if (!isset($providerInfo['user'])) {
+            throw new LocalizedException(__('Missing user information'));
+        }
+
+        $url = $this->service->getProtectedApiEndpoint('verify/' . $code . '/' . $providerInfo['user']);
+
+        $curl = $this->curlFactory->create();
+        $curl->addHeader('X-Authy-API-Key', $this->service->getApiKey());
+        $curl->get($url);
+
+        $response = $this->decoder->decode($curl->getBody());
+
+        if ($errorMessage = $this->service->getErrorFromResponse($response)) {
+            throw new LocalizedException(__($errorMessage));
+        }
+
+        return true;
     }
 }

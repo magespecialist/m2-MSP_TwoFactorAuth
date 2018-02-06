@@ -60,6 +60,15 @@ class Verify extends AbstractAction
      */
     private $registry;
 
+    /**
+     * Verify constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param TfaInterface $tfa
+     * @param Registry $registry
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param PageFactory $pageFactory
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -101,10 +110,7 @@ class Verify extends AbstractAction
     }
 
     /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @inheritdoc
      */
     public function execute()
     {
@@ -115,10 +121,7 @@ class Verify extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @inheritdoc
      */
     protected function _isAllowed()
     {

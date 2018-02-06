@@ -53,6 +53,14 @@ class Auth extends AbstractAction
      */
     private $userConfigManager;
 
+    /**
+     * Auth constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param PageFactory $pageFactory
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param TfaInterface $tfa
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -76,6 +84,10 @@ class Auth extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function execute()
     {
         $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), Authy::CODE);
@@ -83,9 +95,7 @@ class Auth extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {
