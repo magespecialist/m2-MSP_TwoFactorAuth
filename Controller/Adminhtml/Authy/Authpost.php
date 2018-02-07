@@ -23,7 +23,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
 use Magento\Framework\DataObjectFactory;
-use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Controller\Result\JsonFactory;
 use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
@@ -47,9 +47,9 @@ class Authpost extends AbstractAction
     private $session;
 
     /**
-     * @var PageFactory
+     * @var JsonFactory
      */
-    private $pageFactory;
+    private $jsonFactory;
 
     /**
      * @var TfaSessionInterface
@@ -80,7 +80,7 @@ class Authpost extends AbstractAction
      * Authpost constructor.
      * @param Action\Context $context
      * @param Session $session
-     * @param PageFactory $pageFactory
+     * @param JsonFactory $jsonFactory
      * @param Authy $authy
      * @param TfaSessionInterface $tfaSession
      * @param TrustedManagerInterface $trustedManager
@@ -91,7 +91,7 @@ class Authpost extends AbstractAction
     public function __construct(
         Action\Context $context,
         Session $session,
-        PageFactory $pageFactory,
+        JsonFactory $jsonFactory,
         Authy $authy,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
@@ -102,7 +102,7 @@ class Authpost extends AbstractAction
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
-        $this->pageFactory = $pageFactory;
+        $this->jsonFactory = $jsonFactory;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
         $this->authy = $authy;
@@ -125,6 +125,7 @@ class Authpost extends AbstractAction
     public function execute()
     {
         $user = $this->getUser();
+        $result = $this->jsonFactory->create();
 
         try {
             $this->authy->verify($user, $this->dataObjectFactory->create([
@@ -132,9 +133,8 @@ class Authpost extends AbstractAction
             ]));
             $this->trustedManager->handleTrustDeviceRequest(Authy::CODE, $this->getRequest());
             $this->tfaSession->grantAccess();
+            $result->setData(['success' => true]);
         } catch (\Exception $e) {
-            $this->messageManager->addErrorMessage($e->getMessage());
-
             $this->alert->event(
                 'MSP_TwoFactorAuth',
                 'Authy error',
@@ -144,10 +144,10 @@ class Authpost extends AbstractAction
                 $e->getMessage()
             );
 
-            return $this->_redirect('*/*/auth');
+            $result->setData(['success' => false, 'message' => $e->getMessage()]);
         }
 
-        return $this->_redirect('/');
+        return $result;
     }
 
     /**

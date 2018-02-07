@@ -43,20 +43,42 @@ class Configure extends Template
     }
 
     /**
-     * Get URL to post activation code to
-     * @return string
-     */
-    public function getPostUrl()
-    {
-        return $this->getUrl('*/*/configurepost');
-    }
-
-    /**
      * Get a country list
      * return array
      */
-    public function getCountriesList()
+    private function getCountriesList()
     {
         return $this->countryCollectionFactory->create()->addOrder('name', 'asc')->getItems();
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getJsLayout()
+    {
+        $countries = [];
+        foreach ($this->getCountriesList() as $country) {
+            $countries[] = [
+                'dial_code' => $country->getDialCode(),
+                'name' => $country->getName(),
+            ];
+        }
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['children']['register']['configurePostUrl'] =
+            $this->getUrl('*/*/configurepost');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['children']['verify']['verifyPostUrl'] =
+            $this->getUrl('*/*/configureverifypost');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['children']['verify']['successUrl'] =
+            $this->getUrl('/');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['children']['register']['countries'] =
+            $countries;
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['loggingImageUrl'] =
+            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
+
+        return parent::getJsLayout();
     }
 }

@@ -24,8 +24,20 @@ use Magento\Backend\Block\Template;
 
 class Auth extends Template
 {
-    public function getPostUrl()
+    /**
+     * @inheritdoc
+     */
+    public function getJsLayout()
     {
-        return $this->getUrl('*/*/authpost');
+        $this->jsLayout['components']['msp-twofactorauth-auth']['postUrl'] =
+            $this->getUrl('*/*/authpost');
+
+        $this->jsLayout['components']['msp-twofactorauth-auth']['successUrl'] =
+            $this->getUrl('/');
+
+        $this->jsLayout['components']['msp-twofactorauth-auth']['loggingImageUrl'] =
+            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
+
+        return parent::getJsLayout();
     }
 }

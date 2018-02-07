@@ -17,36 +17,36 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-.msp_tfa-trusted_devices {
+.msp-tfa-trusted-devices {
     display: table;
     width: 100%;
     table-layout: fixed;
 }
 
-.msp_tfa-trusted_devices-name {
+.msp-tfa-trusted-devices-name {
 
 }
 
-.msp_tfa-trusted_devices-row,
-.msp_tfa-trusted_devices-head {
+.msp-tfa-trusted-devices-row,
+.msp-tfa-trusted-devices-head {
     display: table-row;
 }
 
-.msp_tfa-trusted_devices-revoke {
+.msp-tfa-trusted-devices-revoke {
     width: 80px;
     text-align: right;
 }
 
-.msp_tfa-trusted_devices-last_ip {
+.msp-tfa-trusted-devices-last-ip {
     width: 90px;
 }
 
-.msp_tfa-trusted_devices-date {
+.msp-tfa-trusted-devices-date {
     width: 140px;
 }
 
-.msp_tfa-trusted_devices-head div,
-.msp_tfa-trusted_devices-row div {
+.msp-tfa-trusted-devices-head div,
+.msp-tfa-trusted-devices-row div {
     display: table-cell;
     height: 3rem;
     vertical-align: middle;
@@ -54,25 +54,25 @@
     font-size: 85%;
 }
 
-.msp_tfa-trusted_devices-head div {
+.msp-tfa-trusted-devices-head div {
     font-weight: bold;
     border-bottom: 5px solid #ffffff;
 }
 
-.msp_tfa-trusted_devices-revoke button {
+.msp-tfa-trusted-devices-revoke button {
     font-size: 85%;
 }
 
-.msp_tfa-forced_providers ul {
+.msp-tfa-forced_providers ul {
     margin-left: 3em;
 }
 
-.msp_tfa-reset_providers button {
+.msp-tfa-reset_providers button {
     width: 250px;
     margin-bottom: .4em;
     display: block;
 }
 
-.msp_tfa-provider {
+.msp-tfa-provider {
     margin-bottom: .2em;
 }

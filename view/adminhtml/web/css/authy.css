@@ -17,52 +17,34 @@
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-.page-wrapper {
-    max-width: 55rem !important;
-}
-
-#authy-actions-list button span {
+.msp-tfa-authy-actions-list button span {
     display: block;
 }
 
-#authy-actions-list button {
+.msp-tfa-authy-actions-list button {
     display: block;
     width: 100%;
     margin-bottom: .8em !important;
 }
 
-.authy-request-code {
-    display: none;
+.msp-tfa-authy-switch-method {
+    height: 2em;
+    line-height: 2em;
 }
 
-#authy-one-touch {
-    display: none;
-    height: 115px;
-    text-align: center;
-    background: #f0f0f0;
-    padding: 1em;
-}
-
-#authy-one-touch img {
-    width: 64px;
-}
-
-#authy-switch-method {
-    display: none;
-}
-
-#authy-switch-method::after {
+.msp-tfa-authy-switch-method::after {
     clear: both;
 }
 
-#authy-one-touch-login {
+.msp-tfa-authy-one-touch,
+.msp-tfa-authy-login {
     height: 115px;
-    display: none;
     text-align: center;
     background: #f0f0f0;
     padding: 1em;
 }
 
-#authy-one-touch-login img {
+.msp-tfa-authy-one-touch img,
+.msp-tfa-authy-login img {
     width: 64px;
 }

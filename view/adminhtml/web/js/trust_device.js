@@ -1,5 +1,3 @@
-<?xml version="1.0"?>
-<!--
 /**
  * MageSpecialist
  *
@@ -13,20 +11,21 @@
  * obtain it through the world-wide-web, please send an email
  * to info@magespecialist.it so we can send you a copy immediately.
  *
- * @category   MSP
- * @package    MSP_TwoFactorAuth
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
--->
-<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <update handle="admin_login" />
 
-    <body>
-        <referenceContainer name="login.content">
-            <block class="MSP\TwoFactorAuth\Block\Provider\Authy\Verify" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/authy/verify.phtml" />
-        </referenceContainer>
-    </body>
-</page>
+'use strict';
+
+define([
+    'uiComponent',
+    'MSP_TwoFactorAuth/js/registry'
+], function (Component, registry) {
+    return Component.extend({
+        checked: registry.trustThisDevice,
+
+        defaults: {
+            template: 'MSP_TwoFactorAuth/trust_device'
+        }
+    });
+});

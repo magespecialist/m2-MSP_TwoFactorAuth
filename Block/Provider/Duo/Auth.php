@@ -48,29 +48,19 @@ class Auth extends Template
     }
 
     /**
-     * Get API hostname
-     * @return string
+     * @inheritdoc
      */
-    public function getApiHost()
+    public function getJsLayout()
     {
-        return $this->duoSecurity->getApiHostname();
-    }
+        $this->jsLayout['components']['msp-twofactorauth-auth']['postUrl'] =
+            $this->getUrl('*/*/authpost', ['form_key' => $this->getFormKey()]);
 
-    /**
-     * Get API signature
-     * @return string
-     */
-    public function getSignature()
-    {
-        return $this->duoSecurity->getRequestSignature($this->session->getUser());
-    }
+        $this->jsLayout['components']['msp-twofactorauth-auth']['signature'] =
+            $this->duoSecurity->getRequestSignature($this->session->getUser());
 
-    /**
-     * Get post action
-     * @return string
-     */
-    public function getPostAction()
-    {
-        return $this->getUrl('*/*/authpost', ['form_key' => $this->getFormKey()]);
+        $this->jsLayout['components']['msp-twofactorauth-auth']['apiHost'] =
+            $this->duoSecurity->getApiHostname();
+
+        return parent::getJsLayout();
     }
 }

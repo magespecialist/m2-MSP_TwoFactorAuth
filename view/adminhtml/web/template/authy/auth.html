@@ -1,0 +1,106 @@
+<!--
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<form autocomplete="off">
+    <fieldset class="admin__fieldset">
+        <legend class="admin__legend"><span data-bind='i18n: "2FA - Authy Auth"'></span></legend>
+        <br/>
+
+        <div visible='selectedMethod() === ""' class="msp-tfa-authy-actions-list">
+            <h3 data-bind='i18n: "Verification methods:"'></h3>
+
+            <button
+                    click="runOneTouch"
+                    type="button"
+                    class="action-primary">
+                <span data-bind='i18n: "Use one touch"'></span>
+            </button>
+
+            <button
+                    click="runSendCodeToken"
+                    type="button"
+                    class="action-primary">
+                <span data-bind='i18n: "Use authy token"'></span>
+            </button>
+
+            <br/>
+            <h3 data-bind='i18n: "Emergency methods:"'></h3>
+
+            <button
+                    click="runSendCodeSms"
+                    type="button"
+                    class="action-default">
+                <span data-bind='i18n: "Send me a code via SMS"'></span>
+            </button>
+
+            <button
+                    click="runSendCodeCall"
+                    type="button"
+                    class="action-choose">
+                <span data-bind='i18n: "Send me a code via phone call"'></span>
+            </button>
+        </div>
+
+        <div class="msp-tfa-waitbox" visible='(selectedMethod() === "onetouch") && !success()'>
+            <img class="loading" attr="src: getLoadingImageUrl()"/>
+            <div data-bind='i18n: waitingText'></div>
+        </div>
+
+        <div visible='success()' class="msp-tfa-waitbox">
+            <img class="loading" attr="src: getLoggingImageUrl()" />
+            <div data-bind='i18n: "Access granted, redirecting you to Magento..."'></div>
+        </div>
+
+        <div class="admin__field _required field-tfa_code msp-tfa-authy-request-code"
+             visible='(selectedMethod() === "code") && !success()'>
+            <label for="tfa_code" class="admin__field-label"><span data-bind='i18n: "Code"'></span></label>
+            <div class="admin__field-control">
+                <input
+                        id="tfa_code"
+                        class="admin__control-text"
+                        type="password"
+                        data-bind='{value: tokenCode, enable: !waitingText()}'
+                        placeholder="Your code" />
+            </div>
+        </div>
+
+        <div visible='(selectedMethod() === "code") && !success()'>
+            <!-- ko foreach: getRegion('trust-device') -->
+            <!-- ko template: getTemplate() --><!-- /ko -->
+            <!--/ko-->
+        </div><br/>
+
+        <div class="form-actions msp-tfa-authy-request-code" visible='(selectedMethod() === "code") && !success()'>
+            <div class="actions">
+                <button
+                        enable="!waitingText()"
+                        click="verifyCode"
+                        class="action-login action-primary">
+                    <span data-bind='i18n: waitingText() ? waitingText() : "Confirm"'></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="msp-tfa-authy-switch-method">
+            <a visible='(selectedMethod() !== "") && !success()' href="#"
+               click="switchAnotherMethod" data-bind='i18n: "Switch to another Authy method"'></a>
+        </div>
+    </fieldset>
+</form>

@@ -76,6 +76,9 @@ class Auth extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $this->userConfigManager->setDefaultProvider($this->getUser()->getId(), DuoSecurity::CODE);

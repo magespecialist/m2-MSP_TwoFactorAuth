@@ -19,7 +19,7 @@
  */
 -->
 <!-- ko if: getForcedProviders().length -->
-<div class="msp_tfa-forced_providers">
+<div class="msp-tfa-forced_providers">
     <strong><!-- ko i18n: "Providers defined by admin:" --><!-- /ko --></strong><br />
     <br />
     <ul data-bind="foreach: getForcedProviders()">
@@ -31,7 +31,7 @@
 <input type="hidden" data-bind="attr: { name: inputName + '[]' }" value="" />
 
 <div data-bind="foreach: getEnabledProviders()">
-    <div class="msp_tfa-provider">
+    <div class="msp-tfa-provider">
         <input type="checkbox" data-bind="
             attr: {
                 id: 'reset_' + $data.value,

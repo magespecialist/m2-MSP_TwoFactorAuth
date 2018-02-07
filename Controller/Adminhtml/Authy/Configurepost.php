@@ -22,10 +22,11 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\App\ResponseInterface;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
+use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
@@ -37,7 +38,7 @@ class Configurepost extends AbstractAction
     /**
      * @var PageFactory
      */
-    private $pageFactory;
+    private $jsonFactory;
 
     /**
      * @var Session
@@ -60,28 +61,36 @@ class Configurepost extends AbstractAction
     private $verification;
 
     /**
+     * @var UserConfigManagerInterface
+     */
+    private $userConfigManager;
+
+    /**
      * Configurepost constructor.
      * @param Action\Context $context
      * @param Session $session
      * @param Authy\Verification $verification
+     * @param UserConfigManagerInterface $userConfigManager
      * @param TfaInterface $tfa
      * @param AlertInterface $alert
-     * @param PageFactory $pageFactory
+     * @param JsonFactory $jsonFactory
      */
     public function __construct(
         Action\Context $context,
         Session $session,
         Authy\Verification $verification,
+        UserConfigManagerInterface $userConfigManager,
         TfaInterface $tfa,
         AlertInterface $alert,
-        PageFactory $pageFactory
+        JsonFactory $jsonFactory
     ) {
         parent::__construct($context);
-        $this->pageFactory = $pageFactory;
+        $this->jsonFactory = $jsonFactory;
         $this->session = $session;
         $this->tfa = $tfa;
         $this->alert = $alert;
         $this->verification = $verification;
+        $this->userConfigManager = $userConfigManager;
     }
 
     /**
@@ -99,13 +108,15 @@ class Configurepost extends AbstractAction
     public function execute()
     {
         $request = $this->getRequest();
+        $response = $this->jsonFactory->create();
 
         try {
             $this->verification->request(
                 $this->getUser(),
                 $request->getParam('tfa_country'),
                 $request->getParam('tfa_phone'),
-                $request->getParam('tfa_method')
+                $request->getParam('tfa_method'),
+                $res
             );
 
             $this->alert->event(
@@ -114,6 +125,12 @@ class Configurepost extends AbstractAction
                 AlertInterface::LEVEL_INFO,
                 $this->getUser()->getUserName()
             );
+
+            $response->setData([
+                'success' => true,
+                'message' => $res['message'],
+                'seconds_to_expire' => (int) $res['seconds_to_expire'],
+            ]);
         } catch (\Exception $e) {
             $this->alert->event(
                 'MSP_TwoFactorAuth',
@@ -123,12 +140,10 @@ class Configurepost extends AbstractAction
                 AlertInterface::ACTION_LOG,
                 $e->getMessage()
             );
-
-            $this->messageManager->addErrorMessage($e->getMessage());
-            return $this->_redirect('*/*/configure');
+            $response->setData(['success' => false, 'message' => $e->getMessage()]);
         }
 
-        return $this->_redirect('*/*/verify');
+        return $response;
     }
 
     /**

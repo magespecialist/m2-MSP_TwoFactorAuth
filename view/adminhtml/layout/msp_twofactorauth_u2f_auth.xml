@@ -31,19 +31,36 @@
     <body>
         <referenceContainer name="login.content">
             <block class="MSP\TwoFactorAuth\Block\Provider\U2fKey\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/u2fkey/auth.phtml">
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/auth.phtml">
 
-                <block class="MSP\TwoFactorAuth\Block\TrustDevice" name="msp_twofactorauth_trust_device"
-                       as="trust-device" template="MSP_TwoFactorAuth::msp_twofactorauth/trust_device.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="msp-twofactorauth-auth" xsi:type="array">
+                                <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/u2fkey/auth</item>
+                                <item name="children" xsi:type="array">
+                                    <item name="msp-twofactorauth-trust-device" xsi:type="array">
+                                        <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/trust_device</item>
+                                        <item name="displayArea" xsi:type="string">trust-device</item>
+                                    </item>
+                                </item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+
+                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="change-provider"
+                       template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml">
+
                     <arguments>
                         <argument name="provider" xsi:type="string">u2fkey</argument>
-                    </arguments>
-                </block>
-
-                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
-                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml">
-                    <arguments>
-                        <argument name="provider" xsi:type="string">u2fkey</argument>
+                        <argument name="jsLayout" xsi:type="array">
+                            <item name="components" xsi:type="array">
+                                <item name="msp-twofactorauth-change-provider" xsi:type="array">
+                                    <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/change_provider</item>
+                                </item>
+                            </item>
+                        </argument>
                     </arguments>
                 </block>
             </block>

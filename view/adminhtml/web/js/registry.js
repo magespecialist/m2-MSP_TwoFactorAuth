@@ -1,4 +1,3 @@
-<?php
 /**
  * MageSpecialist
  *
@@ -12,25 +11,16 @@
  * obtain it through the world-wide-web, please send an email
  * to info@magespecialist.it so we can send you a copy immediately.
  *
- * @category   MSP
- * @package    MSP_TwoFactorAuth
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
 
-/** @var $block \MSP\TwoFactorAuth\Block\Provider\Duo\Auth */
-?>
-<form>
-    <fieldset class="admin__fieldset">
-        <iframe id="duo_iframe"
-                data-host="<?php echo $this->getApiHost(); ?>"
-                data-sig-request="<?php echo $this->getSignature(); ?>"
-                data-post-action="<?php echo $this->getPostAction(); ?>"
-        ></iframe>
-        <script type="text/javascript">
-          require(['MSP_TwoFactorAuth/js/duo'], function(duo) { duo.init(); });
-        </script>
-    </fieldset>
+'use strict';
 
-    <?php echo $block->getChildHtml('change-provider') ?>
-</form>
+define([
+    'ko'
+], function (ko) {
+    return {
+        trustThisDevice: ko.observable(false)
+    };
+});

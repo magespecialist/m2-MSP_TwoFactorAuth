@@ -70,6 +70,17 @@ class Authpost extends AbstractAction
      */
     private $alert;
 
+    /**
+     * Authpost constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param PageFactory $pageFactory
+     * @param DuoSecurity $duoSecurity
+     * @param TfaSessionInterface $tfaSession
+     * @param DataObjectFactory $dataObjectFactory
+     * @param AlertInterface $alert
+     * @param TfaInterface $tfa
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -99,6 +110,9 @@ class Authpost extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $user = $this->getUser();

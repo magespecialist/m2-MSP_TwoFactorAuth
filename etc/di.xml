@@ -107,8 +107,8 @@
             <argument name="authAction" xsi:type="string">msp_twofactorauth/authy/auth</argument>
             <argument name="extraActions" xsi:type="array">
                 <item name="configurepost" xsi:type="string">msp_twofactorauth/authy/configurepost</item>
+                <item name="configureverifypost" xsi:type="string">msp_twofactorauth/authy/configureverifypost</item>
                 <item name="verify" xsi:type="string">msp_twofactorauth/authy/verify</item>
-                <item name="verifypost" xsi:type="string">msp_twofactorauth/authy/verifypost</item>
                 <item name="authpost" xsi:type="string">msp_twofactorauth/authy/authpost</item>
                 <item name="token" xsi:type="string">msp_twofactorauth/authy/token</item>
                 <item name="onetouch" xsi:type="string">msp_twofactorauth/authy/onetouch</item>

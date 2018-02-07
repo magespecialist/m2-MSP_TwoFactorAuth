@@ -19,7 +19,6 @@
 namespace MSP\TwoFactorAuth\Block\Provider\U2fKey;
 
 use Magento\Backend\Block\Template;
-use Magento\Framework\Json\EncoderInterface;
 use MSP\TwoFactorAuth\Model\Provider\Engine\U2fKey;
 
 class Configure extends Template
@@ -29,47 +28,36 @@ class Configure extends Template
      */
     private $u2fKey;
 
-    /**
-     * @var EncoderInterface
-     */
-    private $encoder;
-
     public function __construct(
         Template\Context $context,
-        EncoderInterface $encoder,
         U2fKey $u2fKey,
         array $data = []
     ) {
     
         parent::__construct($context, $data);
         $this->u2fKey = $u2fKey;
-        $this->encoder = $encoder;
     }
 
     /**
-     * Get register data JSON payload
-     * @return string
+     * @inheritdoc
      */
-    public function getRegisterData()
+    public function getJsLayout()
     {
-        return $this->encoder->encode($this->u2fKey->getRegisterData());
-    }
+        $this->jsLayout['components']['msp-twofactorauth-configure']['postUrl'] =
+            $this->getUrl('*/*/configurepost');
 
-    /**
-     * Get success URL
-     * @return string
-     */
-    public function getSuccessUrl()
-    {
-        return $this->getUrl('/');
-    }
+        $this->jsLayout['components']['msp-twofactorauth-configure']['successUrl'] =
+            $this->getUrl('/');
 
-    /**
-     * Get register post URL
-     * @return string
-     */
-    public function getConfigurePostUrl()
-    {
-        return $this->getUrl('*/*/configurepost');
+        $this->jsLayout['components']['msp-twofactorauth-configure']['loggingImageUrl'] =
+            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['touchImageUrl'] =
+            $this->getViewFileUrl('MSP_TwoFactorAuth::images/u2f/touch.png');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['registerData'] =
+            $this->u2fKey->getRegisterData();
+
+        return parent::getJsLayout();
     }
 }

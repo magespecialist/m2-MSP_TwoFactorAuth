@@ -1,0 +1,37 @@
+<!--
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<div data-bind="afterRender: onAfterRender">
+    <div visible='currentStep() === "register"'>
+        <fieldset class="admin__fieldset">
+            <legend class="admin__legend">
+                <span data-bind='i18n: "2FA - U2F key auth"'></span>
+            </legend><br/>
+            <div id="u2f-touch-key">
+                <h3 data-bind='i18n: "Plug in your U2F key, then touch button"'></h3>
+                <img attr='src: getTouchImageUrl()' />
+            </div>
+        </fieldset>
+    </div>
+    <div visible='currentStep() === "login"' class="msp-tfa-waitbox">
+        <img class="loading" attr="src: getLoggingImageUrl()" />
+        <div data-bind='i18n: "Registration ok, redirecting you to Magento..."'></div>
+    </div>
+</div>

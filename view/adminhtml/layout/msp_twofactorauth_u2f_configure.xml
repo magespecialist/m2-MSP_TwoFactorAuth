@@ -24,13 +24,24 @@
     <update handle="admin_login" />
 
     <head>
+        <css src="MSP_TwoFactorAuth::css/auth.css"/>
         <css src="MSP_TwoFactorAuth::css/u2f.css"/>
     </head>
 
     <body>
         <referenceContainer name="login.content">
             <block class="MSP\TwoFactorAuth\Block\Provider\U2fKey\Configure" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/u2fkey/configure.phtml" />
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/configure.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="msp-twofactorauth-configure" xsi:type="array">
+                                <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/u2fkey/configure</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+            </block>
         </referenceContainer>
     </body>
 </page>

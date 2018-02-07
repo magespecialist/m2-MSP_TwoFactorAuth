@@ -22,8 +22,8 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Google;
 
 use Magento\Backend\Model\Auth\Session;
 use Magento\Backend\App\Action;
+use Magento\Framework\Controller\Result\JsonFactory;
 use Magento\Framework\DataObjectFactory;
-use Magento\Framework\View\Result\PageFactory;
 use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
@@ -47,9 +47,9 @@ class Authpost extends AbstractAction
     private $session;
 
     /**
-     * @var PageFactory
+     * @var JsonFactory
      */
-    private $pageFactory;
+    private $jsonFactory;
     /**
      * @var Google
      */
@@ -75,10 +75,22 @@ class Authpost extends AbstractAction
      */
     private $alert;
 
+    /**
+     * Authpost constructor.
+     * @param Action\Context $context
+     * @param Session $session
+     * @param JsonFactory $jsonFactory
+     * @param Google $google
+     * @param TfaSessionInterface $tfaSession
+     * @param TrustedManagerInterface $trustedManager
+     * @param TfaInterface $tfa
+     * @param AlertInterface $alert
+     * @param DataObjectFactory $dataObjectFactory
+     */
     public function __construct(
         Action\Context $context,
         Session $session,
-        PageFactory $pageFactory,
+        JsonFactory $jsonFactory,
         Google $google,
         TfaSessionInterface $tfaSession,
         TrustedManagerInterface $trustedManager,
@@ -89,7 +101,7 @@ class Authpost extends AbstractAction
         parent::__construct($context);
         $this->tfa = $tfa;
         $this->session = $session;
-        $this->pageFactory = $pageFactory;
+        $this->jsonFactory = $jsonFactory;
         $this->google = $google;
         $this->tfaSession = $tfaSession;
         $this->trustedManager = $trustedManager;
@@ -106,8 +118,15 @@ class Authpost extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     * @return \Magento\Framework\App\ResponseInterface|\Magento\Framework\Controller\ResultInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
     public function execute()
     {
+        $response = $this->jsonFactory->create();
+
         $user = $this->getUser();
 
         if ($this->google->verify($user, $this->dataObjectFactory->create([
@@ -115,7 +134,7 @@ class Authpost extends AbstractAction
         ]))) {
             $this->trustedManager->handleTrustDeviceRequest(Google::CODE, $this->getRequest());
             $this->tfaSession->grantAccess();
-            return $this->_redirect('/');
+            $response->setData(['success' => true]);
         } else {
             $this->alert->event(
                 'MSP_TwoFactorAuth',
@@ -124,9 +143,10 @@ class Authpost extends AbstractAction
                 $user->getUserName()
             );
 
-            $this->messageManager->addErrorMessage('Invalid code');
-            return $this->_redirect('*/*/auth');
+            $response->setData(['success' => false, 'message' => 'Invalid code']);
         }
+
+        return $response;
     }
 
     /**

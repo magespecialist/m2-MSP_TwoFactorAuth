@@ -31,12 +31,30 @@
     <body>
         <referenceContainer name="login.content">
             <block class="MSP\TwoFactorAuth\Block\Provider\Duo\Auth" name="content"
-                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/duo/auth.phtml">
+                   template="MSP_TwoFactorAuth::msp_twofactorauth/provider/auth.phtml">
 
-                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="msp_twofactorauth_change_provider"
-                       as="change-provider" template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml">
+                <arguments>
+                    <argument name="jsLayout" xsi:type="array">
+                        <item name="components" xsi:type="array">
+                            <item name="msp-twofactorauth-auth" xsi:type="array">
+                                <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/duo/auth</item>
+                            </item>
+                        </item>
+                    </argument>
+                </arguments>
+
+                <block class="MSP\TwoFactorAuth\Block\ChangeProvider" name="change-provider"
+                       template="MSP_TwoFactorAuth::msp_twofactorauth/change_provider.phtml">
+
                     <arguments>
                         <argument name="provider" xsi:type="string">duo_security</argument>
+                        <argument name="jsLayout" xsi:type="array">
+                            <item name="components" xsi:type="array">
+                                <item name="msp-twofactorauth-change-provider" xsi:type="array">
+                                    <item name="component" xsi:type="string">MSP_TwoFactorAuth/js/change_provider</item>
+                                </item>
+                            </item>
+                        </argument>
                     </arguments>
                 </block>
             </block>

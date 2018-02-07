@@ -75,10 +75,11 @@ class Verification
      * @param string $country
      * @param string $phoneNumber
      * @param string $method
+     * @param array &$response
      * @return true
      * @throws LocalizedException
      */
-    public function request(UserInterface $user, $country, $phoneNumber, $method)
+    public function request(UserInterface $user, $country, $phoneNumber, $method, &$response)
     {
         $url = $this->service->getProtectedApiEndpoint('phones/verification/start');
 

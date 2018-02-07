@@ -39,8 +39,13 @@ class ChangeProvider extends Template
      */
     private $session;
 
-    private $providerCode = null;
-
+    /**
+     * ChangeProvider constructor.
+     * @param Template\Context $context
+     * @param Session $session
+     * @param TfaInterface $tfa
+     * @param array $data
+     */
     public function __construct(
         Template\Context $context,
         Session $session,
@@ -50,6 +55,32 @@ class ChangeProvider extends Template
         parent::__construct($context, $data);
         $this->tfa = $tfa;
         $this->session = $session;
+
+        if (!isset($data['provider'])) {
+            throw new \InvalidArgumentException('A provider must be specified');
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getJsLayout()
+    {
+        $providers = [];
+        foreach ($this->getProvidersList() as $provider) {
+            $providers[] = [
+                'code' => $provider->getCode(),
+                'name' => $provider->getName(),
+                'auth' => $this->getUrl($provider->getAuthAction()),
+                'icon' => $this->getViewFileUrl($provider->getIcon()),
+            ];
+        }
+
+        $this->jsLayout['components']['msp-twofactorauth-change-provider']['switchIcon'] =
+            $this->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png');
+        $this->jsLayout['components']['msp-twofactorauth-change-provider']['providers'] = $providers;
+
+        return parent::getJsLayout();
     }
 
     /**
@@ -62,45 +93,16 @@ class ChangeProvider extends Template
     }
 
     /**
-     * Get current 2FA provider if defined
-     * @return null|string
-     * @throws LocalizedException
-     */
-    public function getCurrentProviderCode()
-    {
-        if ($this->providerCode === null) {
-            $this->providerCode = $this->getData('provider');
-            if (!$this->providerCode) {
-                throw new LocalizedException(__('A provider must be defined for this block'));
-            }
-        }
-
-        return $this->providerCode;
-    }
-
-    /**
-     * Return true if current provider is active
-     * @return bool
-     * @throws LocalizedException
-     */
-    public function isCurrentProviderActive()
-    {
-        $currentProvider = $this->tfa->getProvider($this->getCurrentProviderCode());
-        return $currentProvider->isActive($this->getUser()->getId());
-    }
-
-    /**
      * Get a list of available providers
      * @return ProviderInterface[]
-     * @throws LocalizedException
      */
-    public function getProvidersList()
+    private function getProvidersList()
     {
         $res = [];
 
         $providers = $this->tfa->getUserProviders($this->getUser()->getId());
         foreach ($providers as $provider) {
-            if ($provider->getCode() != $this->getCurrentProviderCode()) {
+            if ($provider->getCode() != $this->getData('provider')) {
                 $res[] = $provider;
             }
         }

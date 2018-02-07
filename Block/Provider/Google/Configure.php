@@ -25,20 +25,22 @@ use Magento\Backend\Block\Template;
 class Configure extends Template
 {
     /**
-     * Get QR code
-     * @return string
+     * @inheritdoc
      */
-    public function getQrCodeUrl()
+    public function getJsLayout()
     {
-        return $this->getUrl('*/*/qr');
-    }
+        $this->jsLayout['components']['msp-twofactorauth-configure']['postUrl'] =
+            $this->getUrl('*/*/configurepost');
 
-    /**
-     * Get URL to post activation code to
-     * @return string
-     */
-    public function getPostUrl()
-    {
-        return $this->getUrl('*/*/configurepost');
+        $this->jsLayout['components']['msp-twofactorauth-configure']['qrCodeUrl'] =
+            $this->getUrl('*/*/qr');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['successUrl'] =
+            $this->getUrl('/');
+
+        $this->jsLayout['components']['msp-twofactorauth-configure']['loggingImageUrl'] =
+            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
+
+        return parent::getJsLayout();
     }
 }

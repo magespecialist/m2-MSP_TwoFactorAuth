@@ -1,0 +1,57 @@
+<!--
+/**
+ * MageSpecialist
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to info@magespecialist.it so we can send you a copy immediately.
+ *
+ * @category   MSP
+ * @package    MSP_TwoFactorAuth
+ * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<form autocomplete="off">
+    <fieldset class="admin__fieldset">
+        <legend class="admin__legend">
+            <span data-bind='i18n: "2FA - Authy"'></span>
+        </legend><br/>
+        <p>
+            <strong data-bind='i18n: messageText()'></strong><br />
+            <a href="#" click="changePhoneNumber" data-bind='i18n: "Click here to change your phone number"'></a>
+        </p><br />
+
+        <div class="admin__field _required field-tfa_verify">
+            <label for="tfa_authy_verify" class="admin__field-label">
+                <span data-bind='i18n: "Verification code"'></span>
+            </label>
+            <div class="admin__field-control">
+                <input
+                        data-bind='value: verifyCode, enable: !waitText()'
+                        id="tfa_authy_verify"
+                        class="admin__control-text"
+                        type="text"
+                        autofocus
+                        placeholder="Verification code"/>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <div class="actions">
+                <button
+                        click="doVerify"
+                        enable="!waitText()"
+                        class="action-login action-primary">
+                    <span data-bind='i18n: waitText() ? waitText() : "Verify"'></span>
+                </button>
+            </div>
+        </div>
+    </fieldset>
+</form>

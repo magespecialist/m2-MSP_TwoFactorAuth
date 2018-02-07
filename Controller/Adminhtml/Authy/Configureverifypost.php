@@ -22,7 +22,7 @@ namespace MSP\TwoFactorAuth\Controller\Adminhtml\Authy;
 
 use Magento\Backend\App\Action;
 use Magento\Backend\Model\Auth\Session;
-use Magento\Framework\View\Result\PageFactory;
+use Magento\Framework\Controller\Result\JsonFactory;
 use MSP\SecuritySuiteCommon\Api\AlertInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 use MSP\TwoFactorAuth\Api\TfaSessionInterface;
@@ -32,12 +32,12 @@ use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 /**
  * @SuppressWarnings(PHPMD.CamelCaseMethodName)
  */
-class Verifypost extends AbstractAction
+class Configureverifypost extends AbstractAction
 {
     /**
-     * @var PageFactory
+     * @var JsonFactory
      */
-    private $pageFactory;
+    private $jsonFactory;
 
     /**
      * @var Session
@@ -78,7 +78,7 @@ class Verifypost extends AbstractAction
      * @param AlertInterface $alert
      * @param Authy $authy
      * @param Authy\Verification $verification
-     * @param PageFactory $pageFactory
+     * @param JsonFactory $jsonFactory
      */
     public function __construct(
         Action\Context $context,
@@ -88,10 +88,10 @@ class Verifypost extends AbstractAction
         AlertInterface $alert,
         Authy $authy,
         Authy\Verification $verification,
-        PageFactory $pageFactory
+        JsonFactory $jsonFactory
     ) {
         parent::__construct($context);
-        $this->pageFactory = $pageFactory;
+        $this->jsonFactory = $jsonFactory;
         $this->session = $session;
         $this->tfa = $tfa;
         $this->tfaSession = $tfaSession;
@@ -115,6 +115,7 @@ class Verifypost extends AbstractAction
     public function execute()
     {
         $verificationCode = $this->getRequest()->getParam('tfa_verify');
+        $response = $this->jsonFactory->create();
 
         try {
             $this->verification->verify($this->getUser(), $verificationCode);
@@ -127,6 +128,10 @@ class Verifypost extends AbstractAction
                 AlertInterface::LEVEL_INFO,
                 $this->getUser()->getUserName()
             );
+
+            $response->setData([
+                'success' => true,
+            ]);
         } catch (\Exception $e) {
             $this->alert->event(
                 'MSP_TwoFactorAuth',
@@ -137,11 +142,13 @@ class Verifypost extends AbstractAction
                 $e->getMessage()
             );
 
-            $this->messageManager->addErrorMessage($e->getMessage());
-            return $this->_redirect('*/*/verify');
+            $response->setData([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ]);
         }
 
-        return $this->_redirect('*/*/auth');
+        return $response;
     }
 
     /**

@@ -47,6 +47,9 @@ class Configure extends AbstractAction
         $this->session = $session;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         return $this->_redirect('*/*/auth');

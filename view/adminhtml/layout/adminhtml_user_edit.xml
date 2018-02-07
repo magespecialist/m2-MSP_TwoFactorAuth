@@ -23,7 +23,6 @@
       xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
 
     <head>
-        <css src="MSP_TwoFactorAuth::css/auth.css"/>
         <css src="MSP_TwoFactorAuth::css/tfa.css"/>
     </head>
 

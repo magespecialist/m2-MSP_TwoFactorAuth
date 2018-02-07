@@ -20,7 +20,7 @@ var u2f = u2f || {};
 
 /**
  * The U2F extension id
- * @type {string}
+ * @type {String}
  * @const
  */
 u2f.EXTENSION_ID = 'kmendfapggjehodndflmmgagdbamhnfd';
@@ -28,7 +28,7 @@ u2f.EXTENSION_ID = 'kmendfapggjehodndflmmgagdbamhnfd';
 /**
  * Message types for messsages to/from the extension
  * @const
- * @enum {string}
+ * @enum {String}
  */
 u2f.MessageTypes = {
     'U2F_REGISTER_REQUEST': 'u2f_register_request',
@@ -255,7 +255,7 @@ u2f.WrappedChromeRuntimePort_.prototype.postMessage = function (message) {
 /**
  * Emulates the HTML 5 addEventListener interface. Works only for the
  * onmessage event, which is hooked up to the chrome.runtime.Port.onMessage.
- * @param {string} eventName
+ * @param {String} eventName
  * @param {function({data: Object})} handler
  */
 u2f.WrappedChromeRuntimePort_.prototype.addEventListener =
@@ -289,14 +289,14 @@ u2f.WrappedAuthenticatorPort_ = function () {
  * @param {Object} message
  */
 u2f.WrappedAuthenticatorPort_.prototype.postMessage = function (message) {
-    var intentLocation = /** @type {string} */ message;
+    var intentLocation = /** @type {String} */ message;
 
     document.location = intentLocation;
 };
 
 /**
  * Emulates the HTML 5 addEventListener interface.
- * @param {string} eventName
+ * @param {String} eventName
  * @param {function({data: Object})} handler
  */
 u2f.WrappedAuthenticatorPort_.prototype.addEventListener =
@@ -410,7 +410,7 @@ u2f.WrappedAuthenticatorPort_.INTENT_URL_BASE_ =
  * @param {Array<u2f.SignRequest>} signRequests
  * @param {number} timeoutSeconds (ignored for now)
  * @param {number} reqId
- * @return {string}
+ * @return {String}
  */
 u2f.WrappedAuthenticatorPort_.prototype.formatSignRequest_ =
     function (signRequests, timeoutSeconds, reqId) {

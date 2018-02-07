@@ -17,37 +17,15 @@
  * @copyright  Copyright (c) 2017 Skeeller srl (http://www.magespecialist.it)
  * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
  */
-
-/** @var $block \MSP\TwoFactorAuth\Block\ChangeProvider */
-$providers = $block->getProvidersList();
 ?>
-<?php if (!empty($providers) && $block->isCurrentProviderActive()) : ?>
-    <a id="tfa_msp_change_provider_trigger" href="#" onclick="openTfaMethodSelector()">
-        <img src="<?php echo $block->getViewFileUrl('MSP_TwoFactorAuth::images/change_provider.png') ?>" />
-        <span>
-            <?php echo __('Select a different 2FA provider') ?>
-        </span>
-    </a>
+<div id="msp-twofactorauth-change-provider-container" data-bind="scope:'msp-twofactorauth-change-provider'">
+    <!-- ko template: getTemplate() --><!-- /ko -->
+</div>
 
-    <div id="tfa_msp_change_provider">
-        <h3><?php echo __('Select a different 2FA provider:') ?></h3>
-
-        <div class="tfa_msp_provider_list">
-            <?php foreach ($providers as $provider) : ?>
-                <a class="tfa_msp_provider" href="<?php echo $block->getUrl($provider->getAuthAction()) ?>">
-                    <img src="<?php echo $block->getViewFileUrl($provider->getIcon()) ?>" />
-                    <span>
-                        <?php echo $provider->getName() ?>
-                    </span>
-                </a>
-            <?php endforeach; ?>
-        </div>
-    </div>
-
-    <script type="text/javascript">
-        function openTfaMethodSelector() {
-            document.getElementById('tfa_msp_change_provider').style.display = 'block';
-            document.getElementById('tfa_msp_change_provider_trigger').style.display = 'none';
-        }
-    </script>
-<?php endif; ?>
+<script type="text/x-magento-init">
+{
+    "#msp-twofactorauth-change-provider-container": {
+        "Magento_Ui/js/core/app": <?php /* @escapeNotVerified */ echo $block->getJsLayout() ?>
+    }
+}
+</script>
