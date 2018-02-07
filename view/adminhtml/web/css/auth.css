@@ -34,7 +34,7 @@
     margin-bottom: 1em;
 }
 
-.msp-tfa-change-provider_trigger {
+.msp-tfa-change-provider-trigger {
     margin-bottom: 1em;
     display: block;
 }
@@ -75,11 +75,15 @@
     float: left;
 }
 
-.msp-tfa-change-provider_trigger:hover {
+.msp-tfa-change-provider-trigger:hover {
     background: #f0f0f0;
 }
 
-.msp-tfa-change-provider_trigger {
+#msp-twofactorauth-change-provider-container {
+    margin-top: 1em;
+}
+
+.msp-tfa-change-provider-trigger {
     color: #333333;
     background: #e0e0e0;
     text-align: center;
@@ -87,20 +91,20 @@
     height: 40px;
 }
 
-.msp-tfa-change-provider_trigger img {
+.msp-tfa-change-provider-trigger img {
     margin-right: 10px;
     width: 24px;
     display: block;
     float: left;
 }
 
-.msp-tfa-change-provider_trigger span {
+.msp-tfa-change-provider-trigger span {
     float: left;
     display: block;
     line-height: 24px;
 }
 
-.msp-tfa-change-provider_trigger::after {
+.msp-tfa-change-provider-trigger::after {
     clear: both;
 }
 

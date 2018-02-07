@@ -63,11 +63,11 @@
     font-size: 85%;
 }
 
-.msp-tfa-forced_providers ul {
+.msp-tfa-forced-providers ul {
     margin-left: 3em;
 }
 
-.msp-tfa-reset_providers button {
+.msp-tfa-reset-providers button {
     width: 250px;
     margin-bottom: .4em;
     display: block;
