@@ -51,6 +51,12 @@ class U2fKey implements EngineInterface
      */
     private $scopeConfig;
 
+    /**
+     * U2fKey constructor.
+     * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
+     * @param UserConfigManagerInterface $userConfigManager
+     */
     public function __construct(
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
@@ -202,6 +208,11 @@ class U2fKey implements EngineInterface
         return !!$this->scopeConfig->getValue(static::XML_PATH_ALLOW_TRUSTED_DEVICES);
     }
 
+    /**
+     * @return U2F
+     * @throws LocalizedException
+     * @throws \u2flib_server\Error
+     */
     private function getU2f()
     {
         /** @var Store $store */

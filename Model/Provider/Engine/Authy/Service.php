@@ -32,6 +32,10 @@ class Service
      */
     private $scopeConfig;
 
+    /**
+     * Service constructor.
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(ScopeConfigInterface $scopeConfig)
     {
         $this->scopeConfig = $scopeConfig;

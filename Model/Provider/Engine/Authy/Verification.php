@@ -55,6 +55,14 @@ class Verification
      */
     private $dateTime;
 
+    /**
+     * Verification constructor.
+     * @param CurlFactory $curlFactory
+     * @param DecoderInterface $decoder
+     * @param DateTime $dateTime
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param Service $service
+     */
     public function __construct(
         CurlFactory $curlFactory,
         DecoderInterface $decoder,

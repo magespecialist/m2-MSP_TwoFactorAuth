@@ -54,6 +54,24 @@
         </arguments>
     </type>
 
+    <!-- Set sensitive information -->
+    <type name="Magento\Config\Model\Config\TypePool">
+        <arguments>
+            <argument name="sensitive" xsi:type="array">
+                <item name="msp_securitysuite_twofactorauth/duo/integration_key" xsi:type="string">1</item>
+                <item name="msp_securitysuite_twofactorauth/duo/secret_key" xsi:type="string">1</item>
+                <item name="msp_securitysuite_twofactorauth/duo/api_hostname" xsi:type="string">1</item>
+                <item name="msp_securitysuite_twofactorauth/authy/api_key" xsi:type="string">1</item>
+            </argument>
+            <argument name="environment" xsi:type="array">
+                <item name="msp_securitysuite_twofactorauth/duo/integration_key" xsi:type="string">1</item>
+                <item name="msp_securitysuite_twofactorauth/duo/secret_key" xsi:type="string">1</item>
+                <item name="msp_securitysuite_twofactorauth/duo/api_hostname" xsi:type="string">1</item>
+                <item name="msp_securitysuite_twofactorauth/authy/api_key" xsi:type="string">1</item>
+            </argument>
+        </arguments>
+    </type>
+
     <!-- System 2FA providers list -->
     <type name="MSP\TwoFactorAuth\Api\ProviderPoolInterface">
         <arguments>

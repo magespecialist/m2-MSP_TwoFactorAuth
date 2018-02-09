@@ -67,6 +67,15 @@ class Authy implements EngineInterface
      */
     private $token;
 
+    /**
+     * Authy constructor.
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param DecoderInterface $decoder
+     * @param ScopeConfigInterface $scopeConfig
+     * @param Token $token
+     * @param Service $service
+     * @param CurlFactory $curlFactory
+     */
     public function __construct(
         UserConfigManagerInterface $userConfigManager,
         DecoderInterface $decoder,

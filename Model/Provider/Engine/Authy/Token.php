@@ -50,6 +50,13 @@ class Token
      */
     private $decoder;
 
+    /**
+     * Token constructor.
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param Service $service
+     * @param DecoderInterface $decoder
+     * @param CurlFactory $curlFactory
+     */
     public function __construct(
         UserConfigManagerInterface $userConfigManager,
         Service $service,

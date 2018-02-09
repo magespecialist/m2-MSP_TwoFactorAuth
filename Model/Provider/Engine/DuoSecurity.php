@@ -47,6 +47,10 @@ class DuoSecurity implements EngineInterface
      */
     private $scopeConfig;
 
+    /**
+     * DuoSecurity constructor.
+     * @param ScopeConfigInterface $scopeConfig
+     */
     public function __construct(
         ScopeConfigInterface $scopeConfig
     ) {

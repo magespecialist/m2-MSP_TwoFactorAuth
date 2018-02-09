@@ -55,6 +55,14 @@ class OneTouch
      */
     private $decoder;
 
+    /**
+     * OneTouch constructor.
+     * @param CurlFactory $curlFactory
+     * @param UserConfigManagerInterface $userConfigManager
+     * @param DecoderInterface $decoder
+     * @param Service $service
+     * @param StoreManagerInterface $storeManager
+     */
     public function __construct(
         CurlFactory $curlFactory,
         UserConfigManagerInterface $userConfigManager,

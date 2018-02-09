@@ -53,6 +53,12 @@ class Google implements EngineInterface
      */
     private $scopeConfig;
 
+    /**
+     * Google constructor.
+     * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
+     * @param UserConfigManagerInterface $configManager
+     */
     public function __construct(
         StoreManagerInterface $storeManager,
         ScopeConfigInterface $scopeConfig,
