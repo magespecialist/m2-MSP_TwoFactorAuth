@@ -158,13 +158,29 @@ class DataProvider extends AbstractDataProvider
         return $res;
     }
 
+    /**
+     * @inheritdoc
+     */
+    public function getMeta()
+    {
+        $meta = parent::getMeta();
+
+        $meta['base_fieldset']['children']['msp_tfa_providers']['arguments']['data']['config']['forced_providers'] =
+            $this->getForcedProviders();
+        $meta['base_fieldset']['children']['msp_tfa_providers']['arguments']['data']['config']['enabled_providers'] =
+            $this->enabledProvider->toOptionArray();
+
+        return $meta;
+    }
+
+    /**
+     * @inheritdoc
+     */
     public function getData()
     {
         if ($this->loadedData === null) {
             $this->loadedData = [];
             $items = $this->collection->getItems();
-            $forcedProviders = $this->getForcedProviders();
-            $enabledProviders = $this->enabledProvider->toOptionArray();
 
             /** @var User $user */
             foreach ($items as $user) {
@@ -173,8 +189,6 @@ class DataProvider extends AbstractDataProvider
                 $trustedDevices = $this->getTrustedDevices($user);
 
                 $data = [
-                    'forced_providers' => $forcedProviders,
-                    'enabled_providers' => $enabledProviders,
                     'reset_providers' => $resetProviders,
                     'trusted_devices' => $trustedDevices,
                     'msp_tfa_providers' => $providerCodes,

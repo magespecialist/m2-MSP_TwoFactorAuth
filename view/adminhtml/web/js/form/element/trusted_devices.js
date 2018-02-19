@@ -26,7 +26,7 @@ define([
          * @returns {Array}
          */
         getTrustedDevices: function () {
-            return this.source.data['trusted_devices'];
+            return this.source.data['trusted_devices'] ? this.source.data['trusted_devices'] : [];
         },
 
         /**

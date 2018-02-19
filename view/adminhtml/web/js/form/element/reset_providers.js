@@ -27,7 +27,7 @@ define([
          * @returns {Array}
          */
         getResetProviders: function () {
-            return this.source.data['reset_providers'];
+            return this.source.data['reset_providers'] ? this.source.data['reset_providers'] : [];
         },
 
         /**

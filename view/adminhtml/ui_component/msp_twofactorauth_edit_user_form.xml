@@ -35,6 +35,7 @@
             <item name="namespace" xsi:type="string">msp_twofactorauth_edit_user_form</item>
         </item>
         <item name="template" xsi:type="string">templates/form/collapsible</item>
+        <item name="childrenFromMeta" xsi:type="boolean">true</item>
     </argument>
 
     <dataSource name="msp_twofactorauth_edit_user_form_data_source">

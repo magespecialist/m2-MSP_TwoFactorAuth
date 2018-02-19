@@ -24,7 +24,7 @@ define(['Magento_Ui/js/form/element/abstract'], function (Abstract) {
          * @returns {Array}
          */
         getForcedProviders: function () {
-            return this.source.data['forced_providers'];
+            return this.forced_providers;
         },
 
         /**
@@ -32,7 +32,7 @@ define(['Magento_Ui/js/form/element/abstract'], function (Abstract) {
          * @returns {Array}
          */
         getEnabledProviders: function () {
-            return this.source.data['enabled_providers'];
+            return this.enabled_providers;
         },
 
         /**
