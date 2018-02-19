@@ -59,6 +59,9 @@ class Reset extends AbstractAction
         $this->tfa = $tfa;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $userId = $this->getRequest()->getParam('id');
@@ -83,12 +86,10 @@ class Reset extends AbstractAction
     }
 
     /**
-     * Check if admin has permissions to visit related pages
-     *
-     * @return bool
+     * @inheritdoc
      */
     protected function _isAllowed()
     {
-        return $this->_authorization->isAllowed('Magento_User::acl_users');
+        return parent::_isAllowed() && $this->_authorization->isAllowed('MSP_TwoFactorAuth::tfa');
     }
 }

@@ -25,6 +25,9 @@ use Magento\Framework\App\ResponseInterface;
 use MSP\TwoFactorAuth\Api\TrustedManagerInterface;
 use MSP\TwoFactorAuth\Controller\Adminhtml\AbstractAction;
 
+/**
+ * @SuppressWarnings(PHPMD.CamelCaseMethodName)
+ */
 class Revoke extends AbstractAction
 {
     /**
@@ -41,10 +44,7 @@ class Revoke extends AbstractAction
     }
 
     /**
-     * Dispatch request
-     *
-     * @return \Magento\Framework\Controller\ResultInterface|ResponseInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     * @inheritdoc
      */
     public function execute()
     {
@@ -54,5 +54,13 @@ class Revoke extends AbstractAction
 
         $this->messageManager->addSuccessMessage(__('Device authorization revoked'));
         return $this->_redirect('adminhtml/user/edit', ['user_id' => $userId]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function _isAllowed()
+    {
+        return parent::_isAllowed() && $this->_authorization->isAllowed('MSP_TwoFactorAuth::tfa');
     }
 }

@@ -20,6 +20,7 @@
 
 namespace MSP\TwoFactorAuth\Observer;
 
+use Magento\Framework\AuthorizationInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;
@@ -31,10 +32,17 @@ class AdminUserSaveAfter implements ObserverInterface
      */
     private $userConfigManager;
 
+    /**
+     * @var AuthorizationInterface
+     */
+    private $authorization;
+
     public function __construct(
-        UserConfigManagerInterface $userConfigManager
+        UserConfigManagerInterface $userConfigManager,
+        AuthorizationInterface $authorization
     ) {
         $this->userConfigManager = $userConfigManager;
+        $this->authorization = $authorization;
     }
 
     /**
@@ -44,14 +52,16 @@ class AdminUserSaveAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        $user = $observer->getEvent()->getObject();
-        $data = $user->getData();
+        if (!$this->authorization->isAllowed('MSP_TwoFactorAuth::tfa')) {
+            $user = $observer->getEvent()->getObject();
+            $data = $user->getData();
 
-        if (isset($data['msp_tfa_providers'])) {
-            if (!is_array($data['msp_tfa_providers'])) {
-                $data['msp_tfa_providers'] = [];
+            if (isset($data['msp_tfa_providers'])) {
+                if (!is_array($data['msp_tfa_providers'])) {
+                    $data['msp_tfa_providers'] = [];
+                }
+                $this->userConfigManager->setProvidersCodes($user->getId(), $data['msp_tfa_providers']);
             }
-            $this->userConfigManager->setProvidersCodes($user->getId(), $data['msp_tfa_providers']);
         }
     }
 }

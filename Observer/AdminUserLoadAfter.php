@@ -20,6 +20,7 @@
 
 namespace MSP\TwoFactorAuth\Observer;
 
+use Magento\Framework\AuthorizationInterface;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use MSP\TwoFactorAuth\Api\UserConfigManagerInterface;

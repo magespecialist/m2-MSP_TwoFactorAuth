@@ -24,14 +24,12 @@
     <acl>
         <resources>
             <resource id="Magento_Backend::admin">
-                <resource id="MSP_TwoFactorAuth::tfa" title="Two Factor Auth" translate="title" sortOrder="40">
-                    <resource id="MSP_TwoFactorAuth::providers" title="Providers Management" translate="title"
-                              sortOrder="10"/>
-                    <resource id="MSP_TwoFactorAuth::users" title="Users" translate="title" sortOrder="20"/>
-                    <resource id="MSP_TwoFactorAuth::users_config" title="Users Configuration" translate="title"
-                              sortOrder="30"/>
-                    <resource id="MSP_TwoFactorAuth::trusted_devices" title="Trusted Devices" translate="title"
-                              sortOrder="40"/>
+                <resource id="Magento_Backend::system">
+                    <resource id="Magento_User::acl">
+                        <resource id="Magento_User::acl_users">
+                            <resource id="MSP_TwoFactorAuth::tfa" title="Two Factor Auth" translate="title" sortOrder="40" />
+                        </resource>
+                    </resource>
                 </resource>
             </resource>
         </resources>

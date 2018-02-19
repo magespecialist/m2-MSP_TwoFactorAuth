@@ -25,70 +25,70 @@
     <route url="/V1/msp-2fa/installed-providers" method="GET">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getAllProviders"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::providers" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/forced-providers" method="GET">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getForcedProviders"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::providers" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/user-providers/:userId" method="GET">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getUserProviders"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::users" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/providers-to-activate/:userId" method="GET">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getProvidersToActivate"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::users" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/trusted-devices/:userId" method="GET">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="getTrustedDevices"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::trusted_devices" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/trusted-devices/:tokenId" method="DELETE">
         <service class="\MSP\TwoFactorAuth\Api\TrustedManagerInterface" method="revokeTrustedDevice"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::trusted_devices" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/default-provider-code/:userId" method="GET">
         <service class="\MSP\TwoFactorAuth\Api\UserConfigManagerInterface" method="getDefaultProvider"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::users" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/default-provider-code/:userId" method="PUT">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="setDefaultProvider"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::users_config" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/user-providers/:userId" method="PUT">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="setProvidersCodes"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::users_config" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 
     <route url="/V1/msp-2fa/reset-provider/:userId/:providerCode" method="POST">
         <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="resetProviderConfig"/>
         <resources>
-            <resource ref="MSP_TwoFactorAuth::users_config" />
+            <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
     </route>
 </routes>

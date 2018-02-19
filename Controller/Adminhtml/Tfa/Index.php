@@ -65,6 +65,9 @@ class Index extends AbstractAction
         return $this->session->getUser();
     }
 
+    /**
+     * @inheritdoc
+     */
     public function execute()
     {
         $user = $this->getUser();

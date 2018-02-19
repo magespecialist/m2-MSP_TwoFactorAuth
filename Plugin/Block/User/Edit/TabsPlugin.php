@@ -20,6 +20,7 @@
 
 namespace MSP\TwoFactorAuth\Plugin\Block\User\Edit;
 
+use Magento\Framework\AuthorizationInterface;
 use MSP\TwoFactorAuth\Api\TfaInterface;
 
 class TabsPlugin
@@ -30,13 +31,21 @@ class TabsPlugin
     private $tfa;
 
     /**
+     * @var AuthorizationInterface
+     */
+    private $authorization;
+
+    /**
      * TabsPlugin constructor.
      * @param TfaInterface $tfa
+     * @param AuthorizationInterface $authorization
      */
     public function __construct(
-        TfaInterface $tfa
+        TfaInterface $tfa,
+        AuthorizationInterface $authorization
     ) {
         $this->tfa = $tfa;
+        $this->authorization = $authorization;
     }
 
     /**
@@ -45,7 +54,9 @@ class TabsPlugin
      */
     public function beforeToHtml(\Magento\User\Block\User\Edit\Tabs $subject)
     {
-        if (empty($this->tfa->getAllEnabledProviders())) {
+        if (empty($this->tfa->getAllEnabledProviders()) ||
+            !$this->authorization->isAllowed('MSP_TwoFactorAuth::tfa')
+        ) {
             return;
         }
 
