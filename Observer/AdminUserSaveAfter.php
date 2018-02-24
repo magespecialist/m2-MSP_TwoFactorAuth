@@ -52,7 +52,7 @@ class AdminUserSaveAfter implements ObserverInterface
      */
     public function execute(Observer $observer)
     {
-        if (!$this->authorization->isAllowed('MSP_TwoFactorAuth::tfa')) {
+        if ($this->authorization->isAllowed('MSP_TwoFactorAuth::tfa')) {
             $user = $observer->getEvent()->getObject();
             $data = $user->getData();
 
