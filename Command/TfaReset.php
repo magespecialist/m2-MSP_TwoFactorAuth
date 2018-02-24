@@ -96,6 +96,6 @@ class TfaReset extends Command
 
         $this->userConfigManager->resetProviderConfig($user->getId(), $providerCode);
 
-        $output->writeln('' . __('Provider %1 has ben reset for user %2', $provider->getName(), $userName));
+        $output->writeln('' . __('Provider %1 has been reset for user %2', $provider->getName(), $userName));
     }
 }
