@@ -71,7 +71,7 @@ class Configure extends Template
             $this->getUrl('*/*/configureverifypost');
 
         $this->jsLayout['components']['msp-twofactorauth-configure']['children']['verify']['successUrl'] =
-            $this->getUrl('/');
+            $this->getUrl($this->_urlBuilder->getStartupPageUrl());
 
         $this->jsLayout['components']['msp-twofactorauth-configure']['children']['register']['countries'] =
             $countries;

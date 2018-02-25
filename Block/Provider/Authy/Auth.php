@@ -39,7 +39,7 @@ class Auth extends Template
             $this->getUrl('*/*/verifyonetouch');
 
         $this->jsLayout['components']['msp-twofactorauth-auth']['successUrl'] =
-            $this->getUrl('/');
+            $this->getUrl($this->_urlBuilder->getStartupPageUrl());
 
         $this->jsLayout['components']['msp-twofactorauth-auth']['loadingImageUrl'] =
             $this->getViewFileUrl('MSP_TwoFactorAuth::images/loading.gif');
