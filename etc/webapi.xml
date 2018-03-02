@@ -72,7 +72,7 @@
     </route>
 
     <route url="/V1/msp-2fa/default-provider-code/:userId" method="PUT">
-        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="setDefaultProvider"/>
+        <service class="\MSP\TwoFactorAuth\Api\TfaInterface" method="setDefaultProviderCode"/>
         <resources>
             <resource ref="MSP_TwoFactorAuth::tfa" />
         </resources>
