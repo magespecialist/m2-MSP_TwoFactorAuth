@@ -71,6 +71,11 @@ class Authpost extends AbstractAction
     private $alert;
 
     /**
+     * @var Action\Context
+     */
+    private $context;
+
+    /**
      * Authpost constructor.
      * @param Action\Context $context
      * @param Session $session
@@ -99,6 +104,7 @@ class Authpost extends AbstractAction
         $this->duoSecurity = $duoSecurity;
         $this->dataObjectFactory = $dataObjectFactory;
         $this->alert = $alert;
+        $this->context = $context;
     }
 
     /**
@@ -122,7 +128,7 @@ class Authpost extends AbstractAction
         ]))) {
             $this->tfa->getProvider(DuoSecurity::CODE)->activate($user->getId());
             $this->tfaSession->grantAccess();
-            return $this->_redirect('/');
+            return $this->_redirect($this->context->getBackendUrl()->getStartupPageUrl());
         } else {
             $this->alert->event(
                 'MSP_TwoFactorAuth',

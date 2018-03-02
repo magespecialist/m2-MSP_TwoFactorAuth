@@ -44,6 +44,11 @@ class Index extends AbstractAction
      */
     private $userConfigManager;
 
+    /**
+     * @var Action\Context
+     */
+    private $context;
+
     public function __construct(
         Action\Context $context,
         Session $session,
@@ -54,6 +59,7 @@ class Index extends AbstractAction
         $this->tfa = $tfa;
         $this->session = $session;
         $this->userConfigManager = $userConfigManager;
+        $this->context = $context;
     }
 
     /**
@@ -92,7 +98,7 @@ class Index extends AbstractAction
         }
 
         if (!$providerCode) {
-            return $this->_redirect('/');
+            return $this->_redirect($this->context->getBackendUrl()->getStartupPageUrl());
         }
 
         if ($provider = $this->tfa->getProvider($providerCode)) {

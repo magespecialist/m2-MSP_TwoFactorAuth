@@ -27,7 +27,23 @@
                 <resource id="Magento_Backend::system">
                     <resource id="Magento_User::acl">
                         <resource id="Magento_User::acl_users">
-                            <resource id="MSP_TwoFactorAuth::tfa" title="Two Factor Auth" translate="title" sortOrder="40" />
+                            <resource id="MSP_TwoFactorAuth::tfa"
+                                      title="Two Factor Auth"
+                                      translate="title"
+                                      sortOrder="40" />
+                        </resource>
+                    </resource>
+                </resource>
+
+                <resource id="Magento_Backend::stores">
+                    <resource id="Magento_Backend::stores_settings">
+                        <resource id="Magento_Config::config">
+                            <resource id="MSP_SecuritySuite::config">
+                                <resource id="MSP_TwoFactorAuth::config"
+                                          title="Two Factor Auth"
+                                          translate="title"
+                                          sortOrder="10" />
+                            </resource>
                         </resource>
                     </resource>
                 </resource>
