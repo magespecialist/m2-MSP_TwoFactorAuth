@@ -95,7 +95,7 @@ class OneTouch
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->service->getApiKey());
         $curl->post($url, [
-            'message' => ''.__('Login request for %1', $this->storeManager->getStore()->getName()),
+            'message' => ''.__('Login request for %1 Admin Panel', $this->storeManager->getStore()->getName()),
             'details[URL]' => $this->storeManager->getStore()->getBaseUrl(),
             'details[User]' => $user->getUserName(),
             'details[Email]' => $user->getEmail(),
