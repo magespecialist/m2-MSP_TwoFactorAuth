@@ -76,9 +76,6 @@ class Configure extends Template
         $this->jsLayout['components']['msp-twofactorauth-configure']['children']['register']['countries'] =
             $countries;
 
-        $this->jsLayout['components']['msp-twofactorauth-configure']['loggingImageUrl'] =
-            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
-
         return parent::getJsLayout();
     }
 }

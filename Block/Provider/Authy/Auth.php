@@ -41,12 +41,6 @@ class Auth extends Template
         $this->jsLayout['components']['msp-twofactorauth-auth']['successUrl'] =
             $this->getUrl($this->_urlBuilder->getStartupPageUrl());
 
-        $this->jsLayout['components']['msp-twofactorauth-auth']['loadingImageUrl'] =
-            $this->getViewFileUrl('MSP_TwoFactorAuth::images/loading.gif');
-
-        $this->jsLayout['components']['msp-twofactorauth-auth']['loggingImageUrl'] =
-            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
-
         return parent::getJsLayout();
     }
 }

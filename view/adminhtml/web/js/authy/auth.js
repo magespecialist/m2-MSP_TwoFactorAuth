@@ -43,8 +43,6 @@ define([
         tokenRequestUrl: '',
         oneTouchUrl: '',
         verifyOneTouchUrl: '',
-        loadingImageUrl: '',
-        loggingImageUrl: '',
 
         /**
          * Get auth post URL
@@ -84,22 +82,6 @@ define([
          */
         getSuccessUrl: function () {
             return this.successUrl;
-        },
-
-        /**
-         * Get loading image URL
-         * @returns {String}
-         */
-        getLoadingImageUrl: function () {
-            return this.loadingImageUrl;
-        },
-
-        /**
-         * Get logging in image URL
-         * @returns {String}
-         */
-        getLoggingImageUrl: function () {
-            return this.loggingImageUrl;
         },
 
         /**

@@ -34,7 +34,6 @@ define([
 
         trustThisDevice: registry.trustThisDevice,
 
-        loggingImageUrl: '',
         qrCodeUrl: '',
         postUrl: '',
         successUrl: '',
@@ -87,14 +86,6 @@ define([
                     error.display('There was an internal error trying to verify your code');
                     me.waitText('');
                 });
-        },
-
-        /**
-         * Get logging in image URL
-         * @returns {String}
-         */
-        getLoggingImageUrl: function () {
-            return this.loggingImageUrl;
         }
     });
 });

@@ -34,7 +34,6 @@ define([
         },
 
         postUrl: '',
-        loggingImageUrl: '',
         successUrl: '',
         touchImageUrl: '',
         authenticateData: {},
@@ -69,15 +68,6 @@ define([
         getSuccessUrl: function () {
             return this.successUrl;
         },
-
-        /**
-         * Get logging in image URL
-         * @returns {String}
-         */
-        getLoggingImageUrl: function () {
-            return this.loggingImageUrl;
-        },
-
         /**
          * Wait for key touch
          */

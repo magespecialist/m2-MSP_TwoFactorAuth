@@ -49,9 +49,6 @@ class Configure extends Template
         $this->jsLayout['components']['msp-twofactorauth-configure']['successUrl'] =
             $this->getUrl($this->_urlBuilder->getStartupPageUrl());
 
-        $this->jsLayout['components']['msp-twofactorauth-configure']['loggingImageUrl'] =
-            $this->getViewFileUrl('MSP_TwoFactorAuth::images/logging.gif');
-
         $this->jsLayout['components']['msp-twofactorauth-configure']['touchImageUrl'] =
             $this->getViewFileUrl('MSP_TwoFactorAuth::images/u2f/touch.png');
 

@@ -59,13 +59,21 @@
         </div>
 
         <div class="msp-tfa-waitbox" visible='(selectedMethod() === "onetouch") && !success()'>
-            <img class="loading" attr="src: getLoadingImageUrl()"/>
+            <div data-role="spinner">
+                <div class="spinner">
+                    <span/><span/><span/><span/><span/><span/><span/><span/>
+                </div>
+            </div>
             <div data-bind='i18n: waitingText'></div>
         </div>
 
         <div visible='success()' class="msp-tfa-waitbox">
-            <img class="loading" attr="src: getLoggingImageUrl()" />
-            <div data-bind='i18n: "Access granted, redirecting you to Magento..."'></div>
+            <div data-role="spinner">
+                <div class="spinner">
+                    <span/><span/><span/><span/><span/><span/><span/><span/>
+                </div>
+            </div>
+            <div data-bind='i18n: "Redirecting to Magento Admin Panel..."'></div>
         </div>
 
         <div class="admin__field _required field-tfa_code msp-tfa-authy-request-code"

@@ -26,16 +26,6 @@ define([
         currentStep: registry.currentStep,
         defaults: {
             template: 'MSP_TwoFactorAuth/authy/configure'
-        },
-
-        loggingImageUrl: '',
-
-        /**
-         * Get logging in image URL
-         * @returns {String}
-         */
-        getLoggingImageUrl: function () {
-            return this.loggingImageUrl;
         }
     });
 });

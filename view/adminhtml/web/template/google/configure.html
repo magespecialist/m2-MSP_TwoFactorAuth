@@ -59,7 +59,11 @@
         </form>
     </div>
     <div visible='currentStep() === "login"' class="msp-tfa-waitbox">
-        <img class="loading" attr="src: getLoggingImageUrl()" />
-        <div data-bind='i18n: "Registration ok, redirecting you to Magento..."'></div>
+        <div data-role="spinner">
+            <div class="spinner">
+                <span/><span/><span/><span/><span/><span/><span/><span/>
+            </div>
+        </div>
+        <div data-bind='i18n: "Redirecting to Magento Admin Panel..."'></div>
     </div>
 </div>

@@ -32,7 +32,6 @@ define([
         },
 
         postUrl: '',
-        loggingImageUrl: '',
         successUrl: '',
         touchImageUrl: '',
         registerData: {},
@@ -66,14 +65,6 @@ define([
          */
         getSuccessUrl: function () {
             return this.successUrl;
-        },
-
-        /**
-         * Get logging in image URL
-         * @returns {String}
-         */
-        getLoggingImageUrl: function () {
-            return this.loggingImageUrl;
         },
 
         /**
