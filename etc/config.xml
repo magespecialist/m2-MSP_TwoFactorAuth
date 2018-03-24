@@ -32,6 +32,7 @@
             </google>
             <authy>
                 <allow_trusted_devices>1</allow_trusted_devices>
+                <onetouch_message>Login request to your Magento Admin</onetouch_message>
             </authy>
             <u2fkey>
                 <allow_trusted_devices>1</allow_trusted_devices>

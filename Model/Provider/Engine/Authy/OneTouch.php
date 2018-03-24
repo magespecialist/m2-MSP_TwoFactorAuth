@@ -20,6 +20,7 @@
 
 namespace MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
+use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Exception\LocalizedException;
 use Magento\Framework\HTTP\Client\CurlFactory;
 use Magento\Framework\Json\DecoderInterface;
@@ -30,6 +31,8 @@ use MSP\TwoFactorAuth\Model\Provider\Engine\Authy;
 
 class OneTouch
 {
+    const XML_PATH_ONETOUCH_MESSAGE = 'msp_securitysuite_twofactorauth/authy/onetouch_message';
+
     /**
      * @var CurlFactory
      */
@@ -56,25 +59,33 @@ class OneTouch
     private $decoder;
 
     /**
+     * @var ScopeConfigInterface
+     */
+    private $scopeConfig;
+
+    /**
      * OneTouch constructor.
      * @param CurlFactory $curlFactory
      * @param UserConfigManagerInterface $userConfigManager
      * @param DecoderInterface $decoder
      * @param Service $service
      * @param StoreManagerInterface $storeManager
+     * @param ScopeConfigInterface $scopeConfig
      */
     public function __construct(
         CurlFactory $curlFactory,
         UserConfigManagerInterface $userConfigManager,
         DecoderInterface $decoder,
         Service $service,
-        StoreManagerInterface $storeManager
+        StoreManagerInterface $storeManager,
+        ScopeConfigInterface $scopeConfig
     ) {
         $this->curlFactory = $curlFactory;
         $this->userConfigManager = $userConfigManager;
         $this->storeManager = $storeManager;
         $this->service = $service;
         $this->decoder = $decoder;
+        $this->scopeConfig = $scopeConfig;
     }
 
     /**
@@ -95,7 +106,7 @@ class OneTouch
         $curl = $this->curlFactory->create();
         $curl->addHeader('X-Authy-API-Key', $this->service->getApiKey());
         $curl->post($url, [
-            'message' => ''.__('Login request for %1 Admin Panel', $this->storeManager->getStore()->getName()),
+            'message' => $this->scopeConfig->getValue(self::XML_PATH_ONETOUCH_MESSAGE),
             'details[URL]' => $this->storeManager->getStore()->getBaseUrl(),
             'details[User]' => $user->getUserName(),
             'details[Email]' => $user->getEmail(),

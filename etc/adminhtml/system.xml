@@ -98,6 +98,9 @@
                     <comment>NOTE: This option should be used in HTTPS only environments</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field canRestore="1" id="onetouch_message" translate="label" type="text" sortOrder="40" showInDefault="1" showInWebsite="0" showInStore="0">
+                    <label>OneTouch Message</label>
+                </field>
             </group>
         </section>
     </system>
